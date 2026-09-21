@@ -138,14 +138,15 @@ enum TableLayout {
             Wall(points: [CGPoint(x: 0.082, y: 0.0), CGPoint(x: 0.082, y: 0.530)]),
             // Right outlane / inlane divider.
             Wall(points: [CGPoint(x: 0.918, y: 0.0), CGPoint(x: 0.918, y: 0.530)]),
-            // Left apron: inlane floor that feeds the flipper, then the drain lip.
-            Wall(points: [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.215),
-                          CGPoint(x: 0.300, y: 0.150), CGPoint(x: 0.420, y: 0.092),
-                          CGPoint(x: 0.455, y: 0.072), CGPoint(x: 0.455, y: 0.0)]),
+            // Left apron: the inlane floor, ending on the flipper pivot so the
+            // ball rolls onto the blade. It used to carry on underneath the
+            // blade and down to a drain lip, which left a slot half a ball
+            // wide between the two for the ball to sit in.
+            Wall(points: [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.232),
+                          CGPoint(x: 0.315, y: 0.175)]),
             // Right apron, mirrored.
-            Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.215),
-                          CGPoint(x: 0.700, y: 0.150), CGPoint(x: 0.580, y: 0.092),
-                          CGPoint(x: 0.545, y: 0.072), CGPoint(x: 0.545, y: 0.0)]),
+            Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.232),
+                          CGPoint(x: 0.685, y: 0.175)]),
             // Left orbit guide: inner wall of the lane hugging the left rail.
             Wall(points: [CGPoint(x: 0.115, y: 0.60), CGPoint(x: 0.107, y: 0.86),
                           CGPoint(x: 0.115, y: 1.10), CGPoint(x: 0.150, y: 1.24),
@@ -170,8 +171,6 @@ enum TableLayout {
             // clears it on both sides: it splits the outlane from the inlane.
             Post(center: CGPoint(x: 0.082, y: 0.548), radius: 0.013),
             Post(center: CGPoint(x: 0.918, y: 0.548), radius: 0.013),
-            Post(center: CGPoint(x: 0.300, y: 0.150), radius: 0.013),
-            Post(center: CGPoint(x: 0.700, y: 0.150), radius: 0.013),
             Post(center: CGPoint(x: 0.500, y: 0.56), radius: 0.015),
         ]
     }
@@ -271,10 +270,13 @@ enum TableLayout {
     static let magnetRadius: CGFloat = 0.10
 
     static let flippers: [Flipper] = [
+        // 0.150, not 0.170: at rest the tips left only 0.77 of a ball between
+        // them, so the ball perched on top of them and the middle of the table
+        // could never drain at all.
         Flipper(side: .left, pivot: CGPoint(x: 0.315, y: 0.175),
-                length: 0.170, thickness: 0.030, isUpper: false),
+                length: 0.150, thickness: 0.030, isUpper: false),
         Flipper(side: .right, pivot: CGPoint(x: 0.685, y: 0.175),
-                length: 0.170, thickness: 0.030, isUpper: false),
+                length: 0.150, thickness: 0.030, isUpper: false),
         Flipper(side: .left, pivot: CGPoint(x: 0.245, y: 0.985),
                 length: 0.140, thickness: 0.026, isUpper: true),
     ]

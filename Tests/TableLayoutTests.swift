@@ -50,13 +50,11 @@ final class TableLayoutTests: XCTestCase {
         XCTAssertEqual(left.pivot.x, 1 - right.pivot.x, accuracy: 0.0001)
         XCTAssertEqual(left.pivot.y, right.pivot.y, accuracy: 0.0001)
 
-        // The classic layout leaves a gap the ball can fall through, otherwise
-        // there is no reason to ever hit a flipper.
-        let gap = (right.pivot.x - left.pivot.x) - 2 * left.length
-        XCTAssertGreaterThan(gap, TableLayout.ballRadius,
+        // The real gap is measured at the rest angle, in TableClearanceTests;
+        // this only checks the pivots are far enough apart to leave one at all.
+        XCTAssertGreaterThan((right.pivot.x - left.pivot.x) - 2 * left.length,
+                             TableLayout.ballRadius,
                              "the flippers meet, so nothing can ever drain")
-        XCTAssertLessThan(gap, TableLayout.ballRadius * 4,
-                          "the drain gap is so wide the flippers cannot cover it")
     }
 
     func testTheSlingshotsAreMirrored() {
