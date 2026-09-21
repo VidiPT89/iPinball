@@ -9,37 +9,91 @@ final class TableClearanceTests: XCTestCase {
 
     private let diameter = TableLayout.ballRadius * 2
 
-    /// Every wall segment on the table, paired with the wall it belongs to so
+    /// Every solid edge on the table, grouped by the thing it belongs to so
     /// neighbouring segments of the same rail are not compared with each other.
-    private var segments: [(wall: Int, a: CGPoint, b: CGPoint)] {
-        TableLayout.walls.enumerated().flatMap { index, wall in
-            zip(wall.points, wall.points.dropFirst()).map { (index, $0, $1) }
+    ///
+    /// This deliberately includes the slingshots and the targets, not just the
+    /// walls. An earlier version only compared walls with walls, and so missed
+    /// the pinch between a post and the top of a slingshot that closed the
+    /// mouth of both inlanes to under half a ball.
+    private var edges: [(group: String, a: CGPoint, b: CGPoint)] {
+        var result: [(String, CGPoint, CGPoint)] = []
+
+        for (index, wall) in TableLayout.walls.enumerated() {
+            for (a, b) in zip(wall.points, wall.points.dropFirst()) {
+                result.append(("wall \(index)", a, b))
+            }
         }
+        for slingshot in TableLayout.slingshots {
+            let loop = slingshot.vertices + [slingshot.vertices[0]]
+            for (a, b) in zip(loop, loop.dropFirst()) {
+                result.append(("slingshot \(slingshot.side.rawValue)", a, b))
+            }
+        }
+        return result
+    }
+
+    /// The round solid things: posts and the pop bumpers.
+    private var discs: [(name: String, centre: CGPoint, radius: CGFloat)] {
+        TableLayout.posts.map { ("post at \($0.center)", $0.center, $0.radius) }
+            + TableLayout.bumpers.map { ("bumper \($0.index)", $0.center, $0.radius) }
     }
 
     func testNoTwoRailsFormAPocketNarrowerThanTheBall() {
         var offenders: [String] = []
-        let all = segments
+        let all = edges
 
         for i in 0..<all.count {
             for j in (i + 1)..<all.count {
-                guard all[i].wall != all[j].wall else { continue }
+                guard all[i].group != all[j].group else { continue }
                 // Rails that meet form a corner, not a pocket. The arch joins
                 // both side walls, and its first segment away from that
                 // junction is naturally within a ball of them.
-                guard !joined(all[i].wall, all[j].wall) else { continue }
+                guard !joined(all[i].group, all[j].group) else { continue }
                 let gap = distance(all[i].a, all[i].b, all[j].a, all[j].b)
-                // Touching rails are fine — a corner is not a pocket. What is
-                // not fine is a slot the ball can enter and not leave.
                 guard gap > 0.0005, gap < diameter else { continue }
                 offenders.append(String(
-                    format: "gap %.4f (%.0f%% of a ball) between wall %d and wall %d",
-                    gap, gap / diameter * 100, all[i].wall, all[j].wall))
+                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
+                    gap, gap / diameter * 100, all[i].group, all[j].group))
             }
         }
 
         XCTAssertTrue(offenders.isEmpty,
                       "the ball would wedge here:\n" + offenders.joined(separator: "\n"))
+    }
+
+    /// The gap a post leaves against everything solid around it. This is the
+    /// one that matters most: a post sits in the middle of a lane, so it eats
+    /// into the clearance on both of its sides at once.
+    func testEveryPostLeavesRoomForTheBallOnBothSides() {
+        var offenders: [String] = []
+
+        for disc in discs {
+            for edge in edges {
+                // A post that caps the end of a rail is part of that rail.
+                let ends = min(edge.a.distance(to: disc.centre),
+                               edge.b.distance(to: disc.centre))
+                guard ends > disc.radius + 0.012 else { continue }
+
+                let gap = pointToSegment(disc.centre, edge.a, edge.b) - disc.radius
+                guard gap > 0.0005, gap < diameter else { continue }
+                offenders.append(String(
+                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
+                    gap, gap / diameter * 100, disc.name, edge.group))
+            }
+
+            for other in discs where other.name != disc.name {
+                let gap = disc.centre.distance(to: other.centre)
+                    - disc.radius - other.radius
+                guard gap > 0.0005, gap < diameter else { continue }
+                offenders.append(String(
+                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
+                    gap, gap / diameter * 100, disc.name, other.name))
+            }
+        }
+
+        XCTAssertTrue(offenders.isEmpty,
+                      "the ball cannot get past:\n" + offenders.joined(separator: "\n"))
     }
 
     func testTheShooterLaneSitsOutsideThePlayfield() {
@@ -59,10 +113,10 @@ final class TableClearanceTests: XCTestCase {
         // Measured at the height where the lanes run straight, below the posts.
         let y: CGFloat = 0.35
         let lanes: [(String, CGFloat, CGFloat)] = [
-            ("left outlane", 0.015, 0.072),
-            ("left inlane", 0.072, 0.128),
-            ("right inlane", 0.872, 0.928),
-            ("right outlane", 0.928, TableLayout.playfieldRightEdge),
+            ("left outlane", 0.015, 0.082),
+            ("left inlane", 0.082, 0.150),
+            ("right inlane", 0.850, 0.918),
+            ("right outlane", 0.918, TableLayout.playfieldRightEdge),
             ("shooter lane", TableLayout.playfieldRightEdge, 1.08),
         ]
 
@@ -73,7 +127,7 @@ final class TableClearanceTests: XCTestCase {
     }
 
     func testTheSlingshotsStayClearOfTheOutlaneDividers() {
-        let dividers: [CGFloat] = [0.072, 0.928]
+        let dividers: [CGFloat] = [0.082, 0.918]
         for slingshot in TableLayout.slingshots {
             let outerX = slingshot.side == .left
                 ? slingshot.vertices.map(\.x).min()!
@@ -93,16 +147,16 @@ final class TableClearanceTests: XCTestCase {
     }
 
     /// True when two rails share a junction, and so are one boundary.
-    private func joined(_ a: Int, _ b: Int) -> Bool {
-        let ends = { (index: Int) -> [CGPoint] in
+    private func joined(_ a: String, _ b: String) -> Bool {
+        func ends(_ group: String) -> [CGPoint] {
+            guard group.hasPrefix("wall "),
+                  let index = Int(group.dropFirst("wall ".count)),
+                  TableLayout.walls.indices.contains(index) else { return [] }
             let points = TableLayout.walls[index].points
             return [points.first, points.last].compactMap { $0 }
         }
-        for p in ends(a) where ends(b).contains(where: { $0.distance(to: p) < 0.02 }) {
-            _ = p
-            return true
-        }
-        return false
+        let first = ends(a), second = ends(b)
+        return first.contains { p in second.contains { $0.distance(to: p) < 0.02 } }
     }
 
     // MARK: - Geometry

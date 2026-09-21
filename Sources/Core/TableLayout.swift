@@ -132,27 +132,27 @@ enum TableLayout {
             // It doubles as the right edge of the playfield.
             Wall(points: [CGPoint(x: 1.00, y: 0.13), CGPoint(x: 1.00, y: 1.14),
                           CGPoint(x: 0.985, y: 1.20)]),
-            // Left outlane / inlane divider.
-            Wall(points: [CGPoint(x: 0.072, y: 0.0), CGPoint(x: 0.072, y: 0.44),
-                          CGPoint(x: 0.105, y: 0.53)]),
+            // Left outlane / inlane divider. It runs straight up to its post:
+            // the old inward lean closed the mouth of the inlane to a third of
+            // a ball, and the ball jammed against the slingshot there.
+            Wall(points: [CGPoint(x: 0.082, y: 0.0), CGPoint(x: 0.082, y: 0.530)]),
             // Right outlane / inlane divider.
-            Wall(points: [CGPoint(x: 0.928, y: 0.0), CGPoint(x: 0.928, y: 0.44),
-                          CGPoint(x: 0.895, y: 0.53)]),
+            Wall(points: [CGPoint(x: 0.918, y: 0.0), CGPoint(x: 0.918, y: 0.530)]),
             // Left apron: inlane floor that feeds the flipper, then the drain lip.
-            Wall(points: [CGPoint(x: 0.072, y: 0.30), CGPoint(x: 0.215, y: 0.215),
+            Wall(points: [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.215),
                           CGPoint(x: 0.300, y: 0.150), CGPoint(x: 0.420, y: 0.092),
                           CGPoint(x: 0.455, y: 0.072), CGPoint(x: 0.455, y: 0.0)]),
             // Right apron, mirrored.
-            Wall(points: [CGPoint(x: 0.928, y: 0.30), CGPoint(x: 0.785, y: 0.215),
+            Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.215),
                           CGPoint(x: 0.700, y: 0.150), CGPoint(x: 0.580, y: 0.092),
                           CGPoint(x: 0.545, y: 0.072), CGPoint(x: 0.545, y: 0.0)]),
             // Left orbit guide: inner wall of the lane hugging the left rail.
-            Wall(points: [CGPoint(x: 0.108, y: 0.60), CGPoint(x: 0.100, y: 0.86),
-                          CGPoint(x: 0.108, y: 1.10), CGPoint(x: 0.150, y: 1.24),
+            Wall(points: [CGPoint(x: 0.115, y: 0.60), CGPoint(x: 0.107, y: 0.86),
+                          CGPoint(x: 0.115, y: 1.10), CGPoint(x: 0.150, y: 1.24),
                           CGPoint(x: 0.230, y: 1.32)]),
             // Right orbit guide.
-            Wall(points: [CGPoint(x: 0.892, y: 0.60), CGPoint(x: 0.900, y: 0.86),
-                          CGPoint(x: 0.892, y: 1.10), CGPoint(x: 0.850, y: 1.24),
+            Wall(points: [CGPoint(x: 0.885, y: 0.60), CGPoint(x: 0.893, y: 0.86),
+                          CGPoint(x: 0.885, y: 1.10), CGPoint(x: 0.850, y: 1.24),
                           CGPoint(x: 0.770, y: 1.32)]),
             // Lane dividers between the four P-I-N-B rollovers.
             Wall(points: [CGPoint(x: 0.380, y: 1.46), CGPoint(x: 0.380, y: 1.27)]),
@@ -166,8 +166,10 @@ enum TableLayout {
 
     static var posts: [Post] {
         [
-            Post(center: CGPoint(x: 0.105, y: 0.53), radius: 0.016),
-            Post(center: CGPoint(x: 0.895, y: 0.53), radius: 0.016),
+            // Slimmer than the rest, and sat on the divider line, so the ball
+            // clears it on both sides: it splits the outlane from the inlane.
+            Post(center: CGPoint(x: 0.082, y: 0.548), radius: 0.013),
+            Post(center: CGPoint(x: 0.918, y: 0.548), radius: 0.013),
             Post(center: CGPoint(x: 0.300, y: 0.150), radius: 0.013),
             Post(center: CGPoint(x: 0.700, y: 0.150), radius: 0.013),
             Post(center: CGPoint(x: 0.500, y: 0.56), radius: 0.015),
@@ -184,13 +186,13 @@ enum TableLayout {
 
     static let slingshots: [Slingshot] = [
         Slingshot(side: .left, vertices: [
-            CGPoint(x: 0.128, y: 0.505),
-            CGPoint(x: 0.128, y: 0.318),
+            CGPoint(x: 0.150, y: 0.505),
+            CGPoint(x: 0.150, y: 0.318),
             CGPoint(x: 0.318, y: 0.412),
         ]),
         Slingshot(side: .right, vertices: [
-            CGPoint(x: 0.872, y: 0.505),
-            CGPoint(x: 0.872, y: 0.318),
+            CGPoint(x: 0.850, y: 0.505),
+            CGPoint(x: 0.850, y: 0.318),
             CGPoint(x: 0.682, y: 0.412),
         ]),
     ]
