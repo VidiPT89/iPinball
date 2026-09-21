@@ -100,6 +100,7 @@
 		FA68E7E5E207472E5DC847C5 /* TableBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19E6F25622AA4C1D29AFE03 /* TableBuilder.swift */; };
 		FAD4ED59F9D554998C297E63 /* GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A4981EA910AA0B555382AA8 /* GameModels.swift */; };
 		FC04FC1D29B7E97F9E326310 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEB751C34E881E7D7937E2 /* Strings.swift */; };
+		FFDA964C67DB88302187F642 /* PlungerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC6247B8AF0C199F8569FC0 /* PlungerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,6 +165,7 @@
 		E19E6F25622AA4C1D29AFE03 /* TableBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableBuilder.swift; sourceTree = "<group>"; };
 		E210EC35F6D144C4C4D38715 /* GameControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControls.swift; sourceTree = "<group>"; };
 		ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Links.swift; sourceTree = "<group>"; };
+		EDC6247B8AF0C199F8569FC0 /* PlungerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlungerTests.swift; sourceTree = "<group>"; };
 		F3396483B01C8E995BB05D6C /* TableLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableLayout.swift; sourceTree = "<group>"; };
 		F6C310062A34F49EAFACFD7D /* HUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -175,6 +177,7 @@
 				A482148C55FA0EA990299406 /* GameOverFlowTests.swift */,
 				91A9B8A1A909DFFFDB2D5B20 /* GameSessionTests.swift */,
 				27DF96F89FCDA77CC09F0F16 /* MissionEngineTests.swift */,
+				EDC6247B8AF0C199F8569FC0 /* PlungerTests.swift */,
 				20BC782FEBEFF5CF2C35CA60 /* ScoreEngineTests.swift */,
 				2F54C07CB41536C40F3AD5D5 /* TableClearanceTests.swift */,
 				8FC28BB1A0ACAA7FD6B16C59 /* TableLayoutTests.swift */,
@@ -489,6 +492,7 @@
 				3F8CE9654C22BAB6DBBA3B36 /* GameOverFlowTests.swift in Sources */,
 				F102CADED8A51B3615A50ABE /* GameSessionTests.swift in Sources */,
 				8FB841F059FA9B1E69D2BC6B /* MissionEngineTests.swift in Sources */,
+				FFDA964C67DB88302187F642 /* PlungerTests.swift in Sources */,
 				1BCBD9F0126645DB719A6606 /* ScoreEngineTests.swift in Sources */,
 				CCF4FA68BD1FD61316D39294 /* TableClearanceTests.swift in Sources */,
 				2D0E73BF674D075E930ECE68 /* TableLayoutTests.swift in Sources */,

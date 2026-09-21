@@ -7,8 +7,16 @@ enum PhysicsTuning {
 
     // MARK: World
 
-    /// The table is tilted, not vertical, so gravity is far weaker than 9.8.
-    static let gravity = CGVector(dx: 0, dy: -6.2)
+    /// Downward pull in **table widths per second squared**, like every other
+    /// speed here, so the table plays the same at any window size. SpriteKit
+    /// wants metres per second squared at 150 points to the metre, and
+    /// `PinballScene` converts using the current scale. Expressed as a fixed
+    /// SpriteKit value it made gravity weaker on a large screen than a small
+    /// one, because the speeds around it are scaled and it was not.
+    static let gravity: CGFloat = 2.18
+
+    /// How SpriteKit measures a metre.
+    static let pointsPerMetre: CGFloat = 150
 
     // MARK: Ball
 
@@ -23,7 +31,7 @@ enum PhysicsTuning {
     /// Speed clamp applied every frame, in table widths per second, so the feel
     /// is identical on every screen size. Without it the solver becomes
     /// unstable and the ball escapes through thin walls.
-    static let maxBallSpeed: CGFloat = 3.4
+    static let maxBallSpeed: CGFloat = 3.6
 
     // MARK: Flippers
 
@@ -43,8 +51,11 @@ enum PhysicsTuning {
 
     // MARK: Plunger
 
-    static let plungerMinSpeed: CGFloat = 1.45
-    static let plungerMaxSpeed: CGFloat = 3.10
+    /// Even a limp plunge has to carry the ball past the arch above the
+    /// shooter lane. Anything less drops it back into the lane, and the game
+    /// had no way forward from there.
+    static let plungerMinSpeed: CGFloat = 2.60
+    static let plungerMaxSpeed: CGFloat = 3.30
     /// Drag distance, as a fraction of the screen height, for a full charge.
     static let plungerFullPullRatio: CGFloat = 0.22
 

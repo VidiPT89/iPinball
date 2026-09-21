@@ -41,7 +41,6 @@ final class PinballScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = palette.background
         scaleMode = .resizeFill
-        physicsWorld.gravity = PhysicsTuning.gravity
         physicsWorld.contactDelegate = self
 
         let camera = SKCameraNode()
@@ -71,6 +70,9 @@ final class PinballScene: SKScene {
         balls.removeAll()
 
         geometry = TableGeometry(sceneSize: size, topInset: hudInset)
+        physicsWorld.gravity = CGVector(
+            dx: 0,
+            dy: -PhysicsTuning.gravity * geometry.scale / PhysicsTuning.pointsPerMetre)
         let builder = TableBuilder(geometry: geometry, palette: palette)
         parts = builder.build(into: self)
 
@@ -242,15 +244,32 @@ final class PinballScene: SKScene {
         }
     }
 
+    /// True when the one ball on the table is sitting still in the shooter
+    /// lane. A short plunge drops it straight back there, and on a real
+    /// machine you simply plunge again — without this the game had no way
+    /// forward at all, because the phase had already moved on to `.playing`
+    /// and the plunger only answered to `.ballReady`.
+    var canPlunge: Bool {
+        if session.phase == .ballReady { return true }
+        guard session.phase == .playing, balls.count == 1,
+              let ball = balls.first, !ball.isOnRamp else { return false }
+
+        let local = geometry.localPoint(ball.position)
+        return local.x > TableLayout.playfieldRightEdge
+            && local.y < 0.45
+            && ball.speed2D < geometry.length(0.35)
+    }
+
     func chargePlunger(to fraction: CGFloat) {
-        guard session.phase == .ballReady else { return }
+        guard canPlunge else { return }
         plungerCharge = max(0, min(1, fraction))
         updatePlungerVisual()
         audio?.plungerCharge(plungerCharge)
     }
 
     func firePlunger() {
-        guard session.phase == .ballReady, let ball = balls.first else { return }
+        guard canPlunge, let ball = balls.first else { return }
+        let wasWaiting = session.phase == .ballReady
         let charge = max(0.18, plungerCharge)
         ball.physicsBody?.isDynamic = true
         let speed = geometry.length(
@@ -262,7 +281,8 @@ final class PinballScene: SKScene {
         model?.showLaunchHint = false
         audio?.play(.plunger)
         haptics?.tap(.medium)
-        dispatch(.ballLaunched)
+        // A re-plunge is not a new ball: the session already counted this one.
+        if wasWaiting { dispatch(.ballLaunched) }
     }
 
     private func updatePlungerVisual() {
@@ -271,7 +291,7 @@ final class PinballScene: SKScene {
         plunger.position = geometry.point(CGPoint(x: TableLayout.shooterLaneCenterX,
                                                   y: TableLayout.shooterLaneBottomY))
         plunger.position.y -= travel
-        launchArrow?.alpha = session.phase == .ballReady ? 0.35 + plungerCharge * 0.5 : 0
+        launchArrow?.alpha = canPlunge ? 0.35 + plungerCharge * 0.5 : 0
     }
 
     func nudge(direction: CGFloat) {
@@ -320,6 +340,7 @@ final class PinballScene: SKScene {
         }
 
         updateBallSaveRing()
+        updateLaunchHint()
         pushHUD()
     }
 
@@ -328,8 +349,7 @@ final class PinballScene: SKScene {
         // A ball that somehow ended up outside the table is recovered rather
         // than lost, so the player never sees a ball simply vanish.
         for ball in balls where !ball.isOnRamp {
-            let local = CGPoint(x: (ball.position.x - geometry.origin.x) / geometry.scale,
-                                y: (ball.position.y - geometry.origin.y) / geometry.scale)
+            let local = geometry.localPoint(ball.position)
             if local.x < -0.1 || local.x > 1.1 || local.y > TableLayout.height + 0.1 {
                 ball.park(at: geometry.point(TableLayout.ballStart))
             }
@@ -360,6 +380,16 @@ final class PinballScene: SKScene {
 
     func activateMagnet() {
         magnetActiveUntil = sceneTime + PhysicsTuning.magnetHoldDuration
+    }
+
+    /// Brings the launch prompt back if the ball rolls into the shooter lane,
+    /// so the player is told the plunger is live again.
+    private func updateLaunchHint() {
+        guard let model, !model.isGameOver else { return }
+        let waiting = canPlunge
+        if model.showLaunchHint != waiting {
+            model.showLaunchHint = waiting
+        }
     }
 
     private func updateBallSaveRing() {

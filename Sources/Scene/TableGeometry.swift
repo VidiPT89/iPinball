@@ -23,6 +23,11 @@ struct TableGeometry {
         CGPoint(x: origin.x + p.x * scale, y: origin.y + p.y * scale)
     }
 
+    /// The inverse of `point`, for asking where something is on the table.
+    func localPoint(_ p: CGPoint) -> CGPoint {
+        CGPoint(x: (p.x - origin.x) / scale, y: (p.y - origin.y) / scale)
+    }
+
     func length(_ value: CGFloat) -> CGFloat { value * scale }
 
     func size(_ value: CGSize) -> CGSize {
