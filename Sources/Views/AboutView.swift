@@ -6,9 +6,6 @@ struct AboutView: View {
     @Environment(\.palette) private var palette
     @Environment(\.openURL) private var openURL
 
-    private let website = URL(string: "https://ividi.dev/")!
-    private let github = URL(string: "https://github.com/VidiPT89/")!
-
     var body: some View {
         Panel_Scaffold(title: settings.t("about.title")) {
             VStack(spacing: 12) {
@@ -34,13 +31,13 @@ struct AboutView: View {
                     linkRow(title: settings.t("about.website"),
                             value: "ividi.dev",
                             icon: "globe",
-                            url: website,
+                            url: Links.website,
                             label: settings.t("a11y.openWebsite"))
 
                     linkRow(title: settings.t("about.github"),
                             value: "@VidiPT89",
                             icon: "chevron.left.forwardslash.chevron.right",
-                            url: github,
+                            url: Links.github,
                             label: settings.t("a11y.openGitHub"))
 
                     Divider().overlay(palette.faintColor.opacity(0.25))

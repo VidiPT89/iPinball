@@ -169,7 +169,7 @@ final class GameModel {
                 show("hud.lastBall", style: .neutral)
             }
 
-        case .gameOver(let finalScore, _):
+        case .gameOver(let finalScore):
             ballsPlayed += 1
             self.finalScore = finalScore
             score = finalScore

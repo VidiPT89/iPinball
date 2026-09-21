@@ -51,7 +51,7 @@ enum GameEffect: Equatable {
     case bonusAwarded(points: Int)
     case tilted
     case tiltWarning
-    case gameOver(score: Int, isHighScore: Bool)
+    case gameOver(score: Int)
 }
 
 /// Short identifier for the floating text the scene pops at the impact point.

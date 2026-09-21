@@ -17,9 +17,6 @@ struct SplashView: View {
     @State private var showLinks = false
     @State private var hasFinished = false
 
-    private let website = URL(string: "https://ividi.dev/")!
-    private let github = URL(string: "https://github.com/VidiPT89/")!
-
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
@@ -89,9 +86,9 @@ struct SplashView: View {
 
             HStack(spacing: 22) {
                 linkButton(title: "ividi.dev", systemImage: "globe",
-                           url: website, label: settings.t("a11y.openWebsite"))
+                           url: Links.website, label: settings.t("a11y.openWebsite"))
                 linkButton(title: "VidiPT89", systemImage: "chevron.left.forwardslash.chevron.right",
-                           url: github, label: settings.t("a11y.openGitHub"))
+                           url: Links.github, label: settings.t("a11y.openGitHub"))
             }
         }
         .opacity(showCredit ? 1 : 0)

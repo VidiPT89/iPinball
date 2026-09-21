@@ -284,7 +284,7 @@ final class GameSession {
         if ballsInPlay > 1 {
             ballsInPlay -= 1
             if ballsInPlay == 1 {
-                        score.isMultiballActive = false
+                score.isMultiballActive = false
                 return [.multiballEnded]
             }
             return []
@@ -325,7 +325,7 @@ final class GameSession {
 
         if currentBall >= ballCount {
             phase = .gameOver
-            effects.append(.gameOver(score: score.score, isHighScore: false))
+            effects.append(.gameOver(score: score.score))
             return effects
         }
 

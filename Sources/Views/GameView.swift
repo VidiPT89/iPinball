@@ -56,6 +56,7 @@ struct GameView: View {
         .gameKeyboardControls(scene: scene, model: model,
                               pause: pause, resume: resume)
         .onChange(of: palette.accent) { _, _ in scene.repaint(with: palette) }
+        .onChange(of: reduceMotion) { _, new in scene.reduceMotion = new }
         .onChange(of: model.isGameOver) { _, isOver in
             guard isOver else { return }
             model.highScoreRank = settings.rank(for: model.finalScore)

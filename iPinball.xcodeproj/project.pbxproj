@@ -36,6 +36,7 @@
 		32DFB8D3E8E07CF5D81DA8D1 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1173313662A46E3DFA6265E /* GameView.swift */; };
 		3CE2E25D8C61CD3DC75D3A51 /* MissionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FE4B227DAA2D1D62B18D86 /* MissionEngine.swift */; };
 		3F66276E0F517D17D1C9442D /* FlipperNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A567AE3E5C504980FF3234DC /* FlipperNode.swift */; };
+		3F8CE9654C22BAB6DBBA3B36 /* GameOverFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A482148C55FA0EA990299406 /* GameOverFlowTests.swift */; };
 		424FFD6B9563A5FB47E586FF /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520ADDCBCF212316C14B7228 /* AboutView.swift */; };
 		42DE7C5FFCE3D110CCE0B27E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5877EDC0E62B4CC58128A0C6 /* Palette.swift */; };
 		44E74D6CD683750E6BAE01CC /* HighScoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2195DA816D55A54D64676 /* HighScoresView.swift */; };
@@ -46,6 +47,7 @@
 		531116F986E751C17661A00C /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010D0534C04133C4C479235B /* PauseOverlay.swift */; };
 		5509E31DC45E330A624DC673 /* HighScoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2195DA816D55A54D64676 /* HighScoresView.swift */; };
 		58E420F4EB5F899E2DB1AE40 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3396483B01C8E995BB05D6C /* TableLayout.swift */; };
+		59FD451D3D4648DB73BF1B15 /* Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */; };
 		5F920EFD0EBFEC971557FB1E /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BBDC9C0A75A9094F07BDC /* GameSession.swift */; };
 		5FD79BE742342A99566C13E9 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7476573811E0AC45ADF8323 /* SplashView.swift */; };
 		618CF60DACF93A86AD653308 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56A52725CE82D601B695653 /* AudioEngine.swift */; };
@@ -73,6 +75,7 @@
 		A7247FE65B8C6BD149E8B5D1 /* iPinballApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098CD933F651CA93ABC166F9 /* iPinballApp.swift */; };
 		A7DDACB80C8653D9AF9970CA /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010D0534C04133C4C479235B /* PauseOverlay.swift */; };
 		A88CB6F045BF1D4AB0980828 /* PanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E1C19328D6084B59D7A558 /* PanelChrome.swift */; };
+		A8E92B5D711FEBCC563E5303 /* Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */; };
 		A90EFC2FE5ADFED87F1017D4 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A6815D644027F2AC5B56CB /* Motion.swift */; };
 		A9A74CA516A27F664EDFA427 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A978F94A17EFB834D2D689 /* SettingsView.swift */; };
 		AE31931FCCE378C5FD8B7327 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FEA225A18E7956D4004919 /* Typography.swift */; };
@@ -138,6 +141,7 @@
 		996BBDC9C0A75A9094F07BDC /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
 		9D2CCF5BC0965B69F5007890 /* TableGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableGeometry.swift; sourceTree = "<group>"; };
 		9DFDD72E629F74B894E8772A /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		A482148C55FA0EA990299406 /* GameOverFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverFlowTests.swift; sourceTree = "<group>"; };
 		A567AE3E5C504980FF3234DC /* FlipperNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperNode.swift; sourceTree = "<group>"; };
 		A56A52725CE82D601B695653 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		A8B1341AC6F8FB46616DF9A6 /* TableNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNodes.swift; sourceTree = "<group>"; };
@@ -152,6 +156,7 @@
 		D1FE4B227DAA2D1D62B18D86 /* MissionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionEngine.swift; sourceTree = "<group>"; };
 		E19E6F25622AA4C1D29AFE03 /* TableBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableBuilder.swift; sourceTree = "<group>"; };
 		E210EC35F6D144C4C4D38715 /* GameControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControls.swift; sourceTree = "<group>"; };
+		ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Links.swift; sourceTree = "<group>"; };
 		F3396483B01C8E995BB05D6C /* TableLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableLayout.swift; sourceTree = "<group>"; };
 		F6C310062A34F49EAFACFD7D /* HUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,6 +165,7 @@
 		006464D1F03C93089786943D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A482148C55FA0EA990299406 /* GameOverFlowTests.swift */,
 				91A9B8A1A909DFFFDB2D5B20 /* GameSessionTests.swift */,
 				27DF96F89FCDA77CC09F0F16 /* MissionEngineTests.swift */,
 				20BC782FEBEFF5CF2C35CA60 /* ScoreEngineTests.swift */,
@@ -227,6 +233,7 @@
 		73AECFF46FF6A50419CE348F /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */,
 				3E2500FD7082B5D8B291E023 /* Platform.swift */,
 			);
 			path = Support;
@@ -436,6 +443,7 @@
 				2E8D2F79823960B215B589C0 /* HapticsEngine.swift in Sources */,
 				5509E31DC45E330A624DC673 /* HighScoresView.swift in Sources */,
 				B86040CE2989C3207E196FD7 /* HowToPlayView.swift in Sources */,
+				59FD451D3D4648DB73BF1B15 /* Links.swift in Sources */,
 				BCF658FA1A9534811221C3DB /* MenuView.swift in Sources */,
 				EA2140DEA775AB73100044C4 /* MissionEngine.swift in Sources */,
 				A90EFC2FE5ADFED87F1017D4 /* Motion.swift in Sources */,
@@ -467,6 +475,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F8CE9654C22BAB6DBBA3B36 /* GameOverFlowTests.swift in Sources */,
 				F102CADED8A51B3615A50ABE /* GameSessionTests.swift in Sources */,
 				8FB841F059FA9B1E69D2BC6B /* MissionEngineTests.swift in Sources */,
 				1BCBD9F0126645DB719A6606 /* ScoreEngineTests.swift in Sources */,
@@ -494,6 +503,7 @@
 				C3FF6497B15748C4830629E2 /* HapticsEngine.swift in Sources */,
 				44E74D6CD683750E6BAE01CC /* HighScoresView.swift in Sources */,
 				1BD24E429E6596EBC702D894 /* HowToPlayView.swift in Sources */,
+				A8E92B5D711FEBCC563E5303 /* Links.swift in Sources */,
 				EB86A1698399A27CEBC341F3 /* MenuView.swift in Sources */,
 				3CE2E25D8C61CD3DC75D3A51 /* MissionEngine.swift in Sources */,
 				DA96E69B54EB86E51727CDC6 /* Motion.swift in Sources */,

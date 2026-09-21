@@ -89,13 +89,38 @@ final class PinballScene: SKScene {
         isNodeBuilt = true
 
         // A rebuild wipes every node, so whatever was on the table has to be
-        // put back: either the game that was waiting to start, or the ball
+        // put back: either the game that was waiting to start, or the balls
         // that a window resize just took away.
         if startWhenReady {
             startWhenReady = false
             startGame()
         } else if session.phase != .idle && session.phase != .gameOver {
+            restoreBalls()
+        }
+    }
+
+    /// Puts back as many balls as the session still believes are in play.
+    ///
+    /// `serveBall` alone is wrong here: during multiball it would drop three
+    /// balls down to one while the session still counted three, so the next
+    /// drain would decrement the count with nothing left on the table and the
+    /// game would sit there with no ball and no way to get one.
+    private func restoreBalls() {
+        guard session.phase != .ballReady else {
             serveBall()
+            return
+        }
+
+        balls.forEach { $0.removeFromParent() }
+        balls.removeAll()
+        ballsOnRamp.removeAll()
+        heldSaucers.removeAll()
+
+        for index in 0..<max(1, session.ballsInPlay) {
+            let ball = spawnBall(at: CGPoint(x: 0.5 + CGFloat(index - 1) * 0.06, y: 1.12))
+            ball.physicsBody?.velocity = CGVector(
+                angle: -.pi / 2 + .random(in: -0.3...0.3),
+                magnitude: geometry.length(0.4))
         }
     }
 

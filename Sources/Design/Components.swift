@@ -107,48 +107,52 @@ struct NeonTitle: View {
 // MARK: - Rolling score
 
 /// Counts up to the new value instead of snapping, and pops on big gains.
+///
+/// The roll is a single interruptible animation rather than a burst of
+/// scheduled work. An earlier version queued fourteen `asyncAfter` blocks per
+/// change; on a busy table the score changes several times a second, so stale
+/// blocks from a previous total kept firing and the displayed score visibly
+/// jumped backwards. Animating `animatableData` lets a new total retarget from
+/// wherever the last one had got to, and cancels nothing because there is
+/// nothing queued.
 struct ScoreTicker: View {
     let value: Int
     var font: Font = Typography.score(34)
 
     @Environment(\.palette) private var palette
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var displayed = 0
     @State private var scale: CGFloat = 1
 
     var body: some View {
-        Text(displayed.grouped)
-            .font(font)
-            .foregroundStyle(palette.textColor)
+        RollingNumber(value: Double(value), font: font, color: palette.textColor)
+            .animation(reduceMotion ? nil : .easeOut(duration: Motion.scoreRoll),
+                       value: value)
             .scaleEffect(scale)
             .onChange(of: value) { old, new in
-                animate(from: old, to: new)
+                guard !reduceMotion, new - old >= 50_000 else { return }
+                withAnimation(.easeOut(duration: Motion.scorePop)) { scale = 1.12 }
+                withAnimation(.easeIn(duration: Motion.scorePop)
+                    .delay(Motion.scorePop)) { scale = 1 }
             }
-            .onAppear { displayed = value }
             .accessibilityLabel(Text(value.grouped))
     }
+}
 
-    private func animate(from old: Int, to new: Int) {
-        guard !reduceMotion else {
-            displayed = new
-            return
-        }
-        if new - old >= 50_000 {
-            withAnimation(.easeOut(duration: Motion.scorePop)) { scale = 1.12 }
-            withAnimation(.easeIn(duration: Motion.scorePop).delay(Motion.scorePop)) {
-                scale = 1
-            }
-        }
-        let steps = 14
-        let stepDuration = Motion.scoreRoll / Double(steps)
-        for step in 1...steps {
-            DispatchQueue.main.asyncAfter(deadline: .now() + stepDuration * Double(step)) {
-                let progress = Double(step) / Double(steps)
-                let eased = 1 - pow(1 - progress, 3)
-                displayed = old + Int(Double(new - old) * eased)
-                if step == steps { displayed = new }
-            }
-        }
+/// Redraws itself for each interpolated value SwiftUI hands it.
+private struct RollingNumber: View, Animatable {
+    var value: Double
+    let font: Font
+    let color: Color
+
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+
+    var body: some View {
+        Text(Int(value.rounded()).grouped)
+            .font(font)
+            .foregroundStyle(color)
     }
 }
 
