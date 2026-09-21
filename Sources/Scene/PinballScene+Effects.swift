@@ -324,6 +324,7 @@ extension PinballScene {
         parts.saucers.forEach { $0.repaint(with: newPalette) }
         parts.slingshots.forEach { $0.repaint(with: newPalette) }
         parts.spinner?.repaint(with: newPalette)
+        parts.ramps.forEach { $0.repaint(with: newPalette) }
         parts.rails?.strokeColor = newPalette.accent.withAlphaComponent(0.75)
         for rollover in parts.rollovers {
             rollover.setLit(rollover.isLit, palette: newPalette)

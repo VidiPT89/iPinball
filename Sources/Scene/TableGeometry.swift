@@ -60,6 +60,33 @@ struct TableGeometry {
         }
         return path
     }
+
+    /// The same curve as `smoothPath`, sampled into points so a ramp can be
+    /// built as a real surface with two edges instead of one thick stroke.
+    func smoothPoints(through points: [CGPoint], samplesPerSegment: Int = 14) -> [CGPoint] {
+        guard points.count > 2, let last = points.last else { return points.map(point) }
+        let scenePoints = points.map(point)
+        var result: [CGPoint] = []
+
+        for i in 0..<(scenePoints.count - 1) {
+            let p0 = scenePoints[max(i - 1, 0)]
+            let p1 = scenePoints[i]
+            let p2 = scenePoints[i + 1]
+            let p3 = scenePoints[min(i + 2, scenePoints.count - 1)]
+            let c1 = CGPoint(x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6)
+            let c2 = CGPoint(x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6)
+
+            for step in 0..<samplesPerSegment {
+                let t = CGFloat(step) / CGFloat(samplesPerSegment)
+                let u = 1 - t
+                let x = u*u*u * p1.x + 3*u*u*t * c1.x + 3*u*t*t * c2.x + t*t*t * p2.x
+                let y = u*u*u * p1.y + 3*u*u*t * c1.y + 3*u*t*t * c2.y + t*t*t * p2.y
+                result.append(CGPoint(x: x, y: y))
+            }
+        }
+        result.append(point(last))
+        return result
+    }
 }
 
 extension CGVector {

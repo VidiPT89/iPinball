@@ -10,7 +10,7 @@ struct TableParts {
     var saucers: [SaucerNode] = []
     var slingshots: [SlingshotNode] = []
     var spinner: SpinnerNode?
-    var rampRails: [SKShapeNode] = []
+    var ramps: [RampNode] = []
     var rails: SKShapeNode?
     var magnetGlow: SKSpriteNode?
 }
@@ -30,7 +30,7 @@ struct TableBuilder {
         addPosts(to: scene)
         addDrain(to: scene)
         parts.magnetGlow = addMagnet(to: scene)
-        parts.rampRails = addRamps(to: scene)
+        parts.ramps = addRamps(to: scene)
         addOrbitGates(to: scene)
 
         parts.slingshots = TableLayout.slingshots.map {
@@ -188,47 +188,34 @@ struct TableBuilder {
         return glow
     }
 
-    private func addRamps(to scene: SKScene) -> [SKShapeNode] {
-        var rails: [SKShapeNode] = []
+    private func addRamps(to scene: SKScene) -> [RampNode] {
+        TableLayout.ramps.map { ramp in
+            let node = RampNode(config: ramp, geometry: geometry, palette: palette)
+            scene.addChild(node)
 
-        for ramp in TableLayout.ramps {
-            let rail = SKShapeNode(path: geometry.smoothPath(through: ramp.path))
-            rail.strokeColor = palette.accentLight.withAlphaComponent(0.55)
-            rail.lineWidth = geometry.length(0.052)
-            rail.lineCap = .round
-            rail.fillColor = .clear
-            rail.zPosition = 30
-            scene.addChild(rail)
-
-            let inner = SKShapeNode(path: geometry.smoothPath(through: ramp.path))
-            inner.strokeColor = palette.tableFelt.withAlphaComponent(0.9)
-            inner.lineWidth = geometry.length(0.036)
-            inner.lineCap = .round
-            inner.fillColor = .clear
-            inner.zPosition = 31
-            scene.addChild(inner)
-            rails.append(inner)
-
-            guard let entrance = ramp.path.first else { continue }
-            let radius = geometry.length(ramp.entranceRadius)
-            let mouth = SKShapeNode(circleOfRadius: radius)
-            mouth.position = geometry.point(entrance)
-            mouth.fillColor = .clear
-            mouth.strokeColor = palette.accent
-            mouth.lineWidth = 2
-            mouth.glowWidth = 2
-            mouth.zPosition = 32
-            mouth.name = "ramp.\(ramp.side.rawValue)"
-
-            let body = SKPhysicsBody(circleOfRadius: radius * 0.8)
-            body.isDynamic = false
-            body.categoryBitMask = PhysicsCategory.rampEntrance
-            body.collisionBitMask = PhysicsCategory.none
-            body.contactTestBitMask = PhysicsCategory.ball
-            mouth.physicsBody = body
-            scene.addChild(mouth)
+            // The mouth stays a separate node because it carries the sensor the
+            // scene looks up by name when the ball reaches the entrance.
+            if let entrance = ramp.path.first {
+                scene.addChild(mouthSensor(for: ramp, at: entrance))
+            }
+            return node
         }
-        return rails
+    }
+
+    private func mouthSensor(for ramp: TableLayout.Ramp,
+                             at entrance: CGPoint) -> SKNode {
+        let radius = geometry.length(ramp.entranceRadius)
+        let node = SKNode()
+        node.position = geometry.point(entrance)
+        node.name = "ramp.\(ramp.side.rawValue)"
+
+        let body = SKPhysicsBody(circleOfRadius: radius * 0.8)
+        body.isDynamic = false
+        body.categoryBitMask = PhysicsCategory.rampEntrance
+        body.collisionBitMask = PhysicsCategory.none
+        body.contactTestBitMask = PhysicsCategory.ball
+        node.physicsBody = body
+        return node
     }
 
     private func addOrbitGates(to scene: SKScene) {

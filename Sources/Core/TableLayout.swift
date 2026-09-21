@@ -232,19 +232,25 @@ enum TableLayout {
                radius: 0.040, ejectAngle: .pi + 0.65),
     ]
 
+    /// The climb runs up the side, turns over at the top and comes back down
+    /// as a habitrail that feeds the inlane. The turn is rounded rather than a
+    /// reversal between two points, which used to render as a spike, and the
+    /// apex stops below the saucer instead of crossing it.
     static let ramps: [Ramp] = [
         Ramp(side: .left,
-             path: [CGPoint(x: 0.285, y: 0.520), CGPoint(x: 0.250, y: 0.700),
-                    CGPoint(x: 0.215, y: 0.900), CGPoint(x: 0.180, y: 1.060),
-                    CGPoint(x: 0.130, y: 0.760), CGPoint(x: 0.110, y: 0.470),
-                    CGPoint(x: 0.120, y: 0.350)],
+             path: [CGPoint(x: 0.285, y: 0.520), CGPoint(x: 0.254, y: 0.690),
+                    CGPoint(x: 0.224, y: 0.860), CGPoint(x: 0.198, y: 0.975),
+                    CGPoint(x: 0.168, y: 1.012), CGPoint(x: 0.136, y: 0.988),
+                    CGPoint(x: 0.120, y: 0.880), CGPoint(x: 0.111, y: 0.700),
+                    CGPoint(x: 0.110, y: 0.510), CGPoint(x: 0.118, y: 0.365)],
              entranceRadius: 0.042,
              exitAngle: -1.35),
         Ramp(side: .right,
-             path: [CGPoint(x: 0.715, y: 0.520), CGPoint(x: 0.750, y: 0.700),
-                    CGPoint(x: 0.785, y: 0.900), CGPoint(x: 0.820, y: 1.060),
-                    CGPoint(x: 0.870, y: 0.760), CGPoint(x: 0.890, y: 0.470),
-                    CGPoint(x: 0.880, y: 0.350)],
+             path: [CGPoint(x: 0.715, y: 0.520), CGPoint(x: 0.746, y: 0.690),
+                    CGPoint(x: 0.776, y: 0.860), CGPoint(x: 0.802, y: 0.975),
+                    CGPoint(x: 0.832, y: 1.012), CGPoint(x: 0.864, y: 0.988),
+                    CGPoint(x: 0.880, y: 0.880), CGPoint(x: 0.889, y: 0.700),
+                    CGPoint(x: 0.890, y: 0.510), CGPoint(x: 0.882, y: 0.365)],
              entranceRadius: 0.042,
              exitAngle: -1.79),
     ]
