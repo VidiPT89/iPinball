@@ -140,15 +140,27 @@ struct GameKeyboardControls: ViewModifier {
     @State private var chargeTimer: Timer?
     @FocusState private var hasKeyboardFocus: Bool
 
+    /// The table stops listening once the game is over, so the initials field
+    /// on the screen above it gets the keystrokes. The flipper keys include
+    /// `a`, `d`, `l`, `w`, `n`, `m` and `p`, each reported as handled, so
+    /// initials like "DAM" were impossible to type while the table listened.
+    private var releasesKeyboard: Bool { model.isGameOver }
+
     func body(content: Content) -> some View {
         content
-            .focusable()
+            .focusable(!releasesKeyboard)
             .focusEffectDisabled()
             .focused($hasKeyboardFocus)
-            .onKeyPress(phases: [.down, .up]) { press in handle(press) }
+            .onKeyPress(phases: [.down, .up]) { press in
+                releasesKeyboard ? .ignored : handle(press)
+            }
             // Without taking the focus the table never sees a key press, and
             // on the Mac the keyboard is the only way to play.
             .onAppear { hasKeyboardFocus = true }
+            .onChange(of: releasesKeyboard) { _, released in
+                stopCharging()
+                hasKeyboardFocus = !released
+            }
             .onDisappear { stopCharging() }
     }
 

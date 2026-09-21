@@ -19,28 +19,37 @@ struct GameView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                palette.feltColor.ignoresSafeArea()
+                // The table and its controls take the keyboard. The screens
+                // that sit on top of it are deliberately outside this layer:
+                // the modifier makes its subtree focusable and reports the
+                // flipper letters as handled, so a text field inside it —
+                // the initials box — could never receive a keystroke.
+                ZStack {
+                    palette.feltColor.ignoresSafeArea()
 
-                SpriteView(scene: prepared(for: proxy.size),
-                           preferredFramesPerSecond: 60,
-                           options: [.ignoresSiblingOrder])
-                    .ignoresSafeArea()
-                    .accessibilityHidden(true)
+                    SpriteView(scene: prepared(for: proxy.size),
+                               preferredFramesPerSecond: 60,
+                               options: [.ignoresSiblingOrder])
+                        .ignoresSafeArea()
+                        .accessibilityHidden(true)
 
-                ControlOverlay(model: model, scene: scene)
+                    ControlOverlay(model: model, scene: scene)
 
-                VStack(spacing: 0) {
-                    HUDView(model: model, onPause: pause)
-                    Spacer()
-                    if model.showLaunchHint && !model.isGameOver {
-                        LaunchHint()
-                            .padding(.bottom, 28)
-                            .transition(.opacity)
+                    VStack(spacing: 0) {
+                        HUDView(model: model, onPause: pause)
+                        Spacer()
+                        if model.showLaunchHint && !model.isGameOver {
+                            LaunchHint()
+                                .padding(.bottom, 28)
+                                .transition(.opacity)
+                        }
                     }
-                }
 
-                BannerLayer(banner: model.banner)
-                    .allowsHitTesting(false)
+                    BannerLayer(banner: model.banner)
+                        .allowsHitTesting(false)
+                }
+                .gameKeyboardControls(scene: scene, model: model,
+                                      pause: pause, resume: resume)
 
                 if model.isPaused {
                     PauseOverlay(onResume: resume, onRestart: restart, onQuit: quit)
@@ -53,8 +62,6 @@ struct GameView: View {
                 }
             }
         }
-        .gameKeyboardControls(scene: scene, model: model,
-                              pause: pause, resume: resume)
         .onChange(of: palette.accent) { _, _ in scene.repaint(with: palette) }
         .onChange(of: reduceMotion) { _, new in scene.reduceMotion = new }
         .onChange(of: model.isGameOver) { _, isOver in
@@ -141,11 +148,14 @@ private struct LaunchHint: View {
                             ? "hud.launch" : "hud.launchKeyboard"))
                 .font(Typography.label(13))
         }
-        .foregroundStyle(palette.textColor)
+        // Over the playfield, which stays dark in both themes, so this reads
+        // off the dark palette rather than the one the chrome is using.
+        .foregroundStyle(Color(platform: Palette.dark.textPrimary))
         .padding(.horizontal, 18)
         .padding(.vertical, 11)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(palette.accentColor.opacity(0.4), lineWidth: 1))
+        .background(Capsule().fill(Color(platform: Palette.dark.surface).opacity(0.92)))
+        .overlay(Capsule().strokeBorder(
+            Color(platform: Palette.dark.accent).opacity(0.45), lineWidth: 1))
         .offset(y: bounce && !reduceMotion ? 5 : -5)
         .onAppear {
             guard !reduceMotion else { return }
@@ -180,7 +190,15 @@ private struct BannerLayer: View {
                     .shadow(color: color(for: shown.style).opacity(0.7), radius: 22)
                     .padding(.horizontal, 26)
                     .padding(.vertical, 14)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    // A solid dark capsule, not a material: the banner lands on
+                    // top of lit bumpers, and a translucent one in light mode
+                    // turned TILT into dark red on a warm blur.
+                    .background(
+                        Capsule()
+                            .fill(Color(platform: Palette.dark.background).opacity(0.94))
+                            .overlay(Capsule().strokeBorder(
+                                color(for: shown.style).opacity(0.55), lineWidth: 1.5))
+                    )
                     .scaleEffect(reduceMotion ? 1 : 1.0)
                     .transition(reduceMotion
                                 ? .opacity
@@ -199,12 +217,13 @@ private struct BannerLayer: View {
         }
     }
 
+    /// Always the dark palette, for the same reason as the capsule behind it.
     private func color(for style: GameModel.Banner.Style) -> Color {
         switch style {
-        case .neutral: return palette.textColor
-        case .good:    return palette.successColor
-        case .great:   return palette.accentLightColor
-        case .bad:     return palette.dangerColor
+        case .neutral: return Color(platform: Palette.dark.textPrimary)
+        case .good:    return Color(platform: Palette.dark.success)
+        case .great:   return Color(platform: Palette.dark.accentLight)
+        case .bad:     return Color(platform: Palette.dark.danger)
         }
     }
 }

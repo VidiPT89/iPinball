@@ -22,60 +22,65 @@ struct GameOverView: View {
                 .fill(.ultraThinMaterial)
                 .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    if model.highScoreRank != nil {
-                        Text(settings.t("gameover.newHighScore"))
-                            .font(Typography.label(13))
-                            .kerning(3)
-                            .foregroundStyle(palette.accentLightColor)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(Capsule().strokeBorder(
-                                palette.accentColor.opacity(0.6), lineWidth: 1))
+            // The card is centred in the window rather than pinned to the top,
+            // but still scrolls if it outgrows the space (long translations,
+            // large Dynamic Type, a short window).
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: 20) {
+                        if model.highScoreRank != nil {
+                            Text(settings.t("gameover.newHighScore"))
+                                .font(Typography.label(13))
+                                .kerning(3)
+                                .foregroundStyle(palette.accentLightColor)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Capsule().strokeBorder(
+                                    palette.accentColor.opacity(0.6), lineWidth: 1))
+                        }
+
+                        Text(settings.t("gameover.title"))
+                            .font(Typography.display(34))
+                            .foregroundStyle(palette.textColor)
+
+                        scoreCard
+
+                        if isHighScore { initialsEntry }
+
+                        VStack(spacing: 10) {
+                            ShareLink(item: settings.t("gameover.shareText",
+                                                       model.finalScore.grouped)) {
+                                Label(settings.t("gameover.share"),
+                                      systemImage: "square.and.arrow.up")
+                                    .font(Typography.title(17))
+                                    .foregroundStyle(palette.textColor)
+                                    .frame(maxWidth: .infinity, minHeight: 50)
+                                    .background(palette.surfaceRaisedColor)
+                                    .clipShape(RoundedRectangle(cornerRadius: 16,
+                                                                style: .continuous))
+                            }
+                            .buttonStyle(.plain)
+
+                            NeonButton(title: settings.t("gameover.playAgain"),
+                                       systemImage: "arrow.clockwise",
+                                       kind: .primary) {
+                                saveIfNeeded()
+                                onPlayAgain()
+                            }
+                            NeonButton(title: settings.t("gameover.menu"),
+                                       systemImage: "house.fill",
+                                       kind: .ghost) {
+                                saveIfNeeded()
+                                onMenu()
+                            }
+                        }
                     }
-
-                    Text(settings.t("gameover.title"))
-                        .font(Typography.display(34))
-                        .foregroundStyle(palette.textColor)
-
-                    scoreCard
-
-                    if isHighScore { initialsEntry }
-
-                    VStack(spacing: 10) {
-                        ShareLink(item: settings.t("gameover.shareText",
-                                                   model.finalScore.grouped)) {
-                            Label(settings.t("gameover.share"),
-                                  systemImage: "square.and.arrow.up")
-                                .font(Typography.title(17))
-                                .foregroundStyle(palette.textColor)
-                                .frame(maxWidth: .infinity, minHeight: 50)
-                                .background(palette.surfaceRaisedColor)
-                                .clipShape(RoundedRectangle(cornerRadius: 16,
-                                                            style: .continuous))
-                        }
-                        .buttonStyle(.plain)
-
-                        NeonButton(title: settings.t("gameover.playAgain"),
-                                   systemImage: "arrow.clockwise",
-                                   kind: .primary) {
-                            saveIfNeeded()
-                            onPlayAgain()
-                        }
-                        NeonButton(title: settings.t("gameover.menu"),
-                                   systemImage: "house.fill",
-                                   kind: .ghost) {
-                            saveIfNeeded()
-                            onMenu()
-                        }
-                    }
+                    .frame(maxWidth: 380)
+                    .padding(24)
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height)
                 }
-                .frame(maxWidth: 380)
-                .padding(24)
-                .frame(maxWidth: .infinity)
+                .scrollBounceBehavior(.basedOnSize)
             }
-            .scrollBounceBehavior(.basedOnSize)
             .opacity(appeared ? 1 : 0)
             .scaleEffect(appeared || reduceMotion ? 1 : 0.94)
         }
