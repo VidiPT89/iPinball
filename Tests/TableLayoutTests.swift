@@ -34,7 +34,7 @@ final class TableLayoutTests: XCTestCase {
         let laneGap = TableLayout.rollovers[1].center.x - TableLayout.rollovers[0].center.x
         XCTAssertGreaterThan(laneGap, diameter, "the P-I-N-B lanes are too narrow")
 
-        let shooterWidth = 0.985 - 0.905
+        let shooterWidth = TableLayout.width - 0.01 - TableLayout.playfieldRightEdge
         XCTAssertGreaterThan(shooterWidth, diameter, "the shooter lane is too narrow")
     }
 
@@ -90,8 +90,9 @@ final class TableLayoutTests: XCTestCase {
 
     func testTheBallStartsInTheShooterLane() {
         let start = TableLayout.ballStart
-        XCTAssertGreaterThan(start.x, 0.905)
-        XCTAssertLessThan(start.x, 0.985)
+        XCTAssertGreaterThan(start.x, TableLayout.playfieldRightEdge,
+                             "the ball would start on the playfield")
+        XCTAssertLessThan(start.x, TableLayout.width)
         XCTAssertGreaterThan(start.y, TableLayout.shooterLaneBottomY)
     }
 
@@ -118,10 +119,11 @@ final class TableGeometryTests: XCTestCase {
         let geometry = TableGeometry(sceneSize: CGSize(width: 400, height: 900))
 
         // One scale for both axes, or circles would render as ellipses.
-        XCTAssertEqual(geometry.length(1), 400, accuracy: 0.001)
+        let expected = 400 / TableLayout.width
+        XCTAssertEqual(geometry.length(1), expected, accuracy: 0.001)
 
         let bottomLeft = geometry.point(CGPoint(x: 0, y: 0))
-        let topRight = geometry.point(CGPoint(x: 1, y: TableLayout.height))
+        let topRight = geometry.point(CGPoint(x: TableLayout.width, y: TableLayout.height))
         XCTAssertEqual(bottomLeft.x, 0, accuracy: 0.001)
         XCTAssertEqual(topRight.x, 400, accuracy: 0.001)
         XCTAssertEqual((900 - (topRight.y - bottomLeft.y)) / 2, bottomLeft.y, accuracy: 0.001)

@@ -8,7 +8,12 @@ import Foundation
 /// once `TableBuilder` maps these values onto the screen.
 enum TableLayout {
 
-    static let width: CGFloat = 1.0
+    /// The cabinet, not the playfield. The shooter lane lives outside the
+    /// playable area, which is what keeps the playfield symmetric about its
+    /// own centre: mirroring the right-hand lanes about the cabinet centre
+    /// used to drop them inside the shooter lane, where they crossed its
+    /// walls and formed pockets narrower than the ball.
+    static let width: CGFloat = 1.09
     static let height: CGFloat = 1.85
     static var aspectRatio: CGFloat { height / width }
 
@@ -17,10 +22,12 @@ enum TableLayout {
 
     // MARK: - Key anchors
 
-    static let topArcCenter = CGPoint(x: 0.5, y: 1.30)
-    static let topArcRadius: CGFloat = 0.485
+    /// Centred on the cabinet, so the arch roofs the shooter lane too.
+    static let topArcCenter = CGPoint(x: 0.5475, y: 1.30)
+    static let topArcRadius: CGFloat = 0.5325
 
-    static let shooterLaneCenterX: CGFloat = 0.945
+    static let playfieldRightEdge: CGFloat = 1.00
+    static let shooterLaneCenterX: CGFloat = 1.040
     static let shooterLaneBottomY: CGFloat = 0.13
 
     static let ballStart = CGPoint(x: shooterLaneCenterX, y: shooterLaneBottomY + 0.05)
@@ -119,23 +126,24 @@ enum TableLayout {
             Wall(points: [CGPoint(x: 0.015, y: 0.0), CGPoint(x: 0.015, y: 1.30)]),
             Wall(points: topArc),
             // Right outer wall, down the far side of the shooter lane.
-            Wall(points: [CGPoint(x: 0.985, y: 1.30), CGPoint(x: 0.985, y: 0.13),
-                          CGPoint(x: 0.905, y: 0.13)]),
+            Wall(points: [CGPoint(x: 1.08, y: 1.30), CGPoint(x: 1.08, y: 0.13),
+                          CGPoint(x: 1.00, y: 0.13)]),
             // Shooter lane divider, stopping short of the arc so the ball escapes.
-            Wall(points: [CGPoint(x: 0.905, y: 0.13), CGPoint(x: 0.905, y: 1.14),
-                          CGPoint(x: 0.895, y: 1.20)]),
+            // It doubles as the right edge of the playfield.
+            Wall(points: [CGPoint(x: 1.00, y: 0.13), CGPoint(x: 1.00, y: 1.14),
+                          CGPoint(x: 0.985, y: 1.20)]),
             // Left outlane / inlane divider.
-            Wall(points: [CGPoint(x: 0.082, y: 0.0), CGPoint(x: 0.082, y: 0.44),
+            Wall(points: [CGPoint(x: 0.072, y: 0.0), CGPoint(x: 0.072, y: 0.44),
                           CGPoint(x: 0.105, y: 0.53)]),
             // Right outlane / inlane divider.
-            Wall(points: [CGPoint(x: 0.918, y: 0.0), CGPoint(x: 0.918, y: 0.44),
+            Wall(points: [CGPoint(x: 0.928, y: 0.0), CGPoint(x: 0.928, y: 0.44),
                           CGPoint(x: 0.895, y: 0.53)]),
             // Left apron: inlane floor that feeds the flipper, then the drain lip.
-            Wall(points: [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.215),
+            Wall(points: [CGPoint(x: 0.072, y: 0.30), CGPoint(x: 0.215, y: 0.215),
                           CGPoint(x: 0.300, y: 0.150), CGPoint(x: 0.420, y: 0.092),
                           CGPoint(x: 0.455, y: 0.072), CGPoint(x: 0.455, y: 0.0)]),
             // Right apron, mirrored.
-            Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.215),
+            Wall(points: [CGPoint(x: 0.928, y: 0.30), CGPoint(x: 0.785, y: 0.215),
                           CGPoint(x: 0.700, y: 0.150), CGPoint(x: 0.580, y: 0.092),
                           CGPoint(x: 0.545, y: 0.072), CGPoint(x: 0.545, y: 0.0)]),
             // Left orbit guide: inner wall of the lane hugging the left rail.
@@ -264,7 +272,7 @@ enum TableLayout {
     ]
 
     /// Sensor strip across the bottom that ends a ball.
-    static let drainRect = CGRect(x: 0.0, y: -0.02, width: 1.0, height: 0.045)
+    static let drainRect = CGRect(x: 0.0, y: -0.02, width: width, height: 0.045)
 
     // MARK: - Helpers
 

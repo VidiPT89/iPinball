@@ -86,6 +86,7 @@
 		BD38463069C2AC4B5AB91620 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FEA225A18E7956D4004919 /* Typography.swift */; };
 		BFF36FA720F5BDAC192F87C5 /* PhysicsCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45E373F8B851D2612EE4F9E /* PhysicsCategories.swift */; };
 		C3FF6497B15748C4830629E2 /* HapticsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507F2531AE40709091686385 /* HapticsEngine.swift */; };
+		CCF4FA68BD1FD61316D39294 /* TableClearanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F54C07CB41536C40F3AD5D5 /* TableClearanceTests.swift */; };
 		D01EFD28105D41CD3B409F82 /* TableNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B1341AC6F8FB46616DF9A6 /* TableNodes.swift */; };
 		DA96E69B54EB86E51727CDC6 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A6815D644027F2AC5B56CB /* Motion.swift */; };
 		DB69A596C668F789B696F517 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEB751C34E881E7D7937E2 /* Strings.swift */; };
@@ -117,6 +118,7 @@
 		20BC782FEBEFF5CF2C35CA60 /* ScoreEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEngineTests.swift; sourceTree = "<group>"; };
 		27DF96F89FCDA77CC09F0F16 /* MissionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionEngineTests.swift; sourceTree = "<group>"; };
 		2B9F56C5033E6F787BE489DE /* PhysicsTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsTuning.swift; sourceTree = "<group>"; };
+		2F54C07CB41536C40F3AD5D5 /* TableClearanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableClearanceTests.swift; sourceTree = "<group>"; };
 		2FBE666F00D9C19617554F97 /* BallNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallNode.swift; sourceTree = "<group>"; };
 		39A6815D644027F2AC5B56CB /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
 		3E2500FD7082B5D8B291E023 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				91A9B8A1A909DFFFDB2D5B20 /* GameSessionTests.swift */,
 				27DF96F89FCDA77CC09F0F16 /* MissionEngineTests.swift */,
 				20BC782FEBEFF5CF2C35CA60 /* ScoreEngineTests.swift */,
+				2F54C07CB41536C40F3AD5D5 /* TableClearanceTests.swift */,
 				8FC28BB1A0ACAA7FD6B16C59 /* TableLayoutTests.swift */,
 			);
 			path = Tests;
@@ -479,6 +482,7 @@
 				F102CADED8A51B3615A50ABE /* GameSessionTests.swift in Sources */,
 				8FB841F059FA9B1E69D2BC6B /* MissionEngineTests.swift in Sources */,
 				1BCBD9F0126645DB719A6606 /* ScoreEngineTests.swift in Sources */,
+				CCF4FA68BD1FD61316D39294 /* TableClearanceTests.swift in Sources */,
 				2D0E73BF674D075E930ECE68 /* TableLayoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
