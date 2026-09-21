@@ -11,7 +11,6 @@ final class ScoreEngine {
     private(set) var comboMultiplier = 1
 
     private(set) var litLanes: Set<Int> = []
-    private(set) var laneSetsCompleted = 0
     private(set) var dropTargetsDownThisBall = 0
     private(set) var loopsThisBall = 0
     private(set) var bankClears = 0
@@ -29,10 +28,6 @@ final class ScoreEngine {
         if comboMultiplier > 1, now - lastComboTime > PhysicsTuning.comboWindow {
             comboMultiplier = 1
         }
-    }
-
-    var isComboActive: Bool {
-        comboMultiplier > 1 && now - lastComboTime <= PhysicsTuning.comboWindow
     }
 
     // MARK: - Scoring
@@ -66,7 +61,6 @@ final class ScoreEngine {
         litLanes.insert(index)
         guard litLanes.count == LaneLetter.allCases.count else { return false }
         litLanes.removeAll()
-        laneSetsCompleted += 1
         raisePlayerMultiplier()
         return true
     }
@@ -99,7 +93,6 @@ final class ScoreEngine {
         playerMultiplier = 1
         comboMultiplier = 1
         litLanes.removeAll()
-        laneSetsCompleted = 0
         bankClears = 0
         isMultiballActive = false
         resetBallCounters()

@@ -116,13 +116,11 @@ struct TableBuilder {
         let combined = CGMutablePath()
 
         for wall in TableLayout.walls {
-            let wallPath = geometry.path(through: wall.points, closed: wall.isClosed)
+            let wallPath = geometry.path(through: wall.points)
             combined.addPath(wallPath)
 
             let node = SKNode()
-            let body = wall.isClosed
-                ? SKPhysicsBody(edgeLoopFrom: wallPath)
-                : SKPhysicsBody(edgeChainFrom: wallPath)
+            let body = SKPhysicsBody(edgeChainFrom: wallPath)
             body.isDynamic = false
             body.restitution = 0.22
             body.friction = 0.1

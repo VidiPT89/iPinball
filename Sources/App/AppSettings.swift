@@ -41,11 +41,6 @@ final class AppSettings {
         set { saved.settings.hapticsEnabled = newValue; persist() }
     }
 
-    var controls: ControlLayout {
-        get { saved.settings.controls }
-        set { saved.settings.controls = newValue; persist() }
-    }
-
     var leftHanded: Bool {
         get { saved.settings.leftHanded }
         set { saved.settings.leftHanded = newValue; persist() }

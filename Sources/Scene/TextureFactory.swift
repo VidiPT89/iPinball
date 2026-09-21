@@ -102,10 +102,4 @@ enum TextureFactory {
             }
         }
     }
-
-    // MARK: Soft shadow used under raised parts
-
-    static func softShadow(diameter: CGFloat) -> SKTexture {
-        radialGlow(diameter: diameter, color: .black)
-    }
 }

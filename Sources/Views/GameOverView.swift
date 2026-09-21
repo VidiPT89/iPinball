@@ -44,6 +44,19 @@ struct GameOverView: View {
                     if isHighScore { initialsEntry }
 
                     VStack(spacing: 10) {
+                        ShareLink(item: settings.t("gameover.shareText",
+                                                   model.finalScore.grouped)) {
+                            Label(settings.t("gameover.share"),
+                                  systemImage: "square.and.arrow.up")
+                                .font(Typography.title(17))
+                                .foregroundStyle(palette.textColor)
+                                .frame(maxWidth: .infinity, minHeight: 50)
+                                .background(palette.surfaceRaisedColor)
+                                .clipShape(RoundedRectangle(cornerRadius: 16,
+                                                            style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+
                         NeonButton(title: settings.t("gameover.playAgain"),
                                    systemImage: "arrow.clockwise",
                                    kind: .primary) {

@@ -36,6 +36,7 @@ extension PinballScene {
         case .jackpotLit:
             parts.standupTargets.forEach { $0.setLit(true) }
             pulseRails(times: 6)
+            activateMagnet()
 
         case .jackpotCollected, .superJackpotCollected:
             whiteFlash()
@@ -85,6 +86,13 @@ extension PinballScene {
     }
 
     private func finishTilt() {
+        // Every ball comes off the table, including the other multiball ones,
+        // so what is on screen matches what the session thinks is in play.
+        balls.forEach { $0.removeFromParent() }
+        balls.removeAll()
+        ballsOnRamp.removeAll()
+        heldSaucers.removeAll()
+
         for effect in session.resolveTilt(at: sceneTime) {
             handle(effect)
         }

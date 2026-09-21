@@ -22,16 +22,14 @@ enum TableLayout {
 
     static let shooterLaneCenterX: CGFloat = 0.945
     static let shooterLaneBottomY: CGFloat = 0.13
-    static let shooterLaneTopY: CGFloat = 1.20
 
     static let ballStart = CGPoint(x: shooterLaneCenterX, y: shooterLaneBottomY + 0.05)
-    static let drainCenter = CGPoint(x: 0.5, y: 0.0)
 
     // MARK: - Structures
 
+    /// Every wall on this table is an open chain; none of them close a loop.
     struct Wall {
         let points: [CGPoint]
-        var isClosed: Bool = false
     }
 
     struct Bumper {

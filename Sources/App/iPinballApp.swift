@@ -41,6 +41,7 @@ struct RootView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var screen: Screen = .splash
     @State private var panel: Panel?
@@ -92,6 +93,18 @@ struct RootView: View {
         .onChange(of: settings.soundEnabled) { _, new in audio.isSoundEnabled = new }
         .onChange(of: settings.musicEnabled) { _, new in audio.setMusic(enabled: new) }
         .onChange(of: settings.hapticsEnabled) { _, new in haptics.isEnabled = new }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active:
+                audio.start()
+                haptics.start()
+            default:
+                // Hand the audio session and the haptic engine back while the
+                // game is not on screen, instead of holding them open.
+                audio.stop()
+                haptics.stop()
+            }
+        }
     }
 
     @ViewBuilder

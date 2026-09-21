@@ -254,7 +254,6 @@ final class SaucerNode: SKNode {
 final class SpinnerNode: SKNode {
 
     private let blade: SKShapeNode
-    private var spinsLeft = 0
 
     init(config: TableLayout.Spinner, geometry: TableGeometry, palette: Palette) {
         let length = geometry.length(config.length)

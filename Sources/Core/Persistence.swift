@@ -23,18 +23,12 @@ enum AppTheme: String, Codable, CaseIterable {
     case dark
 }
 
-enum ControlLayout: String, Codable, CaseIterable {
-    case screenHalves
-    case onScreenButtons
-}
-
 struct GameSettings: Codable, Equatable {
     var language: AppLanguage = .systemDefault
     var theme: AppTheme = .system
     var soundEnabled = true
     var musicEnabled = true
     var hapticsEnabled = true
-    var controls: ControlLayout = .screenHalves
     var leftHanded = false
     var autoPlunge = false
     var ballCount = 3
@@ -64,14 +58,6 @@ struct LifetimeStats: Codable, Equatable {
     var playTime: TimeInterval = 0
 }
 
-struct GameSnapshot: Codable, Equatable {
-    var score: Int
-    var currentBall: Int
-    var ballCount: Int
-    var playerMultiplier: Int
-    var missionsCompleted: [String]
-}
-
 struct SavedData: Codable, Equatable {
     static let currentVersion = 1
 
@@ -79,7 +65,6 @@ struct SavedData: Codable, Equatable {
     var settings = GameSettings()
     var highScores: [HighScore] = []
     var lifetime = LifetimeStats()
-    var missionsCompleted: Set<String> = []
 
     static let highScoreCount = 10
 

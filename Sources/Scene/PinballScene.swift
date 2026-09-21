@@ -36,10 +36,6 @@ final class PinballScene: SKScene {
     var heldSaucers: Set<ObjectIdentifier> = []
     private var magnetActiveUntil: TimeInterval = 0
 
-    var shooterLaneRect: CGRect {
-        CGRect(x: 0.90, y: 0.10, width: 0.10, height: 1.10)
-    }
-
     // MARK: - Lifecycle
 
     override func didMove(to view: SKView) {
@@ -172,6 +168,7 @@ final class PinballScene: SKScene {
         let ball = spawnBall(at: TableLayout.ballStart)
         ball.physicsBody?.isDynamic = false
         plungerCharge = 0
+        audio?.resetPlunger()
         model?.showLaunchHint = true
         model?.ball = session.currentBall
         updatePlungerVisual()

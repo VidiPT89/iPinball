@@ -18,15 +18,8 @@ enum Strings {
     }()
 
     static let common: [String: Pair] = [
-        "common.done": ("Concluído", "Done"),
         "common.cancel": ("Cancelar", "Cancel"),
         "common.close": ("Fechar", "Close"),
-        "common.back": ("Voltar", "Back"),
-        "common.on": ("Ligado", "On"),
-        "common.off": ("Desligado", "Off"),
-        "common.yes": ("Sim", "Yes"),
-        "common.no": ("Não", "No"),
-        "common.points": ("pontos", "points"),
     ]
 
     static let menu: [String: Pair] = [
@@ -36,7 +29,6 @@ enum Strings {
         "menu.howToPlay": ("Como jogar", "How to Play"),
         "menu.settings": ("Definições", "Settings"),
         "menu.about": ("Sobre", "About"),
-        "menu.language": ("Idioma", "Language"),
     ]
 
     static let hud: [String: Pair] = [
@@ -44,9 +36,7 @@ enum Strings {
         "hud.ball": ("Bola", "Ball"),
         "hud.best": ("Melhor", "Best"),
         "hud.multiplier": ("Multiplicador", "Multiplier"),
-        "hud.combo": ("Combo", "Combo"),
         "hud.ballSave": ("Bola salva", "Ball Save"),
-        "hud.pause": ("Pausa", "Pause"),
         "hud.launch": ("Arrasta para baixo e larga para lançar",
                        "Drag down and release to launch"),
         "hud.launchKeyboard": ("Mantém o espaço e larga para lançar",
@@ -95,8 +85,6 @@ enum Strings {
         "settings.music": ("Música", "Music"),
         "settings.haptics": ("Vibração", "Haptics"),
         "settings.controls": ("Controlos", "Controls"),
-        "settings.controls.halves": ("Metades do ecrã", "Screen halves"),
-        "settings.controls.buttons": ("Botões no ecrã", "On-screen buttons"),
         "settings.leftHanded": ("Disposição para canhotos", "Left-handed layout"),
         "settings.leftHanded.hint": ("Troca os lados dos flippers",
                                      "Swaps which side works which flipper"),
@@ -144,8 +132,8 @@ enum Strings {
         "howto.title": ("Como jogar", "How to Play"),
         "howto.basics.title": ("O básico", "The basics"),
         "howto.basics.body": (
-            "Tens 3 bolas. Arrasta para baixo no canal da direita e larga para lançar. Mantém a bola viva com os flippers e faz pontos em tudo o que acertares.",
-            "You get 3 balls. Drag down in the right-hand lane and release to launch. Keep the ball alive with the flippers and score off everything you hit."),
+            "Tens 3 bolas por partida, ou 5 se mudares nas Definições. Arrasta para baixo e larga para lançar. Mantém a bola viva com os flippers e faz pontos em tudo o que acertares.",
+            "You get 3 balls a game, or 5 if you change it in Settings. Drag down and release to launch. Keep the ball alive with the flippers and score off everything you hit."),
         "howto.controls.title": ("Controlos", "Controls"),
         "howto.controls.body": (
             "Toca na metade esquerda ou direita do ecrã para o flipper desse lado. O terço de cima da metade esquerda ativa o flipper superior. Um deslize horizontal curto abana a mesa. No Mac: setas esquerda e direita para os flippers, seta para cima para o superior, espaço para lançar, N e M para abanar.",
@@ -192,7 +180,6 @@ enum Strings {
         "a11y.rightFlipper": ("Flipper direito", "Right flipper"),
         "a11y.upperFlipper": ("Flipper superior", "Upper flipper"),
         "a11y.plunger": ("Lançador", "Plunger"),
-        "a11y.nudge": ("Abanar a mesa", "Nudge the table"),
         "a11y.pause": ("Pausar o jogo", "Pause the game"),
         "a11y.scoreValue": ("Pontuação: %@", "Score: %@"),
         "a11y.ballValue": ("Bola %d de %d", "Ball %d of %d"),

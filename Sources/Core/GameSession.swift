@@ -14,10 +14,8 @@ final class GameSession {
     private(set) var ballsInPlay = 0
     private(set) var extraBalls = 0
     private(set) var ballSaveEndsAt: TimeInterval?
-    private(set) var isJackpotLit = false
     private(set) var dropTargetsDown: Set<Int> = []
     private(set) var litLanes: Set<Int> = []
-    private(set) var lockedBalls = 0
 
     private var nudgeTimestamps: [TimeInterval] = []
     private var now: TimeInterval = 0
@@ -27,6 +25,14 @@ final class GameSession {
 
     var isMultiball: Bool { ballsInPlay > 1 }
     var isTilted: Bool { phase == .tilted }
+
+    /// Derived rather than stored. As a flag it used to be switched off when
+    /// multiball ended or the ball drained, which could strand Jackpot Hunt
+    /// with no lit shot left and make the rest of the mission chain — and the
+    /// wizard mode behind it — unreachable for the rest of the game.
+    var isJackpotLit: Bool {
+        isMultiball || missions.active?.id == "jackpotHunt"
+    }
 
     var ballSaveRemaining: TimeInterval? {
         guard let end = ballSaveEndsAt else { return nil }
@@ -42,8 +48,6 @@ final class GameSession {
         currentBall = 1
         ballsInPlay = 0
         extraBalls = 0
-        lockedBalls = 0
-        isJackpotLit = false
         dropTargetsDown.removeAll()
         litLanes.removeAll()
         nudgeTimestamps.removeAll()
@@ -186,11 +190,11 @@ final class GameSession {
 
     private func handleSaucer() -> [GameEffect] {
         var effects: [GameEffect] = []
-        if missions.active?.id == "lock3" {
-            lockedBalls += 1
-        }
         if let started = missions.startNextMission(at: now) {
             effects.append(.missionStarted(id: started.id))
+            if isJackpotLit {
+                effects.append(.jackpotLit)
+            }
             if started.isWizard {
                 effects.append(.wizardModeStarted)
             }
@@ -225,8 +229,6 @@ final class GameSession {
 
     private func startMultiball() -> [GameEffect] {
         ballsInPlay = 3
-        lockedBalls = 0
-        isJackpotLit = true
         score.isMultiballActive = true
         ballSaveEndsAt = now + PhysicsTuning.multiballSaveDuration
         return [
@@ -282,8 +284,7 @@ final class GameSession {
         if ballsInPlay > 1 {
             ballsInPlay -= 1
             if ballsInPlay == 1 {
-                isJackpotLit = false
-                score.isMultiballActive = false
+                        score.isMultiballActive = false
                 return [.multiballEnded]
             }
             return []
@@ -311,7 +312,6 @@ final class GameSession {
         score.resetBallCounters()
         dropTargetsDown.removeAll()
         litLanes.removeAll()
-        isJackpotLit = false
         score.isMultiballActive = false
         ballSaveEndsAt = nil
         nudgeTimestamps.removeAll()
@@ -346,17 +346,16 @@ final class GameSession {
     /// The phase deliberately stays `.tilted` through the drain: that is what
     /// makes it skip the ball save and the bonus. A tilt always costs a ball,
     /// however much of the save was still running.
+    ///
+    /// Multiball is collapsed first. Without that, `drain` would only take one
+    /// ball off the count and return nothing, leaving the table stuck in
+    /// `.tilted` with dead flippers and balls still rolling.
     func resolveTilt(at time: TimeInterval) -> [GameEffect] {
         now = time
         guard phase == .tilted else { return [] }
-        return drain()
-    }
-
-    func snapshot() -> GameSnapshot {
-        GameSnapshot(score: score.score,
-                     currentBall: currentBall,
-                     ballCount: ballCount,
-                     playerMultiplier: score.playerMultiplier,
-                     missionsCompleted: Array(missions.completed))
+        let wasMultiball = isMultiball
+        ballsInPlay = 1
+        score.isMultiballActive = false
+        return (wasMultiball ? [.multiballEnded] : []) + drain()
     }
 }

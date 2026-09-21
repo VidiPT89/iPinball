@@ -13,9 +13,7 @@ enum Motion {
 
     // Chrome
     static let screenTransition: TimeInterval = 0.32
-    static let sheetTransition: TimeInterval = 0.28
     static let buttonPress: TimeInterval = 0.12
-    static let themeCrossfade: TimeInterval = 0.25
 
     // Scoreboard
     static let scoreRoll: TimeInterval = 0.40
@@ -26,14 +24,12 @@ enum Motion {
     static let shockwave: TimeInterval = 0.35
     static let screenShake: TimeInterval = 0.15
     static let slowMotion: TimeInterval = 0.40
-    static let lightFade: TimeInterval = 0.18
     static let floatingScore: TimeInterval = 0.85
     static let jackpotFlash: TimeInterval = 0.10
     static let bannerSweep: TimeInterval = 1.10
 
     static var standard: Animation { .easeInOut(duration: screenTransition) }
     static var snappy: Animation { .spring(response: 0.32, dampingFraction: 0.72) }
-    static var gentle: Animation { .easeOut(duration: 0.45) }
 
     /// Returns `nil` when the user asked for less movement, so callers can skip
     /// the animation entirely instead of running a shorter one.

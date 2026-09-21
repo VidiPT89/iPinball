@@ -2,7 +2,7 @@ import AVFoundation
 
 /// The voices the table can speak with.
 enum SoundVoice: CaseIterable {
-    case flipper, plunger, nudge
+    case flipper, plunger, plungerNotch, nudge
     case bumper, slingshot, target, dropTarget, bankClear, spinner
     case ramp, orbit, lane, laneSet
     case jackpot, superJackpot, mission, missionFail, multiball
@@ -31,6 +31,7 @@ final class AudioEngine {
     private var isRunning = false
     /// Stops a burst of identical contacts turning into a buzz.
     private var lastPlayed: [SoundVoice: TimeInterval] = [:]
+    private var lastPlungerNotch = -1
 
     // MARK: - Lifecycle
 
@@ -115,11 +116,19 @@ final class AudioEngine {
         if !node.isPlaying { node.play() }
     }
 
-    /// The plunger winds up in pitch as it is pulled back.
+    /// The plunger ratchets as it is pulled back: one click per notch, the
+    /// way a real spring-loaded shooter sounds.
     func plungerCharge(_ fraction: CGFloat) {
         guard isSoundEnabled, isRunning else { return }
-        let node = voices[nextVoice]
-        node.rate = 0.8 + Float(fraction) * 0.6
+        let notch = Int(max(0, min(1, fraction)) / 0.12)
+        guard notch != lastPlungerNotch else { return }
+        lastPlungerNotch = notch
+        play(.plungerNotch)
+    }
+
+    /// Reset when the ball is served so the next pull clicks from the start.
+    func resetPlunger() {
+        lastPlungerNotch = -1
     }
 
     func play(for effect: GameEffect) {
@@ -278,6 +287,10 @@ final class AudioEngine {
             case .plunger:
                 return Recipe(waveform: .saw, startFrequency: 90, endFrequency: 340,
                               duration: 0.30, decay: 7, noise: 0.05, gain: 0.6)
+            case .plungerNotch:
+                return Recipe(waveform: .square, startFrequency: 1_600, endFrequency: 900,
+                              duration: 0.035, decay: 60, noise: 0.20, gain: 0.25,
+                              minimumGap: 0.01)
             case .nudge:
                 return Recipe(waveform: .sine, startFrequency: 70, endFrequency: 45,
                               duration: 0.18, decay: 16, noise: 0.35, gain: 0.5)

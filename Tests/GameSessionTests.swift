@@ -272,3 +272,112 @@ final class GameSessionTests: XCTestCase {
         }
     }
 }
+
+/// Regressions for two faults that made a game unwinnable or unplayable.
+final class GameSessionRegressionTests: XCTestCase {
+
+    private var session: GameSession!
+
+    override func setUp() {
+        super.setUp()
+        session = GameSession()
+        _ = session.startGame(ballCount: 3, at: 0)
+        _ = session.launchBall(at: 0)
+    }
+
+    func testTiltDuringMultiballEndsTheBallInsteadOfLockingTheTable() {
+        reachMultiball()
+        XCTAssertTrue(session.isMultiball)
+
+        for step in 0..<3 { _ = session.handle(.nudged, at: 100 + Double(step) * 0.2) }
+        XCTAssertTrue(session.isTilted)
+
+        let effects = session.resolveTilt(at: 102)
+
+        // The whole ball is spent: no balls left in play, multiball called off
+        // and the table handed back ready rather than stuck in `.tilted`.
+        XCTAssertTrue(effects.contains(.multiballEnded))
+        XCTAssertFalse(session.isMultiball)
+        XCTAssertFalse(session.isTilted)
+        XCTAssertEqual(session.ballsInPlay, 0)
+        XCTAssertEqual(session.phase, .ballReady)
+        // Not `currentBall == 2`: the mission chain hands out extra balls, so
+        // this drain rightly spends one of those instead of advancing.
+    }
+
+    func testJackpotStaysLitForJackpotHuntAfterMultiballEnds() {
+        reachMultiball()
+
+        // Drain back down to a single ball, which is what ends multiball.
+        _ = session.handle(.ballDrained, at: 200)
+        _ = session.handle(.ballDrained, at: 201)
+        XCTAssertFalse(session.isMultiball)
+
+        // Jackpot Hunt is the mission that is meant to be lit on its own.
+        _ = session.handle(.saucerEntered(side: .left), at: 202)
+        XCTAssertEqual(session.missions.active?.id, "jackpotHunt")
+        XCTAssertTrue(session.isJackpotLit,
+                      "the mission cannot be completed if its shot is dark")
+
+        let before = session.score.score
+        _ = session.handle(.litJackpotHit, at: 203)
+        XCTAssertGreaterThan(session.score.score, before)
+    }
+
+    func testJackpotHuntSurvivesADrainAndCanStillBeFinished() {
+        reachMultiball()
+        _ = session.handle(.ballDrained, at: 200)
+        _ = session.handle(.ballDrained, at: 201)
+        _ = session.handle(.saucerEntered(side: .left), at: 202)
+        XCTAssertEqual(session.missions.active?.id, "jackpotHunt")
+
+        // Losing the ball used to darken the jackpot for good.
+        _ = session.handle(.ballDrained, at: 220)
+        _ = session.launchBall(at: 221)
+        XCTAssertTrue(session.isJackpotLit)
+
+        for step in 0..<3 {
+            _ = session.handle(.litJackpotHit, at: 222 + Double(step))
+        }
+        XCTAssertTrue(session.missions.completed.contains("jackpotHunt"))
+        XCTAssertFalse(session.isJackpotLit, "and it goes dark once it is done")
+    }
+
+    func testTheWizardMissionIsReachableByPlayingTheChainThrough() {
+        reachMultiball()
+        _ = session.handle(.ballDrained, at: 200)
+        _ = session.handle(.ballDrained, at: 201)
+
+        _ = session.handle(.saucerEntered(side: .left), at: 202)
+        for step in 0..<3 { _ = session.handle(.litJackpotHit, at: 203 + Double(step)) }
+
+        XCTAssertTrue(session.missions.isWizardUnlocked)
+        let effects = session.handle(.saucerEntered(side: .left), at: 210)
+        XCTAssertTrue(effects.contains(.wizardModeStarted))
+    }
+
+    /// Plays the mission chain up to and including Lock 3.
+    private func reachMultiball() {
+        var time = 1.0
+        while session.missions.completed.count < 5 {
+            _ = session.handle(.saucerEntered(side: .left), at: time)
+            guard let active = session.missions.active else { break }
+            for _ in 0..<active.target {
+                time += 0.1
+                _ = session.handle(event(for: active), at: time)
+            }
+            time += 1
+        }
+    }
+
+    private func event(for mission: Mission) -> TableEvent {
+        switch mission.id {
+        case "warmUp":       return .popBumper(index: 0)
+        case "rampRush":     return .rampCompleted(side: .left)
+        case "targetFrenzy": return .dropTarget(index: Int.random(in: 0..<5))
+        case "orbitLoop":    return .orbitCompleted(side: .left)
+        case "lock3":        return .saucerEntered(side: .left)
+        default:             return .litJackpotHit
+        }
+    }
+}

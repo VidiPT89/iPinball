@@ -24,8 +24,6 @@ enum PhysicsTuning {
     /// is identical on every screen size. Without it the solver becomes
     /// unstable and the ball escapes through thin walls.
     static let maxBallSpeed: CGFloat = 3.4
-    /// Below this the ball is considered barely moving.
-    static let idleSpeed: CGFloat = 0.03
 
     // MARK: Flippers
 

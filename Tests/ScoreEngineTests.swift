@@ -39,7 +39,6 @@ final class ScoreEngineTests: XCTestCase {
 
         engine.advance(to: PhysicsTuning.comboWindow + 0.1)
         XCTAssertEqual(engine.comboMultiplier, 1)
-        XCTAssertFalse(engine.isComboActive)
     }
 
     func testComboRestartsRatherThanContinuingAfterExpiry() {
@@ -66,7 +65,6 @@ final class ScoreEngineTests: XCTestCase {
         XCTAssertTrue(engine.lightLane(3))
 
         XCTAssertEqual(engine.playerMultiplier, 2)
-        XCTAssertEqual(engine.laneSetsCompleted, 1)
         XCTAssertTrue(engine.litLanes.isEmpty, "the set resets so it can be lit again")
     }
 

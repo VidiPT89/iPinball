@@ -28,6 +28,4 @@ enum NodeName {
     static let flipperLeft = "flipper.left"
     static let flipperRight = "flipper.right"
     static let flipperUpper = "flipper.upper"
-    static let tableLights = "table.lights"
-    static let effects = "effects"
 }
