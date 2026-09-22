@@ -16,47 +16,83 @@ final class TableClearanceTests: XCTestCase {
     /// walls. An earlier version only compared walls with walls, and so missed
     /// the pinch between a post and the top of a slingshot that closed the
     /// mouth of both inlanes to under half a ball.
-    private var edges: [(group: String, a: CGPoint, b: CGPoint)] {
-        var result: [(String, CGPoint, CGPoint)] = []
+    private var edges: [(group: String, a: CGPoint, b: CGPoint, radius: CGFloat)] {
+        var result: [(String, CGPoint, CGPoint, CGFloat)] = []
 
         for (index, wall) in TableLayout.walls.enumerated() {
             for (a, b) in zip(wall.points, wall.points.dropFirst()) {
-                result.append(("wall \(index)", a, b))
+                result.append(("wall \(index)", a, b, 0))
             }
         }
         for slingshot in TableLayout.slingshots {
             let loop = slingshot.vertices + [slingshot.vertices[0]]
             for (a, b) in zip(loop, loop.dropFirst()) {
-                result.append(("slingshot \(slingshot.side.rawValue)", a, b))
+                result.append(("slingshot \(slingshot.side.rawValue)", a, b, 0))
+            }
+        }
+        // A thin target is a line with a radius, like a blade.
+        for target in TableLayout.dropTargets {
+            result.append(bar("drop target \(target.index)", target.center,
+                              target.angle, target.size))
+        }
+        for target in TableLayout.standupTargets {
+            result.append(bar("standup target \(target.index)", target.center,
+                              target.angle, target.size))
+        }
+        // Both ends of a flipper's swing: at rest it can pinch against one
+        // thing and, raised, against another. The upper flipper was buried
+        // inside a pop bumper at full throw while looking clear at rest.
+        for flipper in TableLayout.flippers {
+            let sign: CGFloat = flipper.side == .left ? 1 : -1
+            let label = "\(flipper.isUpper ? "upper " : "")flipper \(flipper.side.rawValue)"
+            for (state, angle) in [("resting", PhysicsTuning.flipperRestAngle),
+                                   ("raised", PhysicsTuning.flipperActiveAngle)] {
+                let tip = CGPoint(x: flipper.pivot.x + sign * flipper.length * cos(angle),
+                                  y: flipper.pivot.y + flipper.length * sin(angle))
+                result.append(("\(label) \(state)", flipper.pivot, tip,
+                               flipper.thickness * 0.34))
             }
         }
         return result
     }
 
-    /// The flipper blades at rest, as a line with a radius — which is the
-    /// shape the ball actually meets. Leaving these out is how the drain gap
-    /// between the two tips came to be narrower than the ball without anything
-    /// noticing.
-    private var blades: [(name: String, a: CGPoint, b: CGPoint, radius: CGFloat)] {
-        TableLayout.flippers.map { flipper in
+    private func bar(_ name: String, _ centre: CGPoint, _ angle: CGFloat,
+                     _ size: CGSize) -> (String, CGPoint, CGPoint, CGFloat) {
+        let dx = size.width / 2 * cos(angle)
+        let dy = size.width / 2 * sin(angle)
+        return (name,
+                CGPoint(x: centre.x - dx, y: centre.y - dy),
+                CGPoint(x: centre.x + dx, y: centre.y + dy),
+                size.height / 2)
+    }
+
+    /// The lower flipper tips, for the one gap that decides whether a game
+    /// can end at all.
+    private var lowerTips: [(CGPoint, CGFloat)] {
+        TableLayout.flippers.filter { !$0.isUpper }.map { flipper in
             let sign: CGFloat = flipper.side == .left ? 1 : -1
             let angle = PhysicsTuning.flipperRestAngle
-            let tip = CGPoint(x: flipper.pivot.x + sign * flipper.length * cos(angle),
-                              y: flipper.pivot.y + flipper.length * sin(angle))
-            let name = "\(flipper.isUpper ? "upper " : "")flipper \(flipper.side.rawValue)"
-            return (name, flipper.pivot, tip, flipper.thickness * 0.34)
+            return (CGPoint(x: flipper.pivot.x + sign * flipper.length * cos(angle),
+                            y: flipper.pivot.y + flipper.length * sin(angle)),
+                    flipper.thickness * 0.34)
         }
     }
 
-    /// The round solid things: posts and the pop bumpers.
-    private var discs: [(name: String, centre: CGPoint, radius: CGFloat)] {
-        TableLayout.posts.map { ("post at \($0.center)", $0.center, $0.radius) }
-            + TableLayout.bumpers.map { ("bumper \($0.index)", $0.center, $0.radius) }
+    /// The round solid things. A post is allowed to cap the end of a wall —
+    /// that is how the outlane dividers are finished — but a pop bumper caps
+    /// nothing, so it never gets that exemption.
+    private var discs: [(name: String, centre: CGPoint, radius: CGFloat,
+                         capsRails: Bool)] {
+        TableLayout.posts.map { ("post at \($0.center)", $0.center, $0.radius, true) }
+            + TableLayout.bumpers.map {
+                ("bumper \($0.index)", $0.center, $0.radius, false)
+            }
     }
 
     func testNoTwoRailsFormAPocketNarrowerThanTheBall() {
         var offenders: [String] = []
         let all = edges
+        let joined = joinedGroups
 
         for i in 0..<all.count {
             for j in (i + 1)..<all.count {
@@ -64,12 +100,11 @@ final class TableClearanceTests: XCTestCase {
                 // Rails that meet form a corner, not a pocket. The arch joins
                 // both side walls, and its first segment away from that
                 // junction is naturally within a ball of them.
-                guard !joined(all[i].group, all[j].group) else { continue }
+                guard !joined.contains(pair(all[i].group, all[j].group)) else { continue }
                 let gap = distance(all[i].a, all[i].b, all[j].a, all[j].b)
-                guard gap > 0.0005, gap < diameter else { continue }
-                offenders.append(String(
-                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
-                    gap, gap / diameter * 100, all[i].group, all[j].group))
+                    - all[i].radius - all[j].radius
+                guard gap < diameter else { continue }
+                offenders.append(describe(gap, all[i].group, all[j].group))
             }
         }
 
@@ -86,24 +121,29 @@ final class TableClearanceTests: XCTestCase {
         for disc in discs {
             for edge in edges {
                 // A post that caps the end of a rail is part of that rail.
+                // A post finishing a wall sits on the rim, and that is a
+                // junction rather than a pinch. Nothing else gets a pass: a
+                // blade tip landing on a bumper's rim is not a join, and
+                // treating it as one is how the upper flipper stayed buried
+                // inside a pop bumper without the test noticing.
                 let ends = min(edge.a.distance(to: disc.centre),
                                edge.b.distance(to: disc.centre))
-                guard ends > disc.radius + 0.012 else { continue }
+                let isJunction = disc.capsRails
+                    && edge.group.hasPrefix("wall")
+                    && abs(ends - disc.radius) < 0.02
+                guard !isJunction else { continue }
 
-                let gap = pointToSegment(disc.centre, edge.a, edge.b) - disc.radius
-                guard gap > 0.0005, gap < diameter else { continue }
-                offenders.append(String(
-                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
-                    gap, gap / diameter * 100, disc.name, edge.group))
+                let gap = pointToSegment(disc.centre, edge.a, edge.b)
+                    - disc.radius - edge.radius
+                guard gap < diameter else { continue }
+                offenders.append(describe(gap, disc.name, edge.group))
             }
 
             for other in discs where other.name != disc.name {
                 let gap = disc.centre.distance(to: other.centre)
                     - disc.radius - other.radius
                 guard gap > 0.0005, gap < diameter else { continue }
-                offenders.append(String(
-                    format: "%.4f (%.0f%% of a ball) between %@ and %@",
-                    gap, gap / diameter * 100, disc.name, other.name))
+                offenders.append(describe(gap, disc.name, other.name))
             }
         }
 
@@ -145,46 +185,16 @@ final class TableClearanceTests: XCTestCase {
     /// the flipper tips it perches on them, the middle of the table never
     /// drains, and a game cannot end on its own.
     func testTheBallFitsBetweenTheFlipperTips() {
-        let lower = blades.filter { !$0.name.hasPrefix("upper") }
-        guard lower.count == 2 else { return XCTFail("expected two lower flippers") }
+        let tips = lowerTips
+        guard tips.count == 2 else { return XCTFail("expected two lower flippers") }
 
-        let separation = abs(lower[0].b.x - lower[1].b.x)
-        let gap = separation - lower[0].radius - lower[1].radius
+        let gap = abs(tips[0].0.x - tips[1].0.x) - tips[0].1 - tips[1].1
 
         XCTAssertGreaterThan(gap, diameter * 1.3, String(
             format: "the drain gap is %.3f, only %.2f of a ball — it perches instead",
             gap, gap / diameter))
         XCTAssertLessThan(gap, diameter * 3,
                           "so wide the flippers cannot cover the drain")
-    }
-
-    /// Posts and rails against the blades, which sweep a large part of the
-    /// bottom of the table and so meet almost everything down there.
-    func testNothingPinchesTheBallAgainstAFlipper() {
-        var offenders: [String] = []
-
-        for blade in blades {
-            for edge in edges {
-                // The apron ends on the pivot on purpose, to hand the ball over.
-                guard min(edge.a.distance(to: blade.a), edge.b.distance(to: blade.a))
-                        > blade.radius + 0.02 else { continue }
-                let gap = segmentDistance(blade.a, blade.b, edge.a, edge.b) - blade.radius
-                guard gap > 0.0005, gap < diameter else { continue }
-                offenders.append(String(format: "%.4f (%.0f%%) between %@ and %@",
-                                        gap, gap / diameter * 100, blade.name, edge.group))
-            }
-            for disc in discs {
-                let gap = pointToSegment(disc.centre, blade.a, blade.b)
-                    - blade.radius - disc.radius
-                guard gap > 0.0005, gap < diameter else { continue }
-                offenders.append(String(format: "%.4f (%.0f%%) between %@ and %@",
-                                        gap, gap / diameter * 100, blade.name, disc.name))
-            }
-        }
-
-        XCTAssertTrue(offenders.isEmpty,
-                      "the ball wedges against a flipper here:\n"
-                      + offenders.joined(separator: "\n"))
     }
 
     func testTheSlingshotsStayClearOfTheOutlaneDividers() {
@@ -207,17 +217,41 @@ final class TableClearanceTests: XCTestCase {
                                     "a ball launched up the shooter lane would escape")
     }
 
-    /// True when two rails share a junction, and so are one boundary.
-    private func joined(_ a: String, _ b: String) -> Bool {
-        func ends(_ group: String) -> [CGPoint] {
-            guard group.hasPrefix("wall "),
-                  let index = Int(group.dropFirst("wall ".count)),
-                  TableLayout.walls.indices.contains(index) else { return [] }
-            let points = TableLayout.walls[index].points
-            return [points.first, points.last].compactMap { $0 }
+    private func describe(_ gap: CGFloat, _ a: String, _ b: String) -> String {
+        gap < 0
+            ? String(format: "%@ and %@ overlap by %.4f", a, b, -gap)
+            : String(format: "%.4f (%.0f%% of a ball) between %@ and %@",
+                     gap, gap / diameter * 100, a, b)
+    }
+
+    private func pair(_ a: String, _ b: String) -> String {
+        a < b ? "\(a)|\(b)" : "\(b)|\(a)"
+    }
+
+    /// Pairs of groups that meet somewhere, and so form a corner rather than a
+    /// pocket. Judged per group rather than per segment: the arch joins both
+    /// side walls at a point, and the segments just past that join sit within
+    /// a ball of the wall without any pocket existing.
+    ///
+    /// It covers an end-to-end join and an edge that lands partway along
+    /// another, which is how the apron attaches to the outlane divider.
+    private var joinedGroups: Set<String> {
+        let all = edges
+        var result: Set<String> = []
+        for i in 0..<all.count {
+            for j in (i + 1)..<all.count where all[i].group != all[j].group {
+                let key = pair(all[i].group, all[j].group)
+                guard !result.contains(key) else { continue }
+                let touching: CGFloat = 0.02
+                let meets = [all[i].a, all[i].b].contains {
+                    pointToSegment($0, all[j].a, all[j].b) < touching
+                } || [all[j].a, all[j].b].contains {
+                    pointToSegment($0, all[i].a, all[i].b) < touching
+                }
+                if meets { result.insert(key) }
+            }
         }
-        let first = ends(a), second = ends(b)
-        return first.contains { p in second.contains { $0.distance(to: p) < 0.02 } }
+        return result
     }
 
     // MARK: - Geometry

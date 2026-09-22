@@ -198,7 +198,7 @@ enum TableLayout {
 
     /// Bank of five, angled so a flipper shot sweeps across it.
     static let dropTargets: [DropTarget] = {
-        let start = CGPoint(x: 0.165, y: 0.640)
+        let start = CGPoint(x: 0.204, y: 0.640)
         let step = CGPoint(x: 0.0615, y: 0.0224)
         return (0..<5).map { i in
             DropTarget(index: i,
@@ -210,12 +210,12 @@ enum TableLayout {
     }()
 
     static let standupTargets: [StandupTarget] = [
-        StandupTarget(index: 0, center: CGPoint(x: 0.680, y: 0.740),
-                      angle: -0.55, size: CGSize(width: 0.050, height: 0.020)),
-        StandupTarget(index: 1, center: CGPoint(x: 0.775, y: 0.660),
-                      angle: -0.75, size: CGSize(width: 0.050, height: 0.020)),
-        StandupTarget(index: 2, center: CGPoint(x: 0.840, y: 0.560),
+        StandupTarget(index: 0, center: CGPoint(x: 0.760, y: 0.600),
                       angle: -0.95, size: CGSize(width: 0.050, height: 0.020)),
+        StandupTarget(index: 1, center: CGPoint(x: 0.790, y: 0.720),
+                      angle: -0.85, size: CGSize(width: 0.050, height: 0.020)),
+        StandupTarget(index: 2, center: CGPoint(x: 0.800, y: 0.840),
+                      angle: -0.75, size: CGSize(width: 0.050, height: 0.020)),
         StandupTarget(index: 3, center: CGPoint(x: 0.500, y: 0.905),
                       angle: 0.0, size: CGSize(width: 0.055, height: 0.020)),
     ]
@@ -227,10 +227,13 @@ enum TableLayout {
     }
 
     static let saucers: [Saucer] = [
+        // The kick goes down the side, not across at the bumper nest. Aimed
+        // at the nest the ball came straight back in, and the saucer caught it
+        // again — a one-second hold, over and over, with no way out.
         Saucer(side: .left, center: CGPoint(x: 0.155, y: 1.07),
-               radius: 0.040, ejectAngle: -0.45),
+               radius: 0.040, ejectAngle: -1.15),
         Saucer(side: .right, center: CGPoint(x: 0.845, y: 0.760),
-               radius: 0.040, ejectAngle: .pi + 0.65),
+               radius: 0.040, ejectAngle: .pi + 1.15),
     ]
 
     /// The climb runs up the side, turns over at the top and comes back down
@@ -277,8 +280,11 @@ enum TableLayout {
                 length: 0.150, thickness: 0.030, isUpper: false),
         Flipper(side: .right, pivot: CGPoint(x: 0.685, y: 0.175),
                 length: 0.150, thickness: 0.030, isUpper: false),
-        Flipper(side: .left, pivot: CGPoint(x: 0.245, y: 0.985),
-                length: 0.140, thickness: 0.026, isUpper: true),
+        // Down in the left channel, not up beside the bumper nest: at the old
+        // pivot the blade swept a long way inside the left pop bumper, which
+        // is a moving body buried in a static one.
+        Flipper(side: .left, pivot: CGPoint(x: 0.165, y: 0.780),
+                length: 0.120, thickness: 0.026, isUpper: true),
     ]
 
     /// Sensor strip across the bottom that ends a ball.

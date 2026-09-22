@@ -72,6 +72,11 @@ enum PhysicsTuning {
     static let ballSaveDuration: TimeInterval = 8.0
     static let multiballSaveDuration: TimeInterval = 10.0
     static let saucerHoldDuration: TimeInterval = 1.0
+    /// How long a saucer stays open after kicking, so it cannot catch the ball
+    /// it has just thrown. Without it a kick aimed at anything that bounces
+    /// back — the bumper nest, in this table's case — became a loop the player
+    /// could not break out of.
+    static let saucerCooldown: TimeInterval = 1.6
     static let magnetHoldDuration: TimeInterval = 0.8
     static let comboWindow: TimeInterval = 4.0
     static let nudgeWindow: TimeInterval = 2.0

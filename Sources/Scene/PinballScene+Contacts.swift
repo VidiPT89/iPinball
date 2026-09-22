@@ -104,6 +104,7 @@ extension PinballScene: SKPhysicsContactDelegate {
         guard let saucer = node as? SaucerNode else { return }
         let id = ObjectIdentifier(ball)
         guard !heldSaucers.contains(id) else { return }
+        guard sceneTime >= saucerReadyAt[saucer.side, default: 0] else { return }
         heldSaucers.insert(id)
 
         saucer.pulse()
@@ -123,6 +124,8 @@ extension PinballScene: SKPhysicsContactDelegate {
                     angle: saucer.ejectAngle,
                     magnitude: self.geometry.length(PhysicsTuning.saucerEjectSpeed))
                 self.heldSaucers.remove(ObjectIdentifier(ball))
+                self.saucerReadyAt[saucer.side] =
+                    self.sceneTime + PhysicsTuning.saucerCooldown
             },
         ]))
     }

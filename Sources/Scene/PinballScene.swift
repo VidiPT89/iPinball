@@ -34,6 +34,8 @@ final class PinballScene: SKScene {
     var orbitEntry: (side: TableSide, time: TimeInterval)?
     var ballsOnRamp: Set<ObjectIdentifier> = []
     var heldSaucers: Set<ObjectIdentifier> = []
+    /// When each saucer is allowed to capture again, by side.
+    var saucerReadyAt: [TableSide: TimeInterval] = [:]
     private var magnetActiveUntil: TimeInterval = 0
 
     // MARK: - Lifecycle
