@@ -94,24 +94,6 @@ struct TableGeometry {
     }
 }
 
-extension CGVector {
-    var magnitude: CGFloat { (dx * dx + dy * dy).squareRoot() }
-
-    func normalized() -> CGVector {
-        let m = magnitude
-        guard m > 0 else { return CGVector(dx: 0, dy: 1) }
-        return CGVector(dx: dx / m, dy: dy / m)
-    }
-
-    static func * (lhs: CGVector, rhs: CGFloat) -> CGVector {
-        CGVector(dx: lhs.dx * rhs, dy: lhs.dy * rhs)
-    }
-
-    init(angle: CGFloat, magnitude: CGFloat) {
-        self.init(dx: cos(angle) * magnitude, dy: sin(angle) * magnitude)
-    }
-}
-
 extension CGPoint {
     func distance(to other: CGPoint) -> CGFloat {
         ((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y)).squareRoot()

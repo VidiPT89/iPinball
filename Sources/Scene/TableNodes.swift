@@ -337,9 +337,18 @@ final class SpinnerNode: SKNode {
 final class SlingshotNode: SKShapeNode {
 
     let side: TableSide
+    /// The rubber face that kicks, in scene points: from the inner corner up
+    /// to the top, with its normal pointing out into the playfield.
+    let faceStart: CGPoint
+    let faceEnd: CGPoint
+    let faceNormal: CGVector
 
     init(config: TableLayout.Slingshot, geometry: TableGeometry, palette: Palette) {
         side = config.side
+        faceStart = geometry.point(config.vertices[2])
+        faceEnd = geometry.point(config.vertices[0])
+        faceNormal = KickModel.faceNormal(from: faceStart, to: faceEnd,
+                                          awayFrom: geometry.point(config.vertices[1]))
         super.init()
 
         let scenePath = geometry.path(through: config.vertices, closed: true)

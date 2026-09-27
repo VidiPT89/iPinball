@@ -44,9 +44,30 @@ enum PhysicsTuning {
 
     // MARK: Kick speeds, in table widths per second
 
-    static let bumperKickSpeed: CGFloat = 2.25
-    static let slingshotKickSpeed: CGFloat = 2.0
+    /// What the solenoid adds on top of the ball's own rebound. Lower than the
+    /// old fixed speeds (2.25 and 2.0) because a hard hit now comes back
+    /// harder, as it does on a real table.
+    static let bumperKickSpeed: CGFloat = 1.9
+    static let slingshotKickSpeed: CGFloat = 1.7
+    /// A standup target is passive: it only adds a little to the rebound.
+    static let standupKickSpeed: CGFloat = 0.5
     static let saucerEjectSpeed: CGFloat = 1.85
+
+    // MARK: Variety
+
+    /// How much of the ball's sideways motion survives a kick, and how much of
+    /// its speed into the kicker comes back out. See `KickModel`.
+    static let kickKeepsTangent: CGFloat = 0.7
+    static let kickRebound: CGFloat = 0.3
+    /// The play in a real mechanism, in radians either way. Without it the same
+    /// shot always produced exactly the same result.
+    static let kickSpin: CGFloat = 0.07
+    static let saucerAngleSpread: CGFloat = 0.14
+    static let saucerSpeedSpread: CGFloat = 0.10
+    static let rampAngleSpread: CGFloat = 0.08
+    static let rampSpeedSpread: CGFloat = 0.12
+    /// A plunger spring is never pulled back to exactly the same spot.
+    static let plungerSpeedSpread: CGFloat = 0.04
     static let nudgeSpeed: CGFloat = 0.34
     static let magnetPull: CGFloat = 1.10
 

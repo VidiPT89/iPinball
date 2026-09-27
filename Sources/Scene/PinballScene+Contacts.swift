@@ -45,7 +45,8 @@ extension PinballScene: SKPhysicsContactDelegate {
     private func hitBumper(_ ball: BallNode, node: SKNode?) {
         guard let bumper = node as? BumperNode else { return }
         bumper.pulse(reduceMotion: reduceMotion)
-        kick(ball, awayFrom: bumper.position,
+        kick(ball, normal: CGVector(dx: ball.position.x - bumper.position.x,
+                                    dy: ball.position.y - bumper.position.y),
              speed: geometry.length(PhysicsTuning.bumperKickSpeed))
         flash(at: bumper.position, color: palette.accentLight,
               radius: geometry.length(0.11))
@@ -54,12 +55,15 @@ extension PinballScene: SKPhysicsContactDelegate {
 
     private func hitSlingshot(_ ball: BallNode, node: SKNode?) {
         guard let sling = node as? SlingshotNode else { return }
+        // Only the rubber face has a switch behind it. A ball that clips one of
+        // the other edges just bounces off, as it would on a real table.
+        guard KickModel.touchesFace(ball.position, from: sling.faceStart, to: sling.faceEnd,
+                                    normal: sling.faceNormal,
+                                    reach: geometry.length(TableLayout.ballRadius * 1.6))
+        else { return }
         sling.fire(palette: palette, reduceMotion: reduceMotion)
-        // Slingshots throw the ball up and inwards, never straight back down.
-        let inwards: CGFloat = sling.side == .left ? 1 : -1
-        let angle = atan2(CGFloat(0.85), inwards * 0.55)
-        ball.physicsBody?.velocity = CGVector(
-            angle: angle, magnitude: geometry.length(PhysicsTuning.slingshotKickSpeed))
+        kick(ball, normal: sling.faceNormal,
+             speed: geometry.length(PhysicsTuning.slingshotKickSpeed))
         dispatch(.slingshot(side: sling.side))
     }
 
@@ -74,8 +78,9 @@ extension PinballScene: SKPhysicsContactDelegate {
             dispatch(.dropTarget(index: target.index))
         case .standup:
             target.flash(reduceMotion: reduceMotion)
-            kick(ball, awayFrom: target.position,
-                 speed: geometry.length(PhysicsTuning.slingshotKickSpeed * 0.7))
+            kick(ball, normal: CGVector(dx: ball.position.x - target.position.x,
+                                        dy: ball.position.y - target.position.y),
+                 speed: geometry.length(PhysicsTuning.standupKickSpeed))
             if session.isJackpotLit {
                 dispatch(.litJackpotHit)
             }
@@ -120,9 +125,12 @@ extension PinballScene: SKPhysicsContactDelegate {
                 guard let self, let ball, let saucer,
                       self.balls.contains(where: { $0 === ball }) else { return }
                 ball.physicsBody?.isDynamic = true
-                ball.physicsBody?.velocity = CGVector(
+                ball.physicsBody?.velocity = KickModel.eject(
                     angle: saucer.ejectAngle,
-                    magnitude: self.geometry.length(PhysicsTuning.saucerEjectSpeed))
+                    speed: self.geometry.length(PhysicsTuning.saucerEjectSpeed),
+                    variation: .random(in: -1...1),
+                    angleSpread: PhysicsTuning.saucerAngleSpread,
+                    speedSpread: PhysicsTuning.saucerSpeedSpread)
                 self.heldSaucers.remove(ObjectIdentifier(ball))
                 self.saucerReadyAt[saucer.side] =
                     self.sceneTime + PhysicsTuning.saucerCooldown
@@ -162,9 +170,12 @@ extension PinballScene: SKPhysicsContactDelegate {
                 ball.isOnRamp = false
                 ball.zPosition = 60
                 ball.physicsBody?.isDynamic = true
-                ball.physicsBody?.velocity = CGVector(
+                ball.physicsBody?.velocity = KickModel.eject(
                     angle: ramp.exitAngle,
-                    magnitude: self.geometry.length(PhysicsTuning.rampExitSpeed))
+                    speed: self.geometry.length(PhysicsTuning.rampExitSpeed),
+                    variation: .random(in: -1...1),
+                    angleSpread: PhysicsTuning.rampAngleSpread,
+                    speedSpread: PhysicsTuning.rampSpeedSpread)
                 ball.clearStuck()
                 self.ballsOnRamp.remove(ObjectIdentifier(ball))
                 self.dispatch(.rampCompleted(side: side))
@@ -200,12 +211,13 @@ extension PinballScene: SKPhysicsContactDelegate {
 
     // MARK: - Helpers
 
-    private func kick(_ ball: BallNode, awayFrom centre: CGPoint, speed: CGFloat) {
-        var delta = CGVector(dx: ball.position.x - centre.x,
-                             dy: ball.position.y - centre.y)
-        if delta.magnitude < 0.001 {
-            delta = CGVector(dx: CGFloat.random(in: -1...1), dy: 1)
-        }
-        ball.physicsBody?.velocity = delta.normalized() * speed
+    /// Adds a kick to the ball's own motion; see `KickModel`.
+    private func kick(_ ball: BallNode, normal: CGVector, speed: CGFloat) {
+        guard let body = ball.physicsBody else { return }
+        let direction = normal.magnitude < 0.001
+            ? CGVector(dx: CGFloat.random(in: -1...1), dy: 1) : normal
+        body.velocity = KickModel.activeKick(
+            incoming: body.velocity, normal: direction, kickSpeed: speed,
+            spin: .random(in: -PhysicsTuning.kickSpin...PhysicsTuning.kickSpin))
     }
 }

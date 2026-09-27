@@ -47,6 +47,8 @@ enum TableLayout {
 
     struct Slingshot {
         let side: TableSide
+        /// Top, bottom, inner corner. The rubber face that kicks runs from the
+        /// inner corner up to the top.
         let vertices: [CGPoint]
     }
 
@@ -193,21 +195,27 @@ enum TableLayout {
     ]
 
     static let slingshots: [Slingshot] = [
+        // The bottom corner sits at 0.335, not 0.318: lower, it left the ball
+        // 107% of its width against the inlane floor on paper and less than
+        // that once the solver's skin is counted, and the ball wedged there
+        // for good.
         Slingshot(side: .left, vertices: [
             CGPoint(x: 0.150, y: 0.505),
-            CGPoint(x: 0.150, y: 0.318),
+            CGPoint(x: 0.150, y: 0.335),
             CGPoint(x: 0.318, y: 0.412),
         ]),
         Slingshot(side: .right, vertices: [
             CGPoint(x: 0.850, y: 0.505),
-            CGPoint(x: 0.850, y: 0.318),
+            CGPoint(x: 0.850, y: 0.335),
             CGPoint(x: 0.682, y: 0.412),
         ]),
     ]
 
-    /// Bank of five, angled so a flipper shot sweeps across it.
+    /// Bank of five, angled so a flipper shot sweeps across it. It sits a
+    /// little lower than it did so the second and third targets leave the
+    /// ball room past the tip of the resting upper flipper.
     static let dropTargets: [DropTarget] = {
-        let start = CGPoint(x: 0.204, y: 0.640)
+        let start = CGPoint(x: 0.204, y: 0.625)
         let step = CGPoint(x: 0.0615, y: 0.0224)
         return (0..<5).map { i in
             DropTarget(index: i,

@@ -8,6 +8,12 @@ import XCTest
 final class TableClearanceTests: XCTestCase {
 
     private let diameter = TableLayout.ballRadius * 2
+    /// The narrowest gap the ball can pass. SpriteKit's solver keeps a thin
+    /// skin around every body, about a point and a half each side at a
+    /// phone-sized table, so a gap a hair wider than the ball on paper is
+    /// narrower than it in play. The ball wedged for good between the left
+    /// slingshot and the inlane floor with 7% to spare on paper.
+    private var passable: CGFloat { diameter * 1.15 }
 
     /// Every solid edge on the table, grouped by the thing it belongs to so
     /// neighbouring segments of the same rail are not compared with each other.
@@ -103,7 +109,7 @@ final class TableClearanceTests: XCTestCase {
                 guard !joined.contains(pair(all[i].group, all[j].group)) else { continue }
                 let gap = distance(all[i].a, all[i].b, all[j].a, all[j].b)
                     - all[i].radius - all[j].radius
-                guard gap < diameter else { continue }
+                guard gap < passable else { continue }
                 offenders.append(describe(gap, all[i].group, all[j].group))
             }
         }
@@ -135,14 +141,14 @@ final class TableClearanceTests: XCTestCase {
 
                 let gap = pointToSegment(disc.centre, edge.a, edge.b)
                     - disc.radius - edge.radius
-                guard gap < diameter else { continue }
+                guard gap < passable else { continue }
                 offenders.append(describe(gap, disc.name, edge.group))
             }
 
             for other in discs where other.name != disc.name {
                 let gap = disc.centre.distance(to: other.centre)
                     - disc.radius - other.radius
-                guard gap > 0.0005, gap < diameter else { continue }
+                guard gap > 0.0005, gap < passable else { continue }
                 offenders.append(describe(gap, disc.name, other.name))
             }
         }

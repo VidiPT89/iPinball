@@ -284,7 +284,9 @@ final class PinballScene: SKScene {
         let speed = geometry.length(
             PhysicsTuning.plungerMinSpeed
             + (PhysicsTuning.plungerMaxSpeed - PhysicsTuning.plungerMinSpeed) * charge)
-        ball.physicsBody?.velocity = CGVector(dx: 0, dy: speed)
+        ball.physicsBody?.velocity = KickModel.eject(
+            angle: .pi / 2, speed: speed, variation: .random(in: -1...1),
+            angleSpread: 0, speedSpread: PhysicsTuning.plungerSpeedSpread)
         plungerCharge = 0
         updatePlungerVisual()
         model?.showLaunchHint = false
@@ -369,8 +371,9 @@ final class PinballScene: SKScene {
 
     private func freeStuckBall(_ ball: BallNode) {
         let angle = CGFloat.random(in: (.pi * 0.2)...(.pi * 0.8))
+        let strength = ball.registerFree(at: sceneTime)
         ball.physicsBody?.velocity = CGVector(
-            angle: angle, magnitude: geometry.length(PhysicsTuning.stuckKickSpeed))
+            angle: angle, magnitude: geometry.length(PhysicsTuning.stuckKickSpeed) * strength)
         ball.clearStuck()
         flash(at: ball.position, color: palette.accentLight, radius: geometry.length(0.08))
     }

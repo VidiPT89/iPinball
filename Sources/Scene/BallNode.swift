@@ -8,6 +8,12 @@ final class BallNode: SKSpriteNode {
     /// While a ramp is carrying the ball, physics is switched off.
     var isOnRamp = false
 
+    /// How many times in a row the watchdog has had to free this ball, and
+    /// when it last did. A ball that falls straight back into the same pocket
+    /// gets a harder kick each time.
+    private var freeStreak = 0
+    private var lastFreedAt: TimeInterval = -.infinity
+
     init(radius: CGFloat) {
         let diameter = radius * 2
         let texture = TextureFactory.steelBall(diameter: diameter)
@@ -53,6 +59,15 @@ final class BallNode: SKSpriteNode {
     func isStuck(at time: TimeInterval) -> Bool {
         guard let stuckSince else { return false }
         return time - stuckSince > PhysicsTuning.stuckTimeout
+    }
+
+    /// Records a watchdog kick and returns how hard the next one should be,
+    /// as a multiple of the gentle first kick.
+    func registerFree(at time: TimeInterval) -> CGFloat {
+        let again = time - lastFreedAt < PhysicsTuning.stuckTimeout * 2.5
+        freeStreak = again ? min(freeStreak + 1, 3) : 0
+        lastFreedAt = time
+        return CGFloat(1 + freeStreak)
     }
 
     func clearStuck() {
