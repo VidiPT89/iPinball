@@ -13,7 +13,6 @@ enum TableEvent: Equatable {
     case slingshot(side: TableSide)
     case standupTarget(index: Int)
     case dropTarget(index: Int)
-    case dropBankCleared
     case spinnerRotation
     case rampCompleted(side: TableSide)
     case orbitCompleted(side: TableSide)
@@ -48,7 +47,13 @@ enum GameEffect: Equatable {
     case ballSaved
     case ballLost(ballsRemaining: Int)
     case extraBallAwarded
-    case bonusAwarded(points: Int)
+    case bonusAwarded(BonusReport)
+    /// The extra ball is being played: the machine lights SHOOT AGAIN.
+    case shootAgain
+    case skillShotCollected(points: Int)
+    /// The flipper buttons moved the lit rollover lanes along, as on a real
+    /// machine. Carries the whole new set so the lamps can be redrawn.
+    case lanesRotated(lit: Set<Int>)
     case tilted
     case tiltWarning
     case gameOver(score: Int)
@@ -58,7 +63,19 @@ enum GameEffect: Equatable {
 enum ScoreLabel: String, Equatable {
     case bumper, slingshot, target, dropTarget, bankClear
     case spinner, ramp, orbit, lane, laneSet
-    case jackpot, superJackpot, mission, bonus, combo
+    case jackpot, superJackpot, mission, bonus, combo, skillShot
+}
+
+/// The end-of-ball bonus, broken down the way the display counts it out.
+struct BonusReport: Equatable {
+    let targets: Int
+    let loops: Int
+    let multiplier: Int
+
+    var total: Int {
+        (targets * ScoreValue.bonusPerDroppedTarget + loops * ScoreValue.bonusPerLoop)
+            * multiplier
+    }
 }
 
 /// Lifecycle of a single game.
@@ -66,7 +83,6 @@ enum GamePhase: Equatable {
     case idle
     case ballReady
     case playing
-    case ballDraining
     case tilted
     case gameOver
 }
@@ -98,6 +114,7 @@ enum ScoreValue {
     static let laneSetCompleted = 50_000
     static let jackpot = 100_000
     static let superJackpot = 500_000
+    static let skillShot = 25_000
 
     static let maxComboMultiplier = 8
     static let maxPlayerMultiplier = 5

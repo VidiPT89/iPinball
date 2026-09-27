@@ -15,9 +15,20 @@ final class GameSession {
     private(set) var extraBalls = 0
     private(set) var ballSaveEndsAt: TimeInterval?
     private(set) var dropTargetsDown: Set<Int> = []
-    private(set) var litLanes: Set<Int> = []
+    /// The lit P-I-N-B lanes. The score engine owns them, since completing
+    /// the set is what raises its multiplier.
+    var litLanes: Set<Int> { score.litLanes }
+    /// The rollover lane worth a skill shot, while one is on offer. It walks
+    /// across the lanes while the ball sits in the shooter lane and freezes on
+    /// launch; the plunge has to drop the ball through that lane to collect.
+    private(set) var skillShotLane: Int?
+    private var skillShotExpiresAt: TimeInterval?
 
     private var nudgeTimestamps: [TimeInterval] = []
+    /// A ball gets one save. Without this the save re-armed on every
+    /// re-plunge, and a player who drained inside eight seconds each time
+    /// could never lose the ball at all.
+    private var ballSaveSpent = false
     private var now: TimeInterval = 0
     private var extraBallGivenForScore = false
     private var extraBallGivenForMissions = false
@@ -32,6 +43,15 @@ final class GameSession {
     /// wizard mode behind it — unreachable for the rest of the game.
     var isJackpotLit: Bool {
         isMultiball || missions.active?.id == "jackpotHunt"
+    }
+
+    /// The saucers flash while a shot into one would do something: start the
+    /// next mission, or count towards Lock 3. It is the only way the table has
+    /// of telling a new player where missions begin.
+    var isSaucerLit: Bool {
+        guard phase == .playing else { return false }
+        if let active = missions.active { return active.startsMultiball }
+        return missions.nextMission != nil
     }
 
     var ballSaveRemaining: TimeInterval? {
@@ -49,8 +69,10 @@ final class GameSession {
         ballsInPlay = 0
         extraBalls = 0
         dropTargetsDown.removeAll()
-        litLanes.removeAll()
         nudgeTimestamps.removeAll()
+        skillShotExpiresAt = nil
+        skillShotLane = Self.skillShotLane(at: time)
+        ballSaveSpent = false
         extraBallGivenForScore = false
         extraBallGivenForMissions = false
         extraBallGivenForBanks = false
@@ -66,6 +88,12 @@ final class GameSession {
         guard phase == .ballReady else { return [] }
         phase = .playing
         ballsInPlay = 1
+        skillShotLane = Self.skillShotLane(at: time)
+        skillShotExpiresAt = time + PhysicsTuning.skillShotWindow
+        guard !ballSaveSpent else {
+            ballSaveEndsAt = nil
+            return []
+        }
         ballSaveEndsAt = time + PhysicsTuning.ballSaveDuration
         return [.ballSaveArmed(duration: PhysicsTuning.ballSaveDuration)]
     }
@@ -74,6 +102,7 @@ final class GameSession {
     func advance(to time: TimeInterval) -> [GameEffect] {
         now = time
         score.advance(to: time)
+        advanceSkillShot(to: time)
         var effects: [GameEffect] = []
         if let failure = missions.advance(to: time) {
             effects.append(failure)
@@ -115,9 +144,6 @@ final class GameSession {
                 effects.append(contentsOf: clearBank())
             }
 
-        case .dropBankCleared:
-            effects.append(contentsOf: clearBank())
-
         case .spinnerRotation:
             effects.append(awarded(ScoreValue.spinnerRotation, .spinner))
 
@@ -134,11 +160,10 @@ final class GameSession {
             effects.append(.comboChanged(multiplier: score.comboMultiplier))
 
         case .rolloverLane(let index):
+            effects.append(contentsOf: collectSkillShot(through: index))
             guard !litLanes.contains(index) else { break }
-            litLanes.insert(index)
             effects.append(.laneLit(index: index))
             if score.lightLane(index) {
-                litLanes.removeAll()
                 effects.append(.laneSetCompleted)
                 effects.append(awarded(ScoreValue.laneSetCompleted, .laneSet))
                 effects.append(.playerMultiplierChanged(value: score.playerMultiplier))
@@ -169,6 +194,50 @@ final class GameSession {
         effects.append(contentsOf: applyMissionOutcomes(in: effects))
         effects.append(contentsOf: checkExtraBall())
         return effects
+    }
+
+    // MARK: - Skill shot and lane change
+
+    /// Which lane the skill shot sits on at a given moment while it is still
+    /// walking. Derived from the clock so it needs no timer of its own.
+    static func skillShotLane(at time: TimeInterval) -> Int {
+        let step = Int(max(0, time) / PhysicsTuning.skillShotStep)
+        return step % LaneLetter.allCases.count
+    }
+
+    private func advanceSkillShot(to time: TimeInterval) {
+        switch phase {
+        case .ballReady:
+            skillShotLane = Self.skillShotLane(at: time)
+        case .playing:
+            if let expiry = skillShotExpiresAt, time > expiry {
+                skillShotLane = nil
+                skillShotExpiresAt = nil
+            }
+        default:
+            skillShotLane = nil
+            skillShotExpiresAt = nil
+        }
+    }
+
+    /// The first lane the plunge reaches settles the skill shot either way.
+    private func collectSkillShot(through index: Int) -> [GameEffect] {
+        guard phase == .playing, let lane = skillShotLane else { return [] }
+        skillShotLane = nil
+        skillShotExpiresAt = nil
+        guard lane == index else { return [] }
+        score.isMultiballActive = isMultiball
+        return [.skillShotCollected(points: score.award(ScoreValue.skillShot,
+                                                        label: .skillShot))]
+    }
+
+    /// Lane change: each flipper press moves the lit lanes one place towards
+    /// that flipper's side. Nothing moves when there is nothing to steer.
+    func rotateLanes(towards side: TableSide) -> [GameEffect] {
+        guard phase == .playing, !litLanes.isEmpty,
+              litLanes.count < LaneLetter.allCases.count else { return [] }
+        score.rotateLanes(by: side == .left ? -1 : 1)
+        return [.lanesRotated(lit: litLanes)]
     }
 
     // MARK: - Pieces
@@ -292,6 +361,7 @@ final class GameSession {
 
         if phase != .tilted, isBallSaveActive {
             ballSaveEndsAt = nil
+            ballSaveSpent = true
             ballsInPlay = 0
             phase = .ballReady
             return [.ballSaved]
@@ -303,23 +373,24 @@ final class GameSession {
             effects.append(missionFailure)
         }
 
-        let bonus = score.endOfBallBonus()
-        if bonus > 0, phase != .tilted {
-            score.addRaw(bonus)
-            effects.append(.bonusAwarded(points: bonus))
+        let bonus = score.bonusReport()
+        if bonus.total > 0, phase != .tilted {
+            score.addRaw(bonus.total)
+            effects.append(.bonusAwarded(bonus))
         }
 
         score.resetBallCounters()
         dropTargetsDown.removeAll()
-        litLanes.removeAll()
         score.isMultiballActive = false
         ballSaveEndsAt = nil
+        ballSaveSpent = false
         nudgeTimestamps.removeAll()
 
         if extraBalls > 0 {
             extraBalls -= 1
             phase = .ballReady
             effects.append(.ballLost(ballsRemaining: ballsRemaining))
+            effects.append(.shootAgain)
             return effects
         }
 

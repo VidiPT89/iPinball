@@ -30,21 +30,22 @@ enum PhysicsTuning {
 
     /// Speed clamp applied every frame, in table widths per second, so the feel
     /// is identical on every screen size. Without it the solver becomes
-    /// unstable and the ball escapes through thin walls.
-    static let maxBallSpeed: CGFloat = 3.6
+    /// unstable and the ball escapes through thin walls. At 3.6 a full flipper
+    /// shot was capped to a lob; a 90s table snaps the ball up the playfield.
+    static let maxBallSpeed: CGFloat = 4.4
 
     // MARK: Flippers
 
     static let flipperRestAngle: CGFloat = -0.38      // radians, ~ -22°
     static let flipperActiveAngle: CGFloat = 0.35     // radians, ~ +20°
-    static let flipperAngularSpeed: CGFloat = 34      // radians per second
+    static let flipperAngularSpeed: CGFloat = 40      // radians per second
     static let flipperRestitution: CGFloat = 0.12
     static let flipperFriction: CGFloat = 0.6
 
     // MARK: Kick speeds, in table widths per second
 
-    static let bumperKickSpeed: CGFloat = 1.95
-    static let slingshotKickSpeed: CGFloat = 1.70
+    static let bumperKickSpeed: CGFloat = 2.25
+    static let slingshotKickSpeed: CGFloat = 2.0
     static let saucerEjectSpeed: CGFloat = 1.85
     static let nudgeSpeed: CGFloat = 0.34
     static let magnetPull: CGFloat = 1.10
@@ -83,4 +84,11 @@ enum PhysicsTuning {
     static let nudgesBeforeTilt = 3
     static let rampTravelDuration: TimeInterval = 0.75
     static let rampExitSpeed: CGFloat = 1.55
+
+    // MARK: Skill shot
+
+    /// How long the skill shot lamp stays on each lane while it walks.
+    static let skillShotStep: TimeInterval = 0.45
+    /// How long after the plunge the lit lane still pays out.
+    static let skillShotWindow: TimeInterval = 5.0
 }

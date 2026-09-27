@@ -47,8 +47,8 @@ extension PinballScene: SKPhysicsContactDelegate {
         bumper.pulse(reduceMotion: reduceMotion)
         kick(ball, awayFrom: bumper.position,
              speed: geometry.length(PhysicsTuning.bumperKickSpeed))
-        shockwave(at: bumper.position, color: palette.accentLight,
-                  radius: geometry.length(0.16))
+        flash(at: bumper.position, color: palette.accentLight,
+              radius: geometry.length(0.11))
         dispatch(.popBumper(index: bumper.index))
     }
 

@@ -26,7 +26,7 @@ final class BumperNode: SKNode {
         glow.zPosition = -1
 
         ring = SKShapeNode(circleOfRadius: radius * 1.22)
-        ring.strokeColor = palette.accent.withAlphaComponent(0.55)
+        ring.strokeColor = CabinetColors.steel.withAlphaComponent(0.85)
         ring.lineWidth = max(1.2, radius * 0.10)
         ring.fillColor = .clear
         ring.zPosition = -0.5
@@ -66,7 +66,6 @@ final class BumperNode: SKNode {
     func repaint(with palette: Palette) {
         cap.texture = TextureFactory.bumperCap(diameter: radius * 2,
                                                color: palette.accentLight)
-        ring.strokeColor = palette.accent.withAlphaComponent(0.55)
     }
 }
 
@@ -197,8 +196,28 @@ final class RolloverNode: SKNode {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
+    /// The skill shot lamp flashes on top of whatever the lane already shows.
+    func setFlashing(_ flashing: Bool, palette: Palette) {
+        guard flashing != (action(forKey: "flash") != nil) else { return }
+        removeAction(forKey: "flash")
+        guard flashing else {
+            setLit(isLit, palette: palette)
+            return
+        }
+        run(.repeatForever(.sequence([
+            .run { [weak self] in self?.paintLamp(lit: true, palette: palette) },
+            .wait(forDuration: 0.12),
+            .run { [weak self] in self?.paintLamp(lit: false, palette: palette) },
+            .wait(forDuration: 0.12),
+        ])), withKey: "flash")
+    }
+
     func setLit(_ lit: Bool, palette: Palette) {
         isLit = lit
+        paintLamp(lit: lit, palette: palette)
+    }
+
+    private func paintLamp(lit: Bool, palette: Palette) {
         lamp.fillColor = lit ? palette.accent : palette.tableRail
         lamp.glowWidth = lit ? lamp.frame.width * 0.12 : 0
         letter.fontColor = lit ? .hex(0x14100A) : palette.textDim
@@ -212,6 +231,7 @@ final class SaucerNode: SKNode {
     let side: TableSide
     let ejectAngle: CGFloat
     private let ring: SKShapeNode
+    private var isFlashing = false
 
     init(config: TableLayout.Saucer, geometry: TableGeometry, palette: Palette) {
         side = config.side
@@ -246,6 +266,20 @@ final class SaucerNode: SKNode {
 
     func repaint(with palette: Palette) {
         ring.strokeColor = palette.accent
+    }
+
+    /// Flashes the ring while shooting the saucer would start something, and
+    /// leaves it glowing steadily the rest of the time.
+    func setFlashing(_ flashing: Bool) {
+        guard flashing != isFlashing else { return }
+        isFlashing = flashing
+        ring.removeAction(forKey: "flash")
+        ring.alpha = 1
+        guard flashing else { return }
+        ring.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.25, duration: 0.18),
+            .fadeAlpha(to: 1, duration: 0.18),
+        ])), withKey: "flash")
     }
 }
 
@@ -310,10 +344,10 @@ final class SlingshotNode: SKShapeNode {
 
         let scenePath = geometry.path(through: config.vertices, closed: true)
         path = scenePath
-        fillColor = palette.tableRail
-        strokeColor = palette.accent
-        lineWidth = 2
-        glowWidth = 1.5
+        fillColor = palette.accentDark.withAlphaComponent(0.55)
+        strokeColor = CabinetColors.rubber
+        lineWidth = max(2, geometry.length(0.009))
+        lineJoin = .round
         zPosition = 16
 
         let body = SKPhysicsBody(polygonFrom: scenePath)
@@ -330,14 +364,15 @@ final class SlingshotNode: SKShapeNode {
     func fire(palette: Palette, reduceMotion: Bool) {
         removeAllActions()
         run(.sequence([
-            .run { [weak self] in self?.fillColor = palette.accent },
+            .run { [weak self] in self?.fillColor = palette.accentLight },
             .wait(forDuration: reduceMotion ? 0.05 : 0.09),
-            .run { [weak self] in self?.fillColor = palette.tableRail },
+            .run { [weak self] in
+                self?.fillColor = palette.accentDark.withAlphaComponent(0.55)
+            },
         ]))
     }
 
     func repaint(with palette: Palette) {
-        fillColor = palette.tableRail
-        strokeColor = palette.accent
+        fillColor = palette.accentDark.withAlphaComponent(0.55)
     }
 }

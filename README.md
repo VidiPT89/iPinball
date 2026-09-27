@@ -9,11 +9,13 @@
 
 - ✅ A full 90s playfield — three pop bumpers, two slingshots, a five-target drop bank, four standup targets, two ramps, two orbits, a spinner, two saucers, a magnet and the P-I-N-B rollover lanes
 - ✅ Three flippers on real pin joints, a pull-and-release plunger, and a nudge that tilts the table if you push your luck three times in two seconds
-- ✅ Six chained missions — Warm-Up, Ramp Rush, Target Frenzy, Orbit Loop, Lock 3 and Jackpot Hunt — leading into the Final Shot wizard mode
+- ✅ Six chained missions — Warm-Up, Ramp Rush, Target Frenzy, Orbit Loop, Lock 3 and Jackpot Hunt — leading into the Final Shot wizard mode, tracked on a lit mission ladder under the top arch
+- ✅ A 90s skill shot: the lit lane walks across P-I-N-B while you aim, and the flipper buttons move the lit lanes (lane change)
+- ✅ An amber dot-matrix display for the score, the missions, jackpots, TILT and the end-of-ball bonus counted out line by line
 - ✅ Three-ball multiball where everything scores double, lit jackpots and super jackpots
 - ✅ Combo multiplier up to 8× on back-to-back ramps and orbits, player multiplier up to 5× from the lanes and the drop bank
 - ✅ Ball save, extra balls, end-of-ball bonus, a stuck-ball watchdog and a ten-entry high score table with initials
-- ✅ Neon table lighting, ball trails, shockwaves, screen shake, slow motion on a jackpot and floating score pops
+- ✅ Lamp inserts that flash at the shot to make, general illumination that goes out on a tilt, impact flashes, screen shake and slow motion on a jackpot
 - ✅ Fully synthesised audio and Core Haptics — no sound files, every effect generated at launch
 - ✅ Bilingual PT-PT / English in-app language switch, independent of your device language
 - ✅ Dark, Light and System appearance, with the iVidi.dev orange, burnt yellow and black

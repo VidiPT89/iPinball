@@ -104,58 +104,6 @@ struct NeonTitle: View {
     }
 }
 
-// MARK: - Rolling score
-
-/// Counts up to the new value instead of snapping, and pops on big gains.
-///
-/// The roll is a single interruptible animation rather than a burst of
-/// scheduled work. An earlier version queued fourteen `asyncAfter` blocks per
-/// change; on a busy table the score changes several times a second, so stale
-/// blocks from a previous total kept firing and the displayed score visibly
-/// jumped backwards. Animating `animatableData` lets a new total retarget from
-/// wherever the last one had got to, and cancels nothing because there is
-/// nothing queued.
-struct ScoreTicker: View {
-    let value: Int
-    var font: Font = Typography.score(34)
-
-    @Environment(\.palette) private var palette
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var scale: CGFloat = 1
-
-    var body: some View {
-        RollingNumber(value: Double(value), font: font, color: palette.textColor)
-            .animation(reduceMotion ? nil : .easeOut(duration: Motion.scoreRoll),
-                       value: value)
-            .scaleEffect(scale)
-            .onChange(of: value) { old, new in
-                guard !reduceMotion, new - old >= 50_000 else { return }
-                withAnimation(.easeOut(duration: Motion.scorePop)) { scale = 1.12 }
-                withAnimation(.easeIn(duration: Motion.scorePop)
-                    .delay(Motion.scorePop)) { scale = 1 }
-            }
-            .accessibilityLabel(Text(value.grouped))
-    }
-}
-
-/// Redraws itself for each interpolated value SwiftUI hands it.
-private struct RollingNumber: View, Animatable {
-    var value: Double
-    let font: Font
-    let color: Color
-
-    var animatableData: Double {
-        get { value }
-        set { value = newValue }
-    }
-
-    var body: some View {
-        Text(Int(value.rounded()).grouped)
-            .font(font)
-            .foregroundStyle(color)
-    }
-}
-
 // MARK: - Segmented choice
 
 struct NeonSegmented<Value: Hashable>: View {

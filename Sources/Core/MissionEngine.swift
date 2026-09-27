@@ -69,6 +69,18 @@ final class MissionEngine {
         return max(0, limit - (now - startedAt))
     }
 
+    /// The mission ladder printed on the playfield: a finished mission stays
+    /// lit, the one being played flashes, and so does Final Shot once every
+    /// other lamp is on, to send the player back to a saucer.
+    enum Lamp: Equatable { case off, lit, flashing }
+
+    func lamp(for mission: Mission) -> Lamp {
+        if active?.id == mission.id { return .flashing }
+        if completed.contains(mission.id) { return .lit }
+        if mission.isWizard && isWizardUnlocked { return .flashing }
+        return .off
+    }
+
     // MARK: - Lifecycle
 
     /// Called when the ball settles into a saucer. Returns the mission that started.

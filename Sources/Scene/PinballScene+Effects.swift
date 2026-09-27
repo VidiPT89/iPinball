@@ -8,9 +8,6 @@ extension PinballScene {
 
     func react(to effect: GameEffect) {
         switch effect {
-        case .scored(let points, let label):
-            popScore(points, label: label)
-
         case .dropTargetDown(let index):
             parts.dropTargets.first { $0.index == index }?.drop(reduceMotion: reduceMotion)
 
@@ -59,28 +56,41 @@ extension PinballScene {
 
         case .tilted:
             parts.flippers.forEach { $0.disable() }
+            setGeneralIllumination(on: false)
             shakeCamera(intensity: 1.2)
-            run(.sequence([.wait(forDuration: 1.4), .run { [weak self] in
-                self?.finishTilt()
-            }]))
+            afterDelay(1.4) { [weak self] in self?.finishTilt() }
 
         case .tiltWarning:
             shakeCamera(intensity: 0.5)
 
         case .ballSaved:
-            run(.sequence([.wait(forDuration: 0.35),
-                           .run { [weak self] in self?.serveBall() }]))
+            afterDelay(0.35) { [weak self] in self?.serveBall() }
 
         case .ballLost:
-            run(.sequence([.wait(forDuration: 0.7),
-                           .run { [weak self] in self?.serveBall() }]))
+            // The next ball waits for the display to finish counting the bonus.
+            let wait = 0.7 + bonusCountdown
+            bonusCountdown = 0
+            afterDelay(wait) { [weak self] in self?.serveBall() }
+
+        case .bonusAwarded(let report):
+            bonusCountdown = Motion.bonusCountdown(for: report)
+
+        case .lanesRotated(let lit):
+            for rollover in parts.rollovers {
+                rollover.setLit(lit.contains(rollover.index), palette: palette)
+            }
+
+        case .skillShotCollected:
+            parts.rollovers.forEach { flash(at: $0.position, color: palette.accentLight,
+                                            radius: geometry.length(0.09)) }
+            shakeCamera(intensity: 0.5)
 
         case .gameOver:
             endGame()
 
-        case .comboChanged, .playerMultiplierChanged, .missionProgressed,
+        case .scored, .comboChanged, .playerMultiplierChanged, .missionProgressed,
              .missionFailed, .multiballEnded, .ballSaveArmed, .extraBallAwarded,
-             .bonusAwarded:
+             .shootAgain:
             break
         }
     }
@@ -127,26 +137,6 @@ extension PinballScene {
         shakeCamera(intensity: 0.8)
     }
 
-    // MARK: - Ball trail
-
-    func dropTrail(at point: CGPoint, speed: CGFloat, maxSpeed: CGFloat) {
-        let intensity = min(1, speed / max(maxSpeed, 1))
-        guard intensity > 0.12 else { return }
-
-        let radius = geometry.length(TableLayout.ballRadius) * (0.45 + 0.35 * intensity)
-        let dot = SKShapeNode(circleOfRadius: radius)
-        dot.position = point
-        dot.fillColor = palette.accentLight.withAlphaComponent(0.5 * intensity)
-        dot.strokeColor = .clear
-        dot.blendMode = .add
-        dot.zPosition = 55
-        addChild(dot)
-        dot.run(.sequence([
-            .group([.fadeOut(withDuration: 0.28), .scale(to: 0.2, duration: 0.28)]),
-            .removeFromParent(),
-        ]))
-    }
-
     // MARK: - Impact flourishes
 
     func flash(at point: CGPoint, color: PlatformColor, radius: CGFloat) {
@@ -160,23 +150,6 @@ extension PinballScene {
         addChild(glow)
         glow.run(.sequence([
             .group([.scale(to: 1.7, duration: Motion.shockwave),
-                    .fadeOut(withDuration: Motion.shockwave)]),
-            .removeFromParent(),
-        ]))
-    }
-
-    func shockwave(at point: CGPoint, color: PlatformColor, radius: CGFloat) {
-        guard !reduceMotion else { return }
-        let ring = SKShapeNode(circleOfRadius: radius * 0.4)
-        ring.position = point
-        ring.strokeColor = color
-        ring.lineWidth = geometry.length(0.006)
-        ring.glowWidth = geometry.length(0.004)
-        ring.fillColor = .clear
-        ring.zPosition = 68
-        addChild(ring)
-        ring.run(.sequence([
-            .group([.scale(to: 2.6, duration: Motion.shockwave),
                     .fadeOut(withDuration: Motion.shockwave)]),
             .removeFromParent(),
         ]))
@@ -203,31 +176,6 @@ extension PinballScene {
                 .removeFromParent(),
             ]))
         }
-    }
-
-    /// The floating number that rises off the point of impact.
-    private func popScore(_ points: Int, label: ScoreLabel) {
-        guard !reduceMotion, points >= ScoreValue.standupTarget else { return }
-        guard let ball = balls.first(where: { !$0.isOnRamp }) ?? balls.first else { return }
-
-        let text = SKLabelNode(text: points.grouped)
-        text.fontName = "AvenirNextCondensed-Heavy"
-        text.fontSize = geometry.length(points >= ScoreValue.jackpot ? 0.075 : 0.05)
-        text.fontColor = points >= ScoreValue.jackpot ? palette.accentLight : palette.textPrimary
-        text.position = CGPoint(x: ball.position.x,
-                                y: ball.position.y + geometry.length(0.04))
-        text.zPosition = 90
-        text.setScale(0.6)
-        addChild(text)
-        text.run(.sequence([
-            .group([
-                .scale(to: 1.0, duration: 0.12),
-                .moveBy(x: 0, y: geometry.length(0.10), duration: Motion.floatingScore),
-                .sequence([.wait(forDuration: Motion.floatingScore * 0.5),
-                           .fadeOut(withDuration: Motion.floatingScore * 0.5)]),
-            ]),
-            .removeFromParent(),
-        ]))
     }
 
     // MARK: - Whole-table flourishes
@@ -277,24 +225,20 @@ extension PinballScene {
         ]))
     }
 
-    /// Runs the rail glow up and down, the way a real machine flashes its
-    /// inserts when something big happens.
+    /// Flashes every insert and the steel with it, the way a real machine
+    /// strobes its lamps when something big happens.
     func pulseRails(times: Int) {
         guard let rails = parts.rails else { return }
         rails.removeAllActions()
-        let base = geometry.length(0.006)
+        let lit = palette.accentLight
         rails.run(.sequence([
             .repeat(.sequence([
-                .customAction(withDuration: 0.12) { node, _ in
-                    (node as? SKShapeNode)?.glowWidth = base * 4
-                },
-                .customAction(withDuration: 0.12) { node, _ in
-                    (node as? SKShapeNode)?.glowWidth = base
-                },
+                .run { rails.strokeColor = lit },
+                .wait(forDuration: 0.12),
+                .run { rails.strokeColor = CabinetColors.steel },
+                .wait(forDuration: 0.12),
             ]), count: max(1, times)),
-            .customAction(withDuration: 0.01) { node, _ in
-                (node as? SKShapeNode)?.glowWidth = base
-            },
+            .run { rails.strokeColor = CabinetColors.steel },
         ]))
     }
 
@@ -316,7 +260,6 @@ extension PinballScene {
     func repaint(with newPalette: Palette) {
         palette = newPalette
         TextureFactory.purge()
-        backgroundColor = newPalette.background
         parts.flippers.forEach { $0.repaint(with: newPalette) }
         parts.bumpers.forEach { $0.repaint(with: newPalette) }
         parts.dropTargets.forEach { $0.repaint(with: newPalette) }
@@ -325,9 +268,55 @@ extension PinballScene {
         parts.slingshots.forEach { $0.repaint(with: newPalette) }
         parts.spinner?.repaint(with: newPalette)
         parts.ramps.forEach { $0.repaint(with: newPalette) }
-        parts.rails?.strokeColor = newPalette.accent.withAlphaComponent(0.75)
         for rollover in parts.rollovers {
             rollover.setLit(rollover.isLit, palette: newPalette)
+        }
+    }
+
+    // MARK: - Lamps
+
+    /// Lights the inserts from the state of the rules, the way a lamp matrix
+    /// is refreshed on a real machine. Each lamp ignores a state it is
+    /// already in, so doing this every frame costs next to nothing.
+    func updateInserts() {
+        let inserts = parts.inserts
+        let mission = session.missions.active?.id
+        let wizard = mission == "finalShot"
+        let comboLive = session.score.comboMultiplier > 1
+
+        let ramps: InsertLamp.State = wizard || mission == "rampRush" || comboLive
+            ? .blinking : .off
+        let orbits: InsertLamp.State = wizard || mission == "orbitLoop" || comboLive
+            ? .blinking : .off
+        inserts.rampArrows.values.forEach { $0.set(ramps) }
+        inserts.orbitArrows.values.forEach { $0.set(orbits) }
+
+        let multiplier = session.score.playerMultiplier
+        for (offset, lamp) in inserts.multipliers.enumerated() {
+            lamp.set(multiplier >= offset + 2 ? .on : .off)
+        }
+
+        if session.isBallSaveActive {
+            inserts.shootAgain?.set(.blinking)
+        } else {
+            inserts.shootAgain?.set(session.extraBalls > 0 ? .on : .off)
+        }
+        inserts.jackpot?.set(session.isJackpotLit ? .blinking : .off)
+
+        for mission in MissionEngine.catalog {
+            switch session.missions.lamp(for: mission) {
+            case .off:      inserts.missions[mission.id]?.set(.off)
+            case .lit:      inserts.missions[mission.id]?.set(.on)
+            case .flashing: inserts.missions[mission.id]?.set(.blinking)
+            }
+        }
+
+        let saucersLit = session.isSaucerLit
+        parts.saucers.forEach { $0.setFlashing(saucersLit) }
+
+        let skillLane = session.skillShotLane
+        for rollover in parts.rollovers {
+            rollover.setFlashing(rollover.index == skillLane, palette: palette)
         }
     }
 }

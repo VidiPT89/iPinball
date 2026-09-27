@@ -88,7 +88,7 @@ final class ScoreEngineTests: XCTestCase {
 
         let expected = (2 * ScoreValue.bonusPerDroppedTarget
                         + 1 * ScoreValue.bonusPerLoop) * 2
-        XCTAssertEqual(engine.endOfBallBonus(), expected)
+        XCTAssertEqual(engine.bonusReport().total, expected)
     }
 
     func testResettingBallCountersKeepsTheScoreAndPlayerMultiplier() {
@@ -102,7 +102,7 @@ final class ScoreEngineTests: XCTestCase {
         XCTAssertEqual(engine.score, 5_000)
         XCTAssertEqual(engine.playerMultiplier, 2)
         XCTAssertEqual(engine.comboMultiplier, 1)
-        XCTAssertEqual(engine.endOfBallBonus(), 0)
+        XCTAssertEqual(engine.bonusReport().total, 0)
     }
 
     func testBankClearRaisesThePlayerMultiplier() {

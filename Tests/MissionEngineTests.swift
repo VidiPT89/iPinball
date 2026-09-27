@@ -127,6 +127,45 @@ final class MissionEngineTests: XCTestCase {
         XCTAssertTrue(engine.completed.isEmpty)
     }
 
+    // MARK: - Mission ladder
+
+    func testEveryLampStartsDark() {
+        for mission in MissionEngine.catalog {
+            XCTAssertEqual(engine.lamp(for: mission), .off, mission.id)
+        }
+    }
+
+    func testTheRunningMissionFlashesAndAFinishedOneStaysLit() throws {
+        let warmUp = try XCTUnwrap(MissionEngine.mission(withID: "warmUp"))
+        let rampRush = try XCTUnwrap(MissionEngine.mission(withID: "rampRush"))
+
+        engine.startNextMission(at: 0)
+        XCTAssertEqual(engine.lamp(for: warmUp), .flashing)
+        XCTAssertEqual(engine.lamp(for: rampRush), .off)
+
+        complete(warmUp)
+        XCTAssertEqual(engine.lamp(for: warmUp), .lit)
+    }
+
+    func testAFailedMissionGoesDarkAgain() throws {
+        let rampRush = try XCTUnwrap(MissionEngine.mission(withID: "rampRush"))
+        completeMissions(upTo: "rampRush")
+        engine.startNextMission(at: 0)
+        _ = engine.advance(to: 1_000)
+
+        XCTAssertEqual(engine.lamp(for: rampRush), .off)
+    }
+
+    func testTheWizardLampFlashesOnceItIsReady() throws {
+        let wizard = try XCTUnwrap(MissionEngine.catalog.last)
+        completeMissions(upTo: wizard.id)
+        XCTAssertEqual(engine.lamp(for: wizard), .flashing,
+                       "the table has to say that Final Shot is waiting at a saucer")
+
+        complete(wizard)
+        XCTAssertEqual(engine.lamp(for: wizard), .lit)
+    }
+
     // MARK: - Helpers
 
     private func complete(_ mission: Mission) {

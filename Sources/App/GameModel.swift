@@ -9,13 +9,20 @@ final class GameModel {
     struct Banner: Equatable {
         let key: String
         let style: Style
+        /// A second line, such as the points a jackpot was worth.
+        let detail: String?
+        /// When the display starts showing it. A message that arrives during
+        /// the bonus count waits for the count to finish.
+        let showsAt: Date
         let id: UUID
 
         enum Style { case neutral, good, great, bad }
 
-        init(key: String, style: Style) {
+        init(key: String, style: Style, detail: String? = nil, showsAt: Date = Date()) {
             self.key = key
             self.style = style
+            self.detail = detail
+            self.showsAt = showsAt
             self.id = UUID()
         }
     }
@@ -32,7 +39,6 @@ final class GameModel {
     var missionTarget = 0
     var missionRemaining: TimeInterval?
 
-    var ballSaveRemaining: TimeInterval?
     var isMultiball = false
     var isTilted = false
     var showLaunchHint = true
@@ -43,6 +49,14 @@ final class GameModel {
     var highScoreRank: Int?
 
     var banner: Banner?
+    /// The bonus the display is counting out, and when it started.
+    var bonus: BonusReport?
+    var bonusStartedAt: Date?
+
+    var bonusEndsAt: Date? {
+        guard let bonus, let bonusStartedAt else { return nil }
+        return bonusStartedAt.addingTimeInterval(Motion.bonusCountdown(for: bonus))
+    }
 
     // Stats gathered for the lifetime record.
     var jackpotCount = 0
@@ -62,7 +76,6 @@ final class GameModel {
         missionCurrent = 0
         missionTarget = 0
         missionRemaining = nil
-        ballSaveRemaining = nil
         isMultiball = false
         isTilted = false
         showLaunchHint = true
@@ -71,6 +84,8 @@ final class GameModel {
         finalScore = 0
         highScoreRank = nil
         banner = nil
+        bonus = nil
+        bonusStartedAt = nil
         jackpotCount = 0
         bestCombo = 1
         ballsPlayed = 0
@@ -78,8 +93,10 @@ final class GameModel {
         startedAt = Date()
     }
 
-    func show(_ key: String, style: Banner.Style) {
-        banner = Banner(key: key, style: style)
+    func show(_ key: String, style: Banner.Style, detail: String? = nil) {
+        let now = Date()
+        let start = max(now, bonusEndsAt ?? now)
+        banner = Banner(key: key, style: style, detail: detail, showsAt: start)
     }
 
     /// Folds one rules-engine effect into the HUD state.
@@ -100,6 +117,16 @@ final class GameModel {
 
         case .laneSetCompleted:
             litLanes.removeAll()
+
+        case .lanesRotated(let lit):
+            litLanes = lit
+
+        case .skillShotCollected(let points):
+            score = session.score.score
+            show("hud.skillShot", style: .great, detail: points.grouped)
+
+        case .shootAgain:
+            show("hud.shootAgain", style: .good)
 
         case .missionStarted(let id):
             missionID = id
@@ -129,15 +156,15 @@ final class GameModel {
         case .multiballEnded:
             isMultiball = false
 
-        case .jackpotCollected:
+        case .jackpotCollected(let points):
             jackpotCount += 1
             score = session.score.score
-            show("hud.jackpot", style: .great)
+            show("hud.jackpot", style: .great, detail: points.grouped)
 
-        case .superJackpotCollected:
+        case .superJackpotCollected(let points):
             jackpotCount += 1
             score = session.score.score
-            show("hud.superJackpot", style: .great)
+            show("hud.superJackpot", style: .great, detail: points.grouped)
 
         case .wizardModeStarted:
             show("hud.wizard", style: .great)
@@ -148,9 +175,11 @@ final class GameModel {
         case .extraBallAwarded:
             show("hud.extraBall", style: .good)
 
-        case .bonusAwarded:
+        case .bonusAwarded(let report):
             score = session.score.score
-            show("hud.bonus", style: .good)
+            banner = nil
+            bonus = report
+            bonusStartedAt = Date()
 
         case .tilted:
             isTilted = true

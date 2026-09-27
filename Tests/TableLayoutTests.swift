@@ -28,6 +28,36 @@ final class TableLayoutTests: XCTestCase {
         }
     }
 
+    /// A ball coming back down an orbit has to be turned towards the flipper.
+    /// Both orbits used to run straight down into their outlanes, so a soft
+    /// plunge that fell back off the arch drained without a flip.
+    func testTheOrbitsReturnTheBallToTheInlanesNotTheOutlanes() {
+        let dividers: [TableSide: CGFloat] = [.left: 0.082, .right: 0.918]
+        for side in [TableSide.left, .right] {
+            let outerRail: CGFloat = side == .left ? 0.015 : TableLayout.playfieldRightEdge
+            let deflector = TableLayout.walls.first { wall in
+                wall.points.count == 2 && wall.points.contains { abs($0.x - outerRail) < 0.001 }
+                    && wall.points.contains { $0.y > 0.6 && $0.y < 0.8 && abs($0.x - outerRail) > 0.05 }
+            }
+            guard let deflector, let exit = deflector.points.min(by: { $0.y < $1.y }),
+                  let divider = dividers[side] else {
+                XCTFail("no deflector at the foot of the \(side.rawValue) orbit")
+                continue
+            }
+            let inwards = side == .left ? exit.x - divider : divider - exit.x
+            XCTAssertGreaterThan(inwards, 0,
+                                 "the \(side.rawValue) orbit still empties into the outlane")
+
+            let guide = TableLayout.walls.first { wall in
+                wall.points.last.map { abs($0.y - 1.32) < 0.001 } ?? false
+                    && (side == .left ? wall.points[0].x < 0.5 : wall.points[0].x > 0.5)
+            }
+            let mouthBottom = guide?.points.first?.y ?? 0
+            XCTAssertGreaterThan(mouthBottom - exit.y, TableLayout.ballRadius * 2,
+                                 "the mouth of the \(side.rawValue) orbit is shut")
+        }
+    }
+
     func testTheBallFitsThroughEveryGapItHasToPass() {
         let diameter = TableLayout.ballRadius * 2
 

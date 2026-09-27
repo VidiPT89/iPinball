@@ -151,8 +151,10 @@ final class AudioEngine {
         case .ballLost:                play(.drain)
         case .tilted, .tiltWarning:    play(.tilt)
         case .gameOver:                play(.gameOver)
+        case .skillShotCollected:      play(.laneSet)
+        case .shootAgain:              play(.extraBall)
         case .comboChanged, .playerMultiplierChanged, .multiballEnded,
-             .ballSaveArmed, .bonusAwarded, .missionProgressed:
+             .ballSaveArmed, .bonusAwarded, .missionProgressed, .lanesRotated:
             break
         }
     }
@@ -174,6 +176,7 @@ final class AudioEngine {
         case .mission:       return .mission
         case .bonus:         return .extraBall
         case .combo:         return .orbit
+        case .skillShot:     return .laneSet
         }
     }
 

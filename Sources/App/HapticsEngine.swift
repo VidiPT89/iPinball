@@ -72,8 +72,10 @@ final class HapticsEngine {
             tap(.heavy)
         case .ballLost, .missionFailed:
             rumble(duration: 0.3, intensity: 0.5)
-        case .extraBallAwarded, .ballSaved:
+        case .extraBallAwarded, .ballSaved, .shootAgain:
             tap(.medium)
+        case .skillShotCollected:
+            rumble(duration: 0.25, intensity: 0.7)
         default:
             break
         }

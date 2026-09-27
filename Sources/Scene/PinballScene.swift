@@ -23,7 +23,6 @@ final class PinballScene: SKScene {
     var balls: [BallNode] = []
     private var anchorBody = SKPhysicsBody()
     private var plunger: SKShapeNode?
-    private var ballSaveRing: SKShapeNode?
     private var launchArrow: SKShapeNode?
 
     private(set) var sceneTime: TimeInterval = 0
@@ -37,11 +36,17 @@ final class PinballScene: SKScene {
     /// When each saucer is allowed to capture again, by side.
     var saucerReadyAt: [TableSide: TimeInterval] = [:]
     private var magnetActiveUntil: TimeInterval = 0
+    /// Bumped on every new game, so a delayed action queued by the last one —
+    /// serving a ball, ending the game after the bonus count — cannot land
+    /// in the next.
+    private(set) var gameGeneration = 0
+    /// Extra wait before the next ball while the display counts the bonus.
+    var bonusCountdown: TimeInterval = 0
 
     // MARK: - Lifecycle
 
     override func didMove(to view: SKView) {
-        backgroundColor = palette.background
+        backgroundColor = CabinetColors.cabinet
         scaleMode = .resizeFill
         physicsWorld.contactDelegate = self
 
@@ -89,7 +94,6 @@ final class PinballScene: SKScene {
         }
 
         addPlunger()
-        addBallSaveRing()
         isNodeBuilt = true
 
         // A rebuild wipes every node, so whatever was on the table has to be
@@ -154,20 +158,6 @@ final class PinballScene: SKScene {
         launchArrow = arrow
     }
 
-    private func addBallSaveRing() {
-        let radius = geometry.length(0.11)
-        let ring = SKShapeNode(circleOfRadius: radius)
-        ring.position = geometry.point(CGPoint(x: 0.5, y: 0.03))
-        ring.strokeColor = palette.success
-        ring.lineWidth = geometry.length(0.010)
-        ring.glowWidth = geometry.length(0.006)
-        ring.fillColor = .clear
-        ring.alpha = 0
-        ring.zPosition = 7
-        addChild(ring)
-        ballSaveRing = ring
-    }
-
     // MARK: - Game control
 
     func startGame() {
@@ -176,10 +166,23 @@ final class PinballScene: SKScene {
             startWhenReady = true
             return
         }
+        gameGeneration += 1
+        bonusCountdown = 0
         _ = session.startGame(ballCount: ballCount, at: sceneTime)
         model?.resetForNewGame(ballCount: ballCount)
         resetTableElements()
         serveBall()
+    }
+
+    /// Runs `body` after `delay`, unless a new game has started meanwhile.
+    /// Everything that waits on the rules — the next ball, the end of the
+    /// game after the bonus count — goes through here.
+    func afterDelay(_ delay: TimeInterval, _ body: @escaping () -> Void) {
+        let generation = gameGeneration
+        run(.sequence([.wait(forDuration: delay), .run { [weak self] in
+            guard self?.gameGeneration == generation else { return }
+            body()
+        }]))
     }
 
     private func resetTableElements() {
@@ -198,6 +201,7 @@ final class PinballScene: SKScene {
         ball.physicsBody?.isDynamic = false
         plungerCharge = 0
         audio?.resetPlunger()
+        setGeneralIllumination(on: true)
         model?.showLaunchHint = true
         model?.ball = session.currentBall
         updatePlungerVisual()
@@ -235,6 +239,9 @@ final class PinballScene: SKScene {
         }
         for flipper in parts.flippers where flipper.side == side && flipper.isUpper == upper {
             flipper.press()
+        }
+        if !upper {
+            for effect in session.rotateLanes(towards: side) { handle(effect) }
         }
         audio?.play(.flipper)
         haptics?.tap(.light)
@@ -332,16 +339,18 @@ final class PinballScene: SKScene {
 
         for ball in balls where !ball.isOnRamp {
             ball.stabilise(maxSpeed: maxSpeed, radius: radius, time: sceneTime)
-            if ball.isStuck(at: sceneTime) {
+            // A ball held on purpose — waiting on the plunger, sitting in a
+            // saucer — is not stuck. The watchdog used to flash at the
+            // shooter lane every three seconds while the player took aim.
+            if ball.physicsBody?.isDynamic == false {
+                ball.clearStuck()
+            } else if ball.isStuck(at: sceneTime) {
                 freeStuckBall(ball)
-            }
-            if ball.shouldDropTrail(at: sceneTime, interval: 0.03), !reduceMotion {
-                dropTrail(at: ball.position, speed: ball.speed2D, maxSpeed: maxSpeed)
             }
             applyMagnet(to: ball)
         }
 
-        updateBallSaveRing()
+        updateInserts()
         updateLaunchHint()
         pushHUD()
     }
@@ -394,23 +403,22 @@ final class PinballScene: SKScene {
         }
     }
 
-    private func updateBallSaveRing() {
-        guard let ring = ballSaveRing else { return }
-        guard let remaining = session.ballSaveRemaining, remaining > 0 else {
-            if ring.alpha > 0 { ring.alpha = max(0, ring.alpha - 0.05) }
-            return
+    /// The general illumination: on while a ball is being played, off on a
+    /// tilt, so the table goes dark exactly as a real one does.
+    func setGeneralIllumination(on: Bool) {
+        guard let sheet = parts.generalIllumination else { return }
+        sheet.removeAllActions()
+        let target: CGFloat = on ? 0 : 0.62
+        if reduceMotion {
+            sheet.alpha = target
+        } else {
+            sheet.run(.fadeAlpha(to: target, duration: on ? 0.25 : 0.08))
         }
-        let total = session.isMultiball ? PhysicsTuning.multiballSaveDuration
-                                        : PhysicsTuning.ballSaveDuration
-        let progress = CGFloat(remaining / total)
-        ring.alpha = 0.35 + 0.45 * progress
-        ring.setScale(0.35 + 0.65 * progress)
     }
 
     private func pushHUD() {
         guard sceneTime - lastHUDPush > 0.08, let model else { return }
         lastHUDPush = sceneTime
-        model.ballSaveRemaining = session.ballSaveRemaining
         model.missionRemaining = session.missions.remainingTime
         if model.score != session.score.score {
             model.score = session.score.score
@@ -426,6 +434,18 @@ final class PinballScene: SKScene {
     }
 
     func handle(_ effect: GameEffect) {
+        // The game-over screen waits until the display has counted the last
+        // ball's bonus, rather than covering it up.
+        if case .gameOver = effect, bonusCountdown > 0 {
+            let wait = bonusCountdown
+            bonusCountdown = 0
+            afterDelay(wait) { [weak self] in self?.present(effect) }
+            return
+        }
+        present(effect)
+    }
+
+    private func present(_ effect: GameEffect) {
         model?.apply(effect, session: session)
         audio?.play(for: effect)
         haptics?.play(for: effect)

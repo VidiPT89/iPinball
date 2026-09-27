@@ -2,7 +2,6 @@ import SpriteKit
 
 final class BallNode: SKSpriteNode {
 
-    private var lastTrailDrop: TimeInterval = 0
     private(set) var stuckSince: TimeInterval?
     private var lastPosition: CGPoint = .zero
 
@@ -59,12 +58,6 @@ final class BallNode: SKSpriteNode {
     func clearStuck() {
         stuckSince = nil
         lastPosition = position
-    }
-
-    func shouldDropTrail(at time: TimeInterval, interval: TimeInterval) -> Bool {
-        guard time - lastTrailDrop >= interval else { return false }
-        lastTrailDrop = time
-        return true
     }
 
     func park(at point: CGPoint) {

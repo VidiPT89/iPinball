@@ -65,16 +65,25 @@ final class ScoreEngine {
         return true
     }
 
+    /// Shifts every lit lane one place along, wrapping round at the ends. This
+    /// is the lane change a 90s machine gives the flipper buttons: it lets the
+    /// player steer a lit letter away from the lane the ball is heading for.
+    @discardableResult
+    func rotateLanes(by step: Int) -> Set<Int> {
+        let count = LaneLetter.allCases.count
+        litLanes = Set(litLanes.map { (($0 + step) % count + count) % count })
+        return litLanes
+    }
+
     // MARK: - Counters used by the end-of-ball bonus
 
     func registerDropTarget() { dropTargetsDownThisBall += 1 }
     func registerBankClear() { bankClears += 1; raisePlayerMultiplier() }
     func registerLoop() { loopsThisBall += 1 }
 
-    func endOfBallBonus() -> Int {
-        let raw = dropTargetsDownThisBall * ScoreValue.bonusPerDroppedTarget
-            + loopsThisBall * ScoreValue.bonusPerLoop
-        return raw * playerMultiplier
+    func bonusReport() -> BonusReport {
+        BonusReport(targets: dropTargetsDownThisBall, loops: loopsThisBall,
+                    multiplier: playerMultiplier)
     }
 
     func resetBallCounters() {

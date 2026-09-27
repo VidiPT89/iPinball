@@ -42,9 +42,11 @@ final class FlipperNode: SKNode {
         halo.zPosition = -1
         addChild(halo)
 
-        blade.fillColor = palette.accent
-        blade.strokeColor = palette.accentLight
-        blade.lineWidth = max(1, thickness * 0.12)
+        // A white bat with a coloured rubber ring round it, the flipper every
+        // table of the era shipped with.
+        blade.fillColor = CabinetColors.flipperBody
+        blade.strokeColor = palette.accent
+        blade.lineWidth = max(1.5, thickness * 0.22)
         addChild(blade)
 
         let body = SKPhysicsBody(polygonFrom: path)
@@ -119,8 +121,7 @@ final class FlipperNode: SKNode {
     }
 
     func repaint(with palette: Palette) {
-        blade.fillColor = palette.accent
-        blade.strokeColor = palette.accentLight
+        blade.strokeColor = palette.accent
     }
 
     /// Cuts power to the flippers, as a real machine does on tilt.

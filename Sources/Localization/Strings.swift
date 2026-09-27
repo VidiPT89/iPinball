@@ -32,11 +32,8 @@ enum Strings {
     ]
 
     static let hud: [String: Pair] = [
-        "hud.score": ("Pontos", "Score"),
         "hud.ball": ("Bola", "Ball"),
         "hud.best": ("Melhor", "Best"),
-        "hud.multiplier": ("Multiplicador", "Multiplier"),
-        "hud.ballSave": ("Bola salva", "Ball Save"),
         "hud.launch": ("Arrasta para baixo e larga para lançar",
                        "Drag down and release to launch"),
         "hud.launchKeyboard": ("Mantém o espaço e larga para lançar",
@@ -53,6 +50,15 @@ enum Strings {
         "hud.missionComplete": ("MISSÃO COMPLETA", "MISSION COMPLETE"),
         "hud.missionFailed": ("MISSÃO FALHADA", "MISSION FAILED"),
         "hud.wizard": ("MODO FINAL", "WIZARD MODE"),
+        "hud.skillShot": ("SKILL SHOT", "SKILL SHOT"),
+        "hud.skillShotHint": ("Skill shot: acerta na pista a piscar",
+                              "Skill shot: hit the flashing lane"),
+        "hud.shootAgain": ("LANÇA OUTRA VEZ", "SHOOT AGAIN"),
+        "hud.jackpotIsLit": ("JACKPOT ACESO", "JACKPOT IS LIT"),
+        "hud.bonusTargets": ("Alvos", "Targets"),
+        "hud.bonusLoops": ("Voltas", "Loops"),
+        "hud.bonusMultiplier": ("Multiplicador", "Multiplier"),
+        "hud.bonusTotal": ("Bónus total", "Total bonus"),
     ]
 
     static let missions: [String: Pair] = [
@@ -144,16 +150,16 @@ enum Strings {
             "Nudging shifts the ball, but three nudges in two seconds cause a TILT: you lose the flippers and the ball."),
         "howto.combos.title": ("Combos e multiplicadores", "Combos and multipliers"),
         "howto.combos.body": (
-            "Rampas e orbits seguidas em menos de 4 segundos sobem o combo até 8×. Completar as pistas P-I-N-B sobe o multiplicador de jogador até 5×.",
-            "Back-to-back ramps and orbits within 4 seconds build the combo up to 8×. Completing the P-I-N-B lanes raises the player multiplier up to 5×."),
+            "Rampas e orbits seguidas em menos de 4 segundos sobem o combo até 8×. Completar as pistas P-I-N-B sobe o multiplicador de jogador até 5×. Os flippers mudam as luzes das pistas de lugar, para desviares uma letra acesa da pista onde a bola vai cair. No lançamento, uma das pistas pisca: acerta nela com o plunger para ganhar o skill shot.",
+            "Back-to-back ramps and orbits within 4 seconds build the combo up to 8×. Completing the P-I-N-B lanes raises the player multiplier up to 5×. The flippers move the lane lights along, so you can steer a lit letter away from the lane the ball is heading for. On the launch one lane flashes: plunge into it for the skill shot."),
         "howto.missions.title": ("Missões", "Missions"),
         "howto.missions.body": (
-            "Acerta num saucer para começar uma missão. Completa as seis para desbloquear o Tiro Final. A missão Prender 3 lança a multibola, onde tudo vale a dobrar.",
-            "Shoot a saucer to start a mission. Complete all six to unlock Final Shot. The Lock 3 mission starts multiball, where everything scores double."),
+            "Acerta num saucer para começar uma missão: os dois piscam quando há uma à tua espera. Completa as seis para desbloquear o Tiro Final. A missão Prender 3 lança a multibola, onde tudo vale a dobrar. As luzes no topo da mesa mostram o caminho: a missão em curso pisca, as completas ficam acesas e a estrela pisca quando o Tiro Final está à tua espera.",
+            "Shoot a saucer to start a mission: both flash when one is waiting. Complete all six to unlock Final Shot. The Lock 3 mission starts multiball, where everything scores double. The lamps at the top of the table track your way there: the mission in play flashes, finished ones stay lit, and the star flashes when Final Shot is waiting."),
         "howto.save.title": ("Bola salva", "Ball save"),
         "howto.save.body": (
-            "Os primeiros 8 segundos de cada bola estão protegidos. Se drenares nesse tempo, a bola volta.",
-            "The first 8 seconds of every ball are covered. Drain in that window and the ball comes back."),
+            "Os primeiros 8 segundos de cada bola estão protegidos: a luz SHOOT AGAIN pisca entre os flippers. Se drenares nesse tempo, a bola volta. No fim de cada bola, o visor conta o bónus dos alvos e das voltas, vezes o multiplicador.",
+            "The first 8 seconds of every ball are covered: the SHOOT AGAIN light flashes between the flippers. Drain in that window and the ball comes back. At the end of every ball the display counts out the bonus for targets and loops, times your multiplier."),
         "howto.scoring.title": ("Pontuação", "Scoring"),
         "howto.score.bumper": ("Bumper", "Pop bumper"),
         "howto.score.target": ("Alvo fixo", "Standup target"),
@@ -186,7 +192,5 @@ enum Strings {
         "a11y.languageToggle": ("Mudar idioma", "Switch language"),
         "a11y.openWebsite": ("Abrir ividi.dev", "Open ividi.dev"),
         "a11y.openGitHub": ("Abrir GitHub", "Open GitHub"),
-        "a11y.laneLit": ("Pista %@ acesa", "Lane %@ lit"),
-        "a11y.laneOff": ("Pista %@ apagada", "Lane %@ off"),
     ]
 }

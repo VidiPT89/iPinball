@@ -13,6 +13,8 @@ struct TableParts {
     var ramps: [RampNode] = []
     var rails: SKShapeNode?
     var magnetGlow: SKSpriteNode?
+    var inserts = InsertBank()
+    var generalIllumination: SKSpriteNode?
 }
 
 /// Turns `TableLayout` into SpriteKit nodes. The layout stays pure data, the
@@ -26,6 +28,8 @@ struct TableBuilder {
         var parts = TableParts()
 
         addFelt(to: scene)
+        addArtwork(to: scene)
+        parts.inserts = addInserts(to: scene)
         parts.rails = addWalls(to: scene)
         addPosts(to: scene)
         addDrain(to: scene)
@@ -84,6 +88,7 @@ struct TableBuilder {
             return node
         }
 
+        parts.generalIllumination = addGeneralIllumination(to: scene)
         return parts
     }
 
@@ -96,8 +101,8 @@ struct TableBuilder {
                           height: geometry.length(TableLayout.height))
         let felt = SKShapeNode(rect: rect, cornerRadius: geometry.length(0.05))
         felt.fillColor = palette.tableFelt
-        felt.strokeColor = palette.accent.withAlphaComponent(0.25)
-        felt.lineWidth = 2
+        felt.strokeColor = CabinetColors.steel.withAlphaComponent(0.5)
+        felt.lineWidth = 3
         felt.zPosition = -10
         scene.addChild(felt)
 
@@ -130,15 +135,25 @@ struct TableBuilder {
             scene.addChild(node)
         }
 
+        // Chrome wireforms and steel guides, not neon tubes: a flat steel
+        // stroke with a thin bright line down the middle reads as polished metal.
         let rails = SKShapeNode(path: combined)
-        rails.strokeColor = palette.accent.withAlphaComponent(0.75)
+        rails.strokeColor = CabinetColors.steel
         rails.lineWidth = geometry.length(TableLayout.wallThickness)
         rails.lineCap = .round
         rails.lineJoin = .round
-        rails.glowWidth = geometry.length(0.006)
         rails.fillColor = .clear
         rails.zPosition = 8
         scene.addChild(rails)
+
+        let highlight = SKShapeNode(path: combined)
+        highlight.strokeColor = CabinetColors.steelHighlight.withAlphaComponent(0.7)
+        highlight.lineWidth = max(0.8, geometry.length(TableLayout.wallThickness) * 0.3)
+        highlight.lineCap = .round
+        highlight.lineJoin = .round
+        highlight.fillColor = .clear
+        highlight.zPosition = 8.5
+        scene.addChild(highlight)
         return rails
     }
 
@@ -147,9 +162,10 @@ struct TableBuilder {
             let radius = geometry.length(post.radius)
             let node = SKShapeNode(circleOfRadius: radius)
             node.position = geometry.point(post.center)
-            node.fillColor = palette.accentDark
-            node.strokeColor = palette.accentLight
-            node.lineWidth = 1.2
+            // A steel post wrapped in a white rubber ring.
+            node.fillColor = CabinetColors.steel
+            node.strokeColor = CabinetColors.rubber
+            node.lineWidth = max(1.5, radius * 0.45)
             node.zPosition = 15
 
             let body = SKPhysicsBody(circleOfRadius: radius)

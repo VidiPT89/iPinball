@@ -68,8 +68,6 @@ struct Palette {
     var dimColor: Color { Color(platform: textDim) }
     var faintColor: Color { Color(platform: textFaint) }
     var dangerColor: Color { Color(platform: danger) }
-    var successColor: Color { Color(platform: success) }
-    var feltColor: Color { Color(platform: tableFelt) }
 
     var glow: Color { Color(platform: accent).opacity(0.35) }
 

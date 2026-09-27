@@ -120,7 +120,6 @@ final class RampNode: SKNode {
         rails.lineWidth = max(1.4, geometry.length(0.0055))
         rails.lineCap = .round
         rails.lineJoin = .round
-        rails.glowWidth = geometry.length(0.004)
         rails.zPosition = 30
     }
 
@@ -171,7 +170,6 @@ final class RampNode: SKNode {
         flare.fillColor = .clear
         flare.lineWidth = max(1.6, geometry.length(0.007))
         flare.lineCap = .round
-        flare.glowWidth = geometry.length(0.005)
         flare.zPosition = 31
     }
 
@@ -180,10 +178,12 @@ final class RampNode: SKNode {
     func repaint(with palette: Palette) {
         // A warm translucent deck, not the felt colour: the track is something
         // laid on top of the table, so it must not match what is underneath.
-        surface.fillColor = palette.accentDark.withAlphaComponent(0.30)
+        // Clear plastic with a steel wireform along each edge, as 90s ramps
+        // were built, only the entrance flap carrying the table's colour.
+        surface.fillColor = CabinetColors.steelHighlight.withAlphaComponent(0.10)
         shadow.fillColor = .black.withAlphaComponent(0.45)
-        rails.strokeColor = palette.accentLight
-        rungs.strokeColor = palette.accentLight.withAlphaComponent(0.6)
+        rails.strokeColor = CabinetColors.steel
+        rungs.strokeColor = CabinetColors.steel.withAlphaComponent(0.45)
         flare.strokeColor = palette.accent
     }
 }

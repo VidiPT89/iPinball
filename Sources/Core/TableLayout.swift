@@ -148,13 +148,22 @@ enum TableLayout {
             Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.232),
                           CGPoint(x: 0.685, y: 0.175)]),
             // Left orbit guide: inner wall of the lane hugging the left rail.
-            Wall(points: [CGPoint(x: 0.115, y: 0.60), CGPoint(x: 0.107, y: 0.86),
+            // It starts above the orbit deflector, which leaves the mouth of
+            // the lane open towards the flippers.
+            Wall(points: [CGPoint(x: 0.108, y: 0.84), CGPoint(x: 0.107, y: 0.86),
                           CGPoint(x: 0.115, y: 1.10), CGPoint(x: 0.150, y: 1.24),
                           CGPoint(x: 0.230, y: 1.32)]),
             // Right orbit guide.
-            Wall(points: [CGPoint(x: 0.885, y: 0.60), CGPoint(x: 0.893, y: 0.86),
+            Wall(points: [CGPoint(x: 0.892, y: 0.84), CGPoint(x: 0.893, y: 0.86),
                           CGPoint(x: 0.885, y: 1.10), CGPoint(x: 0.850, y: 1.24),
                           CGPoint(x: 0.770, y: 1.32)]),
+            // Orbit deflectors. Each orbit used to run straight down into its
+            // outlane, so every ball that came back down an orbit — including a
+            // soft plunge that fell back off the arch — drained with nobody
+            // touching it. The deflector turns the ball out towards the inlane
+            // and the flipper, the way an orbit returns on a real table.
+            Wall(points: [CGPoint(x: 0.015, y: 0.76), CGPoint(x: 0.090, y: 0.64)]),
+            Wall(points: [CGPoint(x: 1.000, y: 0.76), CGPoint(x: 0.910, y: 0.64)]),
             // Lane dividers between the four P-I-N-B rollovers.
             Wall(points: [CGPoint(x: 0.380, y: 1.46), CGPoint(x: 0.380, y: 1.27)]),
             Wall(points: [CGPoint(x: 0.500, y: 1.48), CGPoint(x: 0.500, y: 1.27)]),
@@ -266,7 +275,7 @@ enum TableLayout {
                   size: CGSize(width: 0.080, height: 0.020)),
     ]
 
-    static let spinner = Spinner(center: CGPoint(x: 0.062, y: 0.66),
+    static let spinner = Spinner(center: CGPoint(x: 0.062, y: 0.97),
                                  length: 0.072, angle: 0.0)
 
     static let magnetCenter = CGPoint(x: 0.500, y: 0.790)
