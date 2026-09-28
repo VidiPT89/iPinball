@@ -8,7 +8,7 @@
 ## ✨ Features
 
 - ✅ A full 90s playfield — three pop bumpers, two slingshots, a five-target drop bank, four standup targets, two ramps, two orbits, a spinner, two saucers, a magnet and the P-I-N-B rollover lanes
-- ✅ Three flippers on real pin joints, a pull-and-release plunger, and a nudge that tilts the table if you push your luck three times in two seconds
+- ✅ Two flippers on real pin joints, as on the classic 90s tables, a pull-and-release plunger, and a nudge that tilts the table if you push your luck three times in two seconds
 - ✅ Six chained missions — Warm-Up, Ramp Rush, Target Frenzy, Orbit Loop, Lock 3 and Jackpot Hunt — leading into the Final Shot wizard mode, tracked on a lit mission ladder under the top arch
 - ✅ A 90s skill shot: the lit lane walks across P-I-N-B while you aim, and the flipper buttons move the lit lanes (lane change)
 - ✅ An amber dot-matrix display for the score, the missions, jackpots, TILT and the end-of-ball bonus counted out line by line
@@ -59,11 +59,11 @@ Pick the `iPinball-iOS` or `iPinball-macOS` scheme and run (`⌘R`).
 
 1. Watch the splash screen, then choose **Play** from the main menu
 2. Drag down anywhere and release to pull the plunger — the further you pull, the harder the ball is launched
-3. Tap the left or right half of the screen for that flipper. The top third of the left half works the upper flipper
+3. Tap the left or right half of the screen for that flipper
 4. Flick a finger sideways while holding a flipper to nudge the table. Three nudges in two seconds cause a **TILT** and cost you the ball
 5. Shoot a saucer to start a mission. Finish all six to unlock **Final Shot**, and clear **Lock 3** to start multiball
 6. Chain ramps and orbits within four seconds to build the combo up to 8×, and complete the **P-I-N-B** lanes to raise the player multiplier up to 5×
-7. On the Mac: `←` / `→` flippers, `↑` upper flipper, `Space` hold and release to launch, `N` / `M` nudge, `Esc` pause
+7. On the Mac: `←` / `→` flippers, `Space` hold and release to launch, `N` / `M` nudge, `Esc` pause
 8. Switch language, appearance, sound and controls any time from **Settings**
 
 ## 🧪 Testing

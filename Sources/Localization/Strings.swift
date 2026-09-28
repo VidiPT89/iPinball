@@ -142,8 +142,8 @@ enum Strings {
             "You get 3 balls a game, or 5 if you change it in Settings. Drag down and release to launch. Keep the ball alive with the flippers and score off everything you hit."),
         "howto.controls.title": ("Controlos", "Controls"),
         "howto.controls.body": (
-            "Toca na metade esquerda ou direita do ecrã para o flipper desse lado. O terço de cima da metade esquerda ativa o flipper superior. Um deslize horizontal curto abana a mesa. No Mac: setas esquerda e direita para os flippers, seta para cima para o superior, espaço para lançar, N e M para abanar.",
-            "Tap the left or right half of the screen for that flipper. The top third of the left half works the upper flipper. A short horizontal swipe nudges the table. On the Mac: left and right arrows for the flippers, up arrow for the upper one, space to launch, N and M to nudge."),
+            "Toca na metade esquerda ou direita do ecrã para o flipper desse lado. Um deslize horizontal curto abana a mesa. No Mac: setas esquerda e direita para os flippers, espaço para lançar, N e M para abanar.",
+            "Tap the left or right half of the screen for that flipper. A short horizontal swipe nudges the table. On the Mac: left and right arrows for the flippers, space to launch, N and M to nudge."),
         "howto.tilt.title": ("Abanar e tilt", "Nudge and tilt"),
         "howto.tilt.body": (
             "Abanar desvia a bola, mas três abanões em dois segundos dão TILT: perdes os flippers e a bola.",
@@ -184,7 +184,6 @@ enum Strings {
     static let a11y: [String: Pair] = [
         "a11y.leftFlipper": ("Flipper esquerdo", "Left flipper"),
         "a11y.rightFlipper": ("Flipper direito", "Right flipper"),
-        "a11y.upperFlipper": ("Flipper superior", "Upper flipper"),
         "a11y.plunger": ("Lançador", "Plunger"),
         "a11y.pause": ("Pausar o jogo", "Pause the game"),
         "a11y.scoreValue": ("Pontuação: %@", "Score: %@"),

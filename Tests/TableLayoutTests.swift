@@ -69,8 +69,8 @@ final class TableLayoutTests: XCTestCase {
     }
 
     func testTheFlippersAreMirroredAndLeaveADrainGap() {
-        let lower = TableLayout.flippers.filter { !$0.isUpper }
-        XCTAssertEqual(lower.count, 2)
+        let lower = TableLayout.flippers
+        XCTAssertEqual(lower.count, 2, "two flippers, as on a 90s table")
 
         guard let left = lower.first(where: { $0.side == .left }),
               let right = lower.first(where: { $0.side == .right }) else {

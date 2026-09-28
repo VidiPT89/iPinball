@@ -20,7 +20,7 @@ struct ControlOverlay: View {
             } else if model.showLaunchHint && !model.isGameOver && !model.isPaused {
                 plungerZone(height: proxy.size.height)
             } else if !model.isGameOver && !model.isPaused {
-                flipperZones(size: proxy.size)
+                flipperZones
             }
         }
     }
@@ -47,29 +47,20 @@ struct ControlOverlay: View {
 
     // MARK: - Flippers
 
-    private func flipperZones(size: CGSize) -> some View {
+    private var flipperZones: some View {
         let leftSide: TableSide = settings.leftHanded ? .right : .left
         let rightSide: TableSide = settings.leftHanded ? .left : .right
 
         return HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                // The top slice of the left column works the upper flipper,
-                // which sits high on the table on that side.
-                zone(side: .left, upper: true,
-                     label: settings.t("a11y.upperFlipper"))
-                    .frame(height: size.height * 0.34)
-                zone(side: leftSide, upper: false,
-                     label: settings.t("a11y.leftFlipper"))
-            }
-            zone(side: rightSide, upper: false,
-                 label: settings.t("a11y.rightFlipper"))
+            zone(side: leftSide, label: settings.t("a11y.leftFlipper"))
+            zone(side: rightSide, label: settings.t("a11y.rightFlipper"))
         }
     }
 
-    private func zone(side: TableSide, upper: Bool, label: String) -> some View {
+    private func zone(side: TableSide, label: String) -> some View {
         FlipperZone(label: label,
-                    onPress: { scene.pressFlipper(side: side, upper: upper) },
-                    onRelease: { scene.releaseFlipper(side: side, upper: upper) },
+                    onPress: { scene.pressFlipper(side: side) },
+                    onRelease: { scene.releaseFlipper(side: side) },
                     onNudge: { direction in scene.nudge(direction: direction) })
     }
 }
@@ -126,9 +117,8 @@ private struct FlipperZone: View {
 /// Keyboard play, which is the only way to work the table on a Mac and a
 /// welcome shortcut on an iPad with a keyboard attached.
 ///
-/// Left / A — left flipper · Right / L — right flipper · Up / W — upper
-/// flipper · Space — hold to charge the plunger, release to launch ·
-/// N and M — nudge · Esc or P — pause.
+/// Left / A — left flipper · Right / L / D — right flipper · Space — hold to
+/// charge the plunger, release to launch · N and M — nudge · Esc or P — pause.
 struct GameKeyboardControls: ViewModifier {
 
     let scene: PinballScene
@@ -142,7 +132,7 @@ struct GameKeyboardControls: ViewModifier {
 
     /// The table stops listening once the game is over, so the initials field
     /// on the screen above it gets the keystrokes. The flipper keys include
-    /// `a`, `d`, `l`, `w`, `n`, `m` and `p`, each reported as handled, so
+    /// `a`, `d`, `l`, `n`, `m` and `p`, each reported as handled, so
     /// initials like "DAM" were impossible to type while the table listened.
     private var releasesKeyboard: Bool { model.isGameOver }
 
@@ -169,20 +159,17 @@ struct GameKeyboardControls: ViewModifier {
 
         switch press.key {
         case .leftArrow:
-            flipper(.left, upper: false, down: isDown)
+            flipper(.left, down: isDown)
         case .rightArrow:
-            flipper(.right, upper: false, down: isDown)
-        case .upArrow:
-            flipper(.left, upper: true, down: isDown)
+            flipper(.right, down: isDown)
         case .space:
             isDown ? beginCharging() : endCharging()
         case .escape:
             if isDown { model.isPaused ? resume() : pause() }
         default:
             switch press.characters.lowercased() {
-            case "a": flipper(.left, upper: false, down: isDown)
-            case "l", "d": flipper(.right, upper: false, down: isDown)
-            case "w": flipper(.left, upper: true, down: isDown)
+            case "a": flipper(.left, down: isDown)
+            case "l", "d": flipper(.right, down: isDown)
             case "n": if isDown { scene.nudge(direction: -1) }
             case "m": if isDown { scene.nudge(direction: 1) }
             case "p": if isDown { model.isPaused ? resume() : pause() }
@@ -192,9 +179,9 @@ struct GameKeyboardControls: ViewModifier {
         return .handled
     }
 
-    private func flipper(_ side: TableSide, upper: Bool, down: Bool) {
-        down ? scene.pressFlipper(side: side, upper: upper)
-             : scene.releaseFlipper(side: side, upper: upper)
+    private func flipper(_ side: TableSide, down: Bool) {
+        down ? scene.pressFlipper(side: side)
+             : scene.releaseFlipper(side: side)
     }
 
     // MARK: Plunger

@@ -46,11 +46,11 @@ final class TableClearanceTests: XCTestCase {
                               target.angle, target.size))
         }
         // Both ends of a flipper's swing: at rest it can pinch against one
-        // thing and, raised, against another. The upper flipper was buried
-        // inside a pop bumper at full throw while looking clear at rest.
+        // thing and, raised, against another. A flipper can look clear at rest
+        // and bury itself inside a pop bumper at full throw.
         for flipper in TableLayout.flippers {
             let sign: CGFloat = flipper.side == .left ? 1 : -1
-            let label = "\(flipper.isUpper ? "upper " : "")flipper \(flipper.side.rawValue)"
+            let label = "flipper \(flipper.side.rawValue)"
             for (state, angle) in [("resting", PhysicsTuning.flipperRestAngle),
                                    ("raised", PhysicsTuning.flipperActiveAngle)] {
                 let tip = CGPoint(x: flipper.pivot.x + sign * flipper.length * cos(angle),
@@ -75,7 +75,7 @@ final class TableClearanceTests: XCTestCase {
     /// The lower flipper tips, for the one gap that decides whether a game
     /// can end at all.
     private var lowerTips: [(CGPoint, CGFloat)] {
-        TableLayout.flippers.filter { !$0.isUpper }.map { flipper in
+        TableLayout.flippers.map { flipper in
             let sign: CGFloat = flipper.side == .left ? 1 : -1
             let angle = PhysicsTuning.flipperRestAngle
             return (CGPoint(x: flipper.pivot.x + sign * flipper.length * cos(angle),
@@ -130,7 +130,7 @@ final class TableClearanceTests: XCTestCase {
                 // A post finishing a wall sits on the rim, and that is a
                 // junction rather than a pinch. Nothing else gets a pass: a
                 // blade tip landing on a bumper's rim is not a join, and
-                // treating it as one is how the upper flipper stayed buried
+                // treating it as one is how a flipper once stayed buried
                 // inside a pop bumper without the test noticing.
                 let ends = min(edge.a.distance(to: disc.centre),
                                edge.b.distance(to: disc.centre))

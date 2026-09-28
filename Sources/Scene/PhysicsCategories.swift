@@ -27,5 +27,4 @@ enum NodeName {
     static let ball = "ball"
     static let flipperLeft = "flipper.left"
     static let flipperRight = "flipper.right"
-    static let flipperUpper = "flipper.upper"
 }

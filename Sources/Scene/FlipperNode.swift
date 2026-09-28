@@ -5,7 +5,6 @@ import SpriteKit
 final class FlipperNode: SKNode {
 
     let side: TableSide
-    let isUpper: Bool
     let pivotInScene: CGPoint
 
     private let angleRange: CGFloat
@@ -17,7 +16,6 @@ final class FlipperNode: SKNode {
 
     init(config: TableLayout.Flipper, geometry: TableGeometry, palette: Palette) {
         side = config.side
-        isUpper = config.isUpper
         pivotInScene = geometry.point(config.pivot)
         sign = config.side == .left ? 1 : -1
 
@@ -61,8 +59,7 @@ final class FlipperNode: SKNode {
         body.collisionBitMask = PhysicsCategory.ball
         body.contactTestBitMask = PhysicsCategory.ball
         physicsBody = body
-        name = isUpper ? NodeName.flipperUpper
-                       : (side == .left ? NodeName.flipperLeft : NodeName.flipperRight)
+        name = side == .left ? NodeName.flipperLeft : NodeName.flipperRight
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }

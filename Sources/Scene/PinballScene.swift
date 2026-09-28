@@ -233,22 +233,20 @@ final class PinballScene: SKScene {
 
     // MARK: - Input from the container view
 
-    func pressFlipper(side: TableSide, upper: Bool = false) {
+    func pressFlipper(side: TableSide) {
         guard !session.isTilted, session.phase == .playing || session.phase == .ballReady else {
             return
         }
-        for flipper in parts.flippers where flipper.side == side && flipper.isUpper == upper {
+        for flipper in parts.flippers where flipper.side == side {
             flipper.press()
         }
-        if !upper {
-            for effect in session.rotateLanes(towards: side) { handle(effect) }
-        }
+        for effect in session.rotateLanes(towards: side) { handle(effect) }
         audio?.play(.flipper)
         haptics?.tap(.light)
     }
 
-    func releaseFlipper(side: TableSide, upper: Bool = false) {
-        for flipper in parts.flippers where flipper.side == side && flipper.isUpper == upper {
+    func releaseFlipper(side: TableSide) {
+        for flipper in parts.flippers where flipper.side == side {
             flipper.release()
         }
     }

@@ -99,7 +99,6 @@ enum TableLayout {
         let pivot: CGPoint
         let length: CGFloat
         let thickness: CGFloat
-        let isUpper: Bool
     }
 
     struct Spinner {
@@ -211,11 +210,9 @@ enum TableLayout {
         ]),
     ]
 
-    /// Bank of five, angled so a flipper shot sweeps across it. It sits a
-    /// little lower than it did so the second and third targets leave the
-    /// ball room past the tip of the resting upper flipper.
+    /// Bank of five, angled so a flipper shot sweeps across it.
     static let dropTargets: [DropTarget] = {
-        let start = CGPoint(x: 0.204, y: 0.625)
+        let start = CGPoint(x: 0.204, y: 0.640)
         let step = CGPoint(x: 0.0615, y: 0.0224)
         return (0..<5).map { i in
             DropTarget(index: i,
@@ -289,19 +286,15 @@ enum TableLayout {
     static let magnetCenter = CGPoint(x: 0.500, y: 0.790)
     static let magnetRadius: CGFloat = 0.10
 
+    /// Two flippers, as on the classic tables of the 90s.
     static let flippers: [Flipper] = [
         // 0.150, not 0.170: at rest the tips left only 0.77 of a ball between
         // them, so the ball perched on top of them and the middle of the table
         // could never drain at all.
         Flipper(side: .left, pivot: CGPoint(x: 0.315, y: 0.175),
-                length: 0.150, thickness: 0.030, isUpper: false),
+                length: 0.150, thickness: 0.030),
         Flipper(side: .right, pivot: CGPoint(x: 0.685, y: 0.175),
-                length: 0.150, thickness: 0.030, isUpper: false),
-        // Down in the left channel, not up beside the bumper nest: at the old
-        // pivot the blade swept a long way inside the left pop bumper, which
-        // is a moving body buried in a static one.
-        Flipper(side: .left, pivot: CGPoint(x: 0.165, y: 0.780),
-                length: 0.120, thickness: 0.026, isUpper: true),
+                length: 0.150, thickness: 0.030),
     ]
 
     /// Sensor strip across the bottom that ends a ball.
