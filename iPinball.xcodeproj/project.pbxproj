@@ -52,6 +52,7 @@
 		57A19D72FA463E743FE79060 /* RampNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568644C25FE074EA6A924C35 /* RampNode.swift */; };
 		58E420F4EB5F899E2DB1AE40 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3396483B01C8E995BB05D6C /* TableLayout.swift */; };
 		59FD451D3D4648DB73BF1B15 /* Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3CC7E0D6C8C81CBBA6C3C8 /* Links.swift */; };
+		5DCC846620B8B9653C2796E9 /* PinballScene+QA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CB44C328EF507F538C6BF2 /* PinballScene+QA.swift */; };
 		5F920EFD0EBFEC971557FB1E /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BBDC9C0A75A9094F07BDC /* GameSession.swift */; };
 		5FD79BE742342A99566C13E9 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7476573811E0AC45ADF8323 /* SplashView.swift */; };
 		618CF60DACF93A86AD653308 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56A52725CE82D601B695653 /* AudioEngine.swift */; };
@@ -100,6 +101,7 @@
 		D01EFD28105D41CD3B409F82 /* TableNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B1341AC6F8FB46616DF9A6 /* TableNodes.swift */; };
 		DA96E69B54EB86E51727CDC6 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A6815D644027F2AC5B56CB /* Motion.swift */; };
 		DB69A596C668F789B696F517 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEB751C34E881E7D7937E2 /* Strings.swift */; };
+		E498C0078A847A0C612E0055 /* PinballScene+QA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CB44C328EF507F538C6BF2 /* PinballScene+QA.swift */; };
 		E6CB1B3714DCDC736BC73308 /* PlayfieldDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ADEDF59B6CE7A556706B870 /* PlayfieldDecor.swift */; };
 		EA2140DEA775AB73100044C4 /* MissionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FE4B227DAA2D1D62B18D86 /* MissionEngine.swift */; };
 		EB86A1698399A27CEBC341F3 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFDD72E629F74B894E8772A /* MenuView.swift */; };
@@ -155,6 +157,7 @@
 		76A978F94A17EFB834D2D689 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		77F0E4F6E7E0F99C1CCB8B57 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7AFE732B33E1961908B3CEBC /* ArcadeRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcadeRulesTests.swift; sourceTree = "<group>"; };
+		86CB44C328EF507F538C6BF2 /* PinballScene+QA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinballScene+QA.swift"; sourceTree = "<group>"; };
 		8AED35E33711AB659FE914FA /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		8FC28BB1A0ACAA7FD6B16C59 /* TableLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableLayoutTests.swift; sourceTree = "<group>"; };
 		91A9B8A1A909DFFFDB2D5B20 /* GameSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSessionTests.swift; sourceTree = "<group>"; };
@@ -338,6 +341,7 @@
 				926857206F4DD197BA886BA5 /* PinballScene.swift */,
 				654009995CEE960A5CD0952D /* PinballScene+Contacts.swift */,
 				5F038E700FB22FB13A063F1B /* PinballScene+Effects.swift */,
+				86CB44C328EF507F538C6BF2 /* PinballScene+QA.swift */,
 				2ADEDF59B6CE7A556706B870 /* PlayfieldDecor.swift */,
 				568644C25FE074EA6A924C35 /* RampNode.swift */,
 				E19E6F25622AA4C1D29AFE03 /* TableBuilder.swift */,
@@ -489,6 +493,7 @@
 				96D3607369D5F2536584619C /* PhysicsTuning.swift in Sources */,
 				A703A217DE6F33A2E4E126AA /* PinballScene+Contacts.swift in Sources */,
 				886C4AD13CACA60C44067351 /* PinballScene+Effects.swift in Sources */,
+				5DCC846620B8B9653C2796E9 /* PinballScene+QA.swift in Sources */,
 				1BC07B62057C0C0310FF3F6D /* PinballScene.swift in Sources */,
 				081AEDB0B730B6DE885E4107 /* Platform.swift in Sources */,
 				E6CB1B3714DCDC736BC73308 /* PlayfieldDecor.swift in Sources */,
@@ -559,6 +564,7 @@
 				25D52DB7D3078D956F86CCD4 /* PhysicsTuning.swift in Sources */,
 				4735637E40668E08BB0ACA49 /* PinballScene+Contacts.swift in Sources */,
 				2802FDA85E6F1F005127591E /* PinballScene+Effects.swift in Sources */,
+				E498C0078A847A0C612E0055 /* PinballScene+QA.swift in Sources */,
 				11DFEA72811F584DDA115814 /* PinballScene.swift in Sources */,
 				1FC419E349093012B33EF479 /* Platform.swift in Sources */,
 				9D94009531EBB97839C22027 /* PlayfieldDecor.swift in Sources */,

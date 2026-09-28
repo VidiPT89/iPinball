@@ -101,4 +101,32 @@ final class KickModelTests: XCTestCase {
             XCTAssertEqual(vector.magnitude, 2, accuracy: 0.2 + 1e-6)
         }
     }
+
+    // MARK: - Ramp entry
+
+    /// A ball coming off the left orbit rolls across the mouth of the left
+    /// ramp on its way to the inlane. The mouth sensor used to check only the
+    /// speed, so that ball was carried up the ramp as if it had been shot
+    /// there — once on every single ball.
+    func testOnlyABallHeadingUpIntoTheMouthMakesTheClimb() throws {
+        let ramp = try XCTUnwrap(TableLayout.ramps.first { $0.side == .left })
+        let minimum: CGFloat = 0.7
+        let up = ramp.entryDirection
+
+        XCTAssertTrue(ramp.admits(CGVector(dx: up.dx * 2, dy: up.dy * 2), minimumSpeed: minimum))
+        XCTAssertFalse(ramp.admits(CGVector(dx: 2, dy: -0.4), minimumSpeed: minimum),
+                       "rolling across the mouth towards the inlane")
+        XCTAssertFalse(ramp.admits(CGVector(dx: -up.dx * 2, dy: -up.dy * 2), minimumSpeed: minimum),
+                       "coming back down out of the mouth")
+        XCTAssertFalse(ramp.admits(CGVector(dx: up.dx * 0.5, dy: up.dy * 0.5), minimumSpeed: minimum),
+                       "too slow to climb")
+    }
+
+    func testEveryRampClimbsAwayFromTheFlippers() {
+        for ramp in TableLayout.ramps {
+            XCTAssertGreaterThan(ramp.entryDirection.dy, 0.8, "\(ramp.side)")
+            XCTAssertEqual(ramp.entryDirection.magnitude, 1, accuracy: 1e-6)
+        }
+    }
 }
+

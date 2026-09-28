@@ -36,6 +36,7 @@ struct TableBuilder {
         parts.magnetGlow = addMagnet(to: scene)
         parts.ramps = addRamps(to: scene)
         addOrbitGates(to: scene)
+        addShooterGate(to: scene)
 
         parts.slingshots = TableLayout.slingshots.map {
             let node = SlingshotNode(config: $0, geometry: geometry, palette: palette)
@@ -232,6 +233,25 @@ struct TableBuilder {
         body.contactTestBitMask = PhysicsCategory.ball
         node.physicsBody = body
         return node
+    }
+
+    private func addShooterGate(to scene: SKScene) {
+        let gate = TableLayout.shooterGate
+        let path = geometry.path(through: [gate.from, gate.to])
+        let flap = SKShapeNode(path: path)
+        flap.strokeColor = CabinetColors.steel
+        flap.lineWidth = geometry.length(TableLayout.wallThickness * 0.6)
+        flap.lineCap = .round
+        flap.zPosition = 8
+
+        let body = SKPhysicsBody(edgeFrom: geometry.point(gate.from), to: geometry.point(gate.to))
+        body.isDynamic = false
+        body.restitution = 0.22
+        body.friction = 0.1
+        body.categoryBitMask = PhysicsCategory.shooterGate
+        body.collisionBitMask = PhysicsCategory.ball
+        flap.physicsBody = body
+        scene.addChild(flap)
     }
 
     private func addOrbitGates(to scene: SKScene) {

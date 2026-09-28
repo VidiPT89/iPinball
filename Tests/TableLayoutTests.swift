@@ -68,6 +68,32 @@ final class TableLayoutTests: XCTestCase {
         XCTAssertGreaterThan(shooterWidth, diameter, "the shooter lane is too narrow")
     }
 
+    // MARK: - Shooter lane gate
+
+    /// An orbit shot used to come round the arch and drop straight back into
+    /// the shooter lane, so no orbit could ever be completed — and the Orbit
+    /// Loop mission, fourth in the chain, blocked everything after it.
+    func testTheShooterGateLetsThePlungeOutButNothingBackIn() {
+        let gate = TableLayout.shooterGate
+        XCTAssertFalse(TableLayout.isAboveShooterGate(TableLayout.ballStart),
+                       "a ball in the shooter lane passes through on its way up")
+        XCTAssertFalse(TableLayout.isAboveShooterGate(
+            CGPoint(x: TableLayout.shooterLaneCenterX, y: gate.from.y - 0.05)))
+        XCTAssertTrue(TableLayout.isAboveShooterGate(
+            CGPoint(x: TableLayout.shooterLaneCenterX, y: gate.to.y + 0.05)),
+            "coming back down from the arch, it has to bounce off")
+        XCTAssertFalse(TableLayout.isAboveShooterGate(CGPoint(x: 0.95, y: 1.0)),
+                       "the right orbit lane below it is not affected")
+    }
+
+    func testTheShooterGateSpansTheLaneAndTipsTheBallIntoTheOrbit() {
+        let gate = TableLayout.shooterGate
+        XCTAssertLessThanOrEqual(gate.from.x, TableLayout.playfieldRightEdge)
+        XCTAssertGreaterThanOrEqual(gate.to.x, TableLayout.width - 0.01 - 0.001)
+        XCTAssertLessThan(gate.from.y, gate.to.y,
+                          "it slopes down towards the playfield, so a ball rolls off inwards")
+    }
+
     func testTheFlippersAreMirroredAndLeaveADrainGap() {
         let lower = TableLayout.flippers
         XCTAssertEqual(lower.count, 2, "two flippers, as on a 90s table")
@@ -202,6 +228,22 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(decoded.settings, original.settings)
         XCTAssertEqual(decoded.highScores.first?.score, 1_234)
+    }
+
+    /// A save written before the left-handed setting was removed still has
+    /// the key. Failing to decode it would wipe the player's high scores.
+    func testASaveWithTheRetiredLeftHandedSettingStillLoads() throws {
+        var original = SavedData()
+        original.insert(HighScore(initials: "DAM", score: 9_999, missionsCompleted: 1))
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(
+            with: JSONEncoder().encode(original)) as? [String: Any])
+        var settings = try XCTUnwrap(json["settings"] as? [String: Any])
+        settings["leftHanded"] = true
+        json["settings"] = settings
+
+        let old = try JSONSerialization.data(withJSONObject: json)
+        let decoded = try JSONDecoder().decode(SavedData.self, from: old)
+        XCTAssertEqual(decoded.highScores.first?.score, 9_999)
     }
 
     func testAnEmptyStoreReturnsDefaults() {

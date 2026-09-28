@@ -217,25 +217,6 @@ final class PinballScene: SKScene {
         #endif
     }
 
-    #if DEBUG
-    /// QA only: launching with `IPINBALL_DROP="x,y"` drops every new ball at
-    /// that layout point instead of serving it to the plunger, so a trap on
-    /// the table can be reproduced on demand rather than waited for.
-    private func dropForQA(_ ball: BallNode) {
-        guard let spec = ProcessInfo.processInfo.environment["IPINBALL_DROP"] else { return }
-        let parts = spec.split(separator: ",").compactMap { Double($0) }
-        guard parts.count == 2 else { return }
-        let point = CGPoint(x: parts[0], y: parts[1])
-        run(.sequence([.wait(forDuration: 0.5), .run { [weak self, weak ball] in
-            guard let self, let ball else { return }
-            ball.park(at: self.geometry.point(point))
-            ball.physicsBody?.isDynamic = true
-            self.model?.showLaunchHint = false
-            self.dispatch(.ballLaunched)
-        }]))
-    }
-    #endif
-
     @discardableResult
     func spawnBall(at layoutPoint: CGPoint) -> BallNode {
         let radius = geometry.length(TableLayout.ballRadius)
@@ -371,6 +352,10 @@ final class PinballScene: SKScene {
 
         for ball in balls where !ball.isOnRamp {
             ball.stabilise(maxSpeed: maxSpeed, radius: radius, time: sceneTime)
+            // The shooter gate is solid only from the arch side.
+            let aboveGate = TableLayout.isAboveShooterGate(geometry.localPoint(ball.position))
+            ball.physicsBody?.collisionBitMask = PhysicsCategory.solid
+                | (aboveGate ? PhysicsCategory.shooterGate : PhysicsCategory.none)
             // A ball held on purpose — waiting on the plunger, sitting in a
             // saucer, cradled on a held flipper — is not stuck. The watchdog
             // used to kick a cradled ball off the flipper after three seconds.
@@ -407,6 +392,9 @@ final class PinballScene: SKScene {
             angle: angle, magnitude: geometry.length(PhysicsTuning.stuckKickSpeed) * strength)
         ball.clearStuck()
         flash(at: ball.position, color: palette.accentLight, radius: geometry.length(0.08))
+        #if DEBUG
+        logWatchdogForQA(at: ball.position, strength: strength)
+        #endif
     }
 
     private func applyMagnet(to ball: BallNode) {
@@ -462,6 +450,9 @@ final class PinballScene: SKScene {
     // MARK: - Rules bridge
 
     func dispatch(_ event: TableEvent) {
+        #if DEBUG
+        tallyForQA(event)
+        #endif
         for effect in session.handle(event, at: sceneTime) {
             handle(effect)
         }
@@ -480,6 +471,9 @@ final class PinballScene: SKScene {
     }
 
     private func present(_ effect: GameEffect) {
+        #if DEBUG
+        if case .gameOver = effect { reportForQA() }
+        #endif
         model?.apply(effect, session: session)
         audio?.play(for: effect)
         haptics?.play(for: effect)

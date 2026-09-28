@@ -29,12 +29,15 @@ struct GameSettings: Codable, Equatable {
     var soundEnabled = true
     var musicEnabled = true
     var hapticsEnabled = true
-    var leftHanded = false
     var autoPlunge = false
     var ballCount = 3
 }
 
 struct HighScore: Codable, Equatable, Identifiable {
+    /// What goes on the table when the player leaves without typing any, as
+    /// a real machine does when the time for initials runs out.
+    static let defaultInitials = "AAA"
+
     var id = UUID()
     var initials: String
     var score: Int

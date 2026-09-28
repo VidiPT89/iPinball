@@ -14,6 +14,9 @@ enum PhysicsCategory {
     static let spinner: UInt32 = 1 << 9
     static let slingshot: UInt32 = 1 << 10
     static let orbitGate: UInt32 = 1 << 11
+    /// The one-way flap at the top of the shooter lane. A ball collides with
+    /// it only from above; see `TableLayout.isAboveShooterGate`.
+    static let shooterGate: UInt32 = 1 << 12
 
     /// Everything solid the ball is allowed to bounce off.
     static let solid: UInt32 = wall | flipper | bumper | target | slingshot

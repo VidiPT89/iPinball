@@ -155,7 +155,7 @@ struct GameOverView: View {
                     .foregroundStyle(palette.dimColor)
 
                 HStack(spacing: 10) {
-                    TextField("AAA", text: $initials)
+                    TextField(HighScore.defaultInitials, text: $initials)
                         .textFieldStyle(.plain)
                         .font(Typography.score(24))
                         .foregroundStyle(palette.textColor)

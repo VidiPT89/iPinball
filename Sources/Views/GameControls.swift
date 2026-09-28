@@ -48,12 +48,9 @@ struct ControlOverlay: View {
     // MARK: - Flippers
 
     private var flipperZones: some View {
-        let leftSide: TableSide = settings.leftHanded ? .right : .left
-        let rightSide: TableSide = settings.leftHanded ? .left : .right
-
-        return HStack(spacing: 0) {
-            zone(side: leftSide, label: settings.t("a11y.leftFlipper"))
-            zone(side: rightSide, label: settings.t("a11y.rightFlipper"))
+        HStack(spacing: 0) {
+            zone(side: .left, label: settings.t("a11y.leftFlipper"))
+            zone(side: .right, label: settings.t("a11y.rightFlipper"))
         }
     }
 

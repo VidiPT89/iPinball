@@ -97,11 +97,15 @@ final class GameOverFlowTests: XCTestCase {
         XCTAssertEqual(lifetime.totalScore, 250_000)
     }
 
-    func testLeavingTheInitialsBlankStillCountsTheGameButAddsNoEntry() {
+    /// Like an arcade machine whose initials timer runs out: the score goes
+    /// on the table under the default initials rather than being thrown away
+    /// just after the screen announced it.
+    func testLeavingTheInitialsBlankStillRecordsTheHighScore() {
         settings.recordGame(score: 90_000, initials: nil, missionsCompleted: 0,
                             ballsPlayed: 3, jackpots: 0, bestCombo: 2, duration: 90)
 
-        XCTAssertTrue(settings.saved.highScores.isEmpty)
+        XCTAssertEqual(settings.saved.highScores.first?.initials, HighScore.defaultInitials)
+        XCTAssertEqual(settings.bestScore, 90_000)
         XCTAssertEqual(settings.saved.lifetime.gamesPlayed, 1)
         XCTAssertEqual(settings.saved.lifetime.totalScore, 90_000)
     }

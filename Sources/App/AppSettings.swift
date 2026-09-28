@@ -41,11 +41,6 @@ final class AppSettings {
         set { saved.settings.hapticsEnabled = newValue; persist() }
     }
 
-    var leftHanded: Bool {
-        get { saved.settings.leftHanded }
-        set { saved.settings.leftHanded = newValue; persist() }
-    }
-
     var autoPlunge: Bool {
         get { saved.settings.autoPlunge }
         set { saved.settings.autoPlunge = newValue; persist() }
@@ -90,8 +85,12 @@ final class AppSettings {
     func recordGame(score: Int, initials: String?, missionsCompleted: Int,
                     ballsPlayed: Int, jackpots: Int, bestCombo: Int,
                     duration: TimeInterval) {
-        if let initials, !initials.isEmpty, score > 0 {
-            saved.insert(HighScore(initials: initials, score: score,
+        // A score that makes the table goes on it whether or not the player
+        // typed initials. Leaving without them used to throw away a new high
+        // score that the screen had just announced.
+        if score > 0, saved.rank(for: score) != nil {
+            let name = initials.flatMap { $0.isEmpty ? nil : $0 } ?? HighScore.defaultInitials
+            saved.insert(HighScore(initials: name, score: score,
                                    missionsCompleted: missionsCompleted))
         }
         saved.lifetime.gamesPlayed += 1

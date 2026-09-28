@@ -49,10 +49,6 @@ struct SettingsView: View {
             SectionLabel(text: settings.t("settings.controls"))
             GlowCard {
                 VStack(spacing: 14) {
-                    SettingRow(title: settings.t("settings.leftHanded"),
-                               subtitle: settings.t("settings.leftHanded.hint")) {
-                        Toggle("", isOn: $settings.leftHanded).labelsHidden()
-                    }
                     SettingRow(title: settings.t("settings.autoPlunge"),
                                subtitle: settings.t("settings.autoPlunge.hint")) {
                         Toggle("", isOn: $settings.autoPlunge).labelsHidden()

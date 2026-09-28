@@ -149,8 +149,12 @@ extension PinballScene: SKPhysicsContactDelegate {
 
         let id = ObjectIdentifier(ball)
         guard !ballsOnRamp.contains(id) else { return }
-        // A slow ball rolls past the mouth instead of making the climb.
-        guard ball.speed2D > geometry.length(PhysicsTuning.rampExitSpeed * 0.45) else { return }
+        // A slow ball, or one only crossing the mouth, rolls past instead of
+        // making the climb.
+        guard let velocity = ball.physicsBody?.velocity,
+              ramp.admits(velocity,
+                          minimumSpeed: geometry.length(PhysicsTuning.rampExitSpeed * 0.45))
+        else { return }
 
         ballsOnRamp.insert(id)
         ball.isOnRamp = true

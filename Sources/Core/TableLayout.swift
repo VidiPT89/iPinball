@@ -277,6 +277,21 @@ enum TableLayout {
              exitAngle: -1.79),
     ]
 
+    /// A one-way flap across the top of the shooter lane, from the top of
+    /// the divider up to the outer wall. The plunged ball goes up through it;
+    /// a ball coming back round the arch bounces off it into the right orbit.
+    /// Without it an orbit shot dropped straight back into the shooter lane,
+    /// so no orbit could ever be completed.
+    static let shooterGate = (from: CGPoint(x: 0.985, y: 1.20), to: CGPoint(x: 1.08, y: 1.26))
+
+    /// Whether a ball centred at `point` is on the arch side of the shooter
+    /// gate, where the gate is solid to it.
+    static func isAboveShooterGate(_ point: CGPoint) -> Bool {
+        let a = shooterGate.from
+        let b = shooterGate.to
+        return (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x) > 0
+    }
+
     static let orbitGates: [OrbitGate] = [
         OrbitGate(side: .left, center: CGPoint(x: 0.062, y: 0.82),
                   size: CGSize(width: 0.080, height: 0.020)),
@@ -320,5 +335,25 @@ enum TableLayout {
         rollovers.forEach { result.append(("rollover\($0.index)", $0.center, $0.radius)) }
         saucers.forEach { result.append(("saucer-\($0.side.rawValue)", $0.center, $0.radius)) }
         return result
+    }
+}
+
+extension TableLayout.Ramp {
+
+    /// The way a ball has to be travelling to go up this ramp: from the mouth
+    /// towards the first point of the climb.
+    var entryDirection: CGVector {
+        guard path.count > 1 else { return CGVector(dx: 0, dy: 1) }
+        return CGVector(dx: path[1].x - path[0].x, dy: path[1].y - path[0].y).normalized()
+    }
+
+    /// Whether a ball crossing the mouth makes the climb: only one heading up
+    /// into it, at least `minimumSpeed` along the ramp. The mouth sensor is a
+    /// disc, and it used to check only the speed, so a ball rolling across it
+    /// sideways off the orbit deflector was carried up the ramp as if it had
+    /// been shot there — on every single ball.
+    func admits(_ velocity: CGVector, minimumSpeed: CGFloat) -> Bool {
+        let direction = entryDirection
+        return velocity.dx * direction.dx + velocity.dy * direction.dy > minimumSpeed
     }
 }
