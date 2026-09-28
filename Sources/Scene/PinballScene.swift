@@ -212,7 +212,29 @@ final class PinballScene: SKScene {
                 self?.firePlunger()
             }]))
         }
+        #if DEBUG
+        dropForQA(ball)
+        #endif
     }
+
+    #if DEBUG
+    /// QA only: launching with `IPINBALL_DROP="x,y"` drops every new ball at
+    /// that layout point instead of serving it to the plunger, so a trap on
+    /// the table can be reproduced on demand rather than waited for.
+    private func dropForQA(_ ball: BallNode) {
+        guard let spec = ProcessInfo.processInfo.environment["IPINBALL_DROP"] else { return }
+        let parts = spec.split(separator: ",").compactMap { Double($0) }
+        guard parts.count == 2 else { return }
+        let point = CGPoint(x: parts[0], y: parts[1])
+        run(.sequence([.wait(forDuration: 0.5), .run { [weak self, weak ball] in
+            guard let self, let ball else { return }
+            ball.park(at: self.geometry.point(point))
+            ball.physicsBody?.isDynamic = true
+            self.model?.showLaunchHint = false
+            self.dispatch(.ballLaunched)
+        }]))
+    }
+    #endif
 
     @discardableResult
     func spawnBall(at layoutPoint: CGPoint) -> BallNode {

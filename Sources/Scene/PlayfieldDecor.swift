@@ -174,7 +174,7 @@ extension TableBuilder {
             side == .left ? p : CGPoint(x: 1 - p.x, y: p.y)
         }
         let outline = [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.232),
-                       CGPoint(x: 0.315, y: 0.175), CGPoint(x: 0.300, y: 0.0),
+                       CGPoint(x: 0.300, y: 0.200), CGPoint(x: 0.300, y: 0.0),
                        CGPoint(x: 0.082, y: 0.0)].map(mirror)
         let apron = SKShapeNode(path: geometry.path(through: outline, closed: true))
         apron.fillColor = CabinetColors.apron

@@ -139,15 +139,19 @@ enum TableLayout {
             Wall(points: [CGPoint(x: 0.082, y: 0.0), CGPoint(x: 0.082, y: 0.530)]),
             // Right outlane / inlane divider.
             Wall(points: [CGPoint(x: 0.918, y: 0.0), CGPoint(x: 0.918, y: 0.530)]),
-            // Left apron: the inlane floor, ending on the flipper pivot so the
-            // ball rolls onto the blade. It used to carry on underneath the
-            // blade and down to a drain lip, which left a slot half a ball
-            // wide between the two for the ball to sit in.
+            // Left apron: the inlane floor. It ends just above the top of the
+            // resting blade, beside the pivot, so it steps the ball down on to
+            // the flipper the way the inlane guide of a real table does.
+            // It used to end on the pivot itself, where the flipper's round
+            // base stood proud of the floor: a slow ball — one let go from a
+            // cradle — settled in the notch between them, on the pivot, and
+            // no amount of flipping could move it. Before that it ran on under
+            // the blade, which left a slot half a ball wide to sit in.
             Wall(points: [CGPoint(x: 0.082, y: 0.30), CGPoint(x: 0.215, y: 0.232),
-                          CGPoint(x: 0.315, y: 0.175)]),
+                          CGPoint(x: 0.300, y: 0.200)]),
             // Right apron, mirrored.
             Wall(points: [CGPoint(x: 0.918, y: 0.30), CGPoint(x: 0.785, y: 0.232),
-                          CGPoint(x: 0.685, y: 0.175)]),
+                          CGPoint(x: 0.700, y: 0.200)]),
             // Left orbit guide: inner wall of the lane hugging the left rail.
             // It starts above the orbit deflector, which leaves the mouth of
             // the lane open towards the flippers.

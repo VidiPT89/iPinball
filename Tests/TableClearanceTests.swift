@@ -190,6 +190,34 @@ final class TableClearanceTests: XCTestCase {
     /// The one gap the whole game depends on. If the ball cannot fall between
     /// the flipper tips it perches on them, the middle of the table never
     /// drains, and a game cannot end on its own.
+    /// The inlane floor used to end on the flipper's pivot. The round base of
+    /// the flipper stood proud of the floor there, and a slow ball — one let
+    /// go from a cradle — settled in the notch between the two, right on the
+    /// pivot, where flipping could not move it. The floor has to step the
+    /// ball down on to the top of the blade instead.
+    func testTheInlaneFloorHandsTheBallOnToTheBladeNotIntoThePivot() throws {
+        for flipper in TableLayout.flippers {
+            let floor = try XCTUnwrap(TableLayout.walls.min { a, b in
+                (a.points.last?.distance(to: flipper.pivot) ?? .infinity)
+                    < (b.points.last?.distance(to: flipper.pivot) ?? .infinity)
+            })
+            let end = try XCTUnwrap(floor.points.last)
+            // Height of the floor's end above the resting blade's centre line,
+            // measured along the blade's upward normal.
+            let sign: CGFloat = flipper.side == .left ? 1 : -1
+            let angle = PhysicsTuning.flipperRestAngle
+            let normal = CGPoint(x: -sign * sin(angle), y: cos(angle))
+            let offset = CGPoint(x: end.x - flipper.pivot.x, y: end.y - flipper.pivot.y)
+            let height = offset.x * normal.x + offset.y * normal.y
+            let base = flipper.thickness / 2
+            XCTAssertGreaterThanOrEqual(height, base - 0.002, String(
+                format: "%@ inlane floor ends %.3f below the top of the blade",
+                flipper.side.rawValue, base - height))
+            XCTAssertLessThan(height, base + TableLayout.ballRadius,
+                              "\(flipper.side) the ball would drop on to the blade")
+        }
+    }
+
     func testTheBallFitsBetweenTheFlipperTips() {
         let tips = lowerTips
         guard tips.count == 2 else { return XCTFail("expected two lower flippers") }
@@ -249,10 +277,12 @@ final class TableClearanceTests: XCTestCase {
                 let key = pair(all[i].group, all[j].group)
                 guard !result.contains(key) else { continue }
                 let touching: CGFloat = 0.02
+                // Measured to the surface, not the centre line: a flipper is a
+                // thick blade, and the inlane floor meets its top edge.
                 let meets = [all[i].a, all[i].b].contains {
-                    pointToSegment($0, all[j].a, all[j].b) < touching
+                    pointToSegment($0, all[j].a, all[j].b) - all[j].radius < touching
                 } || [all[j].a, all[j].b].contains {
-                    pointToSegment($0, all[i].a, all[i].b) < touching
+                    pointToSegment($0, all[i].a, all[i].b) - all[i].radius < touching
                 }
                 if meets { result.insert(key) }
             }
