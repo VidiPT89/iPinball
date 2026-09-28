@@ -102,6 +102,14 @@ private struct FlipperZone: View {
                         onRelease()
                     }
             )
+            // The zone is replaced by the plunger zone when a ball drains. A
+            // finger still down at that moment never reports lifting, and the
+            // flipper stayed up under the next ball, ignoring the next tap.
+            .onDisappear {
+                guard isDown else { return }
+                isDown = false
+                onRelease()
+            }
             .accessibilityElement()
             .accessibilityLabel(Text(label))
             .accessibilityAddTraits(.isButton)
@@ -149,9 +157,18 @@ struct GameKeyboardControls: ViewModifier {
             .onAppear { hasKeyboardFocus = true }
             .onChange(of: releasesKeyboard) { _, released in
                 stopCharging()
+                if released { scene.releaseAllFlippers() }
                 hasKeyboardFocus = !released
             }
-            .onDisappear { stopCharging() }
+            // Keys held when the table loses the keyboard never report their
+            // release, so the flippers are dropped rather than left up.
+            .onChange(of: hasKeyboardFocus) { _, focused in
+                if !focused { scene.releaseAllFlippers() }
+            }
+            .onDisappear {
+                stopCharging()
+                scene.releaseAllFlippers()
+            }
     }
 
     private func handle(_ press: KeyPress) -> KeyPress.Result {

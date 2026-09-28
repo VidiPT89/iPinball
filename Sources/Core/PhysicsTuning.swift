@@ -39,6 +39,10 @@ enum PhysicsTuning {
     static let flipperRestAngle: CGFloat = -0.38      // radians, ~ -22°
     static let flipperActiveAngle: CGFloat = 0.35     // radians, ~ +20°
     static let flipperAngularSpeed: CGFloat = 40      // radians per second
+    /// How hard a flipper is pushed back to where the button wants it, in
+    /// radians per second for each radian it is out. High enough that a ball
+    /// resting on a held flipper cannot sag it.
+    static let flipperHoldGain: CGFloat = 60
     static let flipperRestitution: CGFloat = 0.12
     static let flipperFriction: CGFloat = 0.6
 

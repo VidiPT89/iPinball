@@ -80,6 +80,7 @@
 		9D94009531EBB97839C22027 /* PlayfieldDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ADEDF59B6CE7A556706B870 /* PlayfieldDecor.swift */; };
 		A22C9009B1AAA0E0126C4E1C /* TableGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2CCF5BC0965B69F5007890 /* TableGeometry.swift */; };
 		A53A8D51AB0728546EFB276C /* BallNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBE666F00D9C19617554F97 /* BallNode.swift */; };
+		A6E6E439BFC8E34A149723F2 /* FlipperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7287CB1D04BCF89556813AFF /* FlipperTests.swift */; };
 		A703A217DE6F33A2E4E126AA /* PinballScene+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654009995CEE960A5CD0952D /* PinballScene+Contacts.swift */; };
 		A7247FE65B8C6BD149E8B5D1 /* iPinballApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098CD933F651CA93ABC166F9 /* iPinballApp.swift */; };
 		A7DDACB80C8653D9AF9970CA /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010D0534C04133C4C479235B /* PauseOverlay.swift */; };
@@ -150,6 +151,7 @@
 		66428BA56B6043D7BAF2982C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		6A4981EA910AA0B555382AA8 /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
 		6AEA37EFCE1569D526F6539B /* TableSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableSnapshotTests.swift; sourceTree = "<group>"; };
+		7287CB1D04BCF89556813AFF /* FlipperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperTests.swift; sourceTree = "<group>"; };
 		76A978F94A17EFB834D2D689 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		77F0E4F6E7E0F99C1CCB8B57 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7AFE732B33E1961908B3CEBC /* ArcadeRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcadeRulesTests.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				7AFE732B33E1961908B3CEBC /* ArcadeRulesTests.swift */,
+				7287CB1D04BCF89556813AFF /* FlipperTests.swift */,
 				A482148C55FA0EA990299406 /* GameOverFlowTests.swift */,
 				91A9B8A1A909DFFFDB2D5B20 /* GameSessionTests.swift */,
 				C017B62D9058AF3EA1071D2B /* KickModelTests.swift */,
@@ -509,6 +512,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08D9427819DD62E86F25915E /* ArcadeRulesTests.swift in Sources */,
+				A6E6E439BFC8E34A149723F2 /* FlipperTests.swift in Sources */,
 				3F8CE9654C22BAB6DBBA3B36 /* GameOverFlowTests.swift in Sources */,
 				F102CADED8A51B3615A50ABE /* GameSessionTests.swift in Sources */,
 				1220EEC2FE62582E19D2662C /* KickModelTests.swift in Sources */,

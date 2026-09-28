@@ -245,6 +245,12 @@ final class PinballScene: SKScene {
         haptics?.tap(.light)
     }
 
+    /// Drops every flipper, for when the controls go away mid-press: a pause,
+    /// the end of the game, a touch zone that disappears under the finger.
+    func releaseAllFlippers() {
+        parts.flippers.forEach { $0.release() }
+    }
+
     func releaseFlipper(side: TableSide) {
         for flipper in parts.flippers where flipper.side == side {
             flipper.release()
@@ -318,6 +324,8 @@ final class PinballScene: SKScene {
     }
 
     func setPaused(_ paused: Bool) {
+        // A button held when the game paused will never report its release.
+        if paused { releaseAllFlippers() }
         isPaused = paused
         physicsWorld.speed = paused ? 0 : 1
     }
@@ -334,15 +342,18 @@ final class PinballScene: SKScene {
             handle(effect)
         }
 
+        parts.flippers.forEach { $0.drive() }
+
         let maxSpeed = geometry.length(PhysicsTuning.maxBallSpeed)
         let radius = geometry.length(TableLayout.ballRadius)
 
         for ball in balls where !ball.isOnRamp {
             ball.stabilise(maxSpeed: maxSpeed, radius: radius, time: sceneTime)
             // A ball held on purpose — waiting on the plunger, sitting in a
-            // saucer — is not stuck. The watchdog used to flash at the
-            // shooter lane every three seconds while the player took aim.
-            if ball.physicsBody?.isDynamic == false {
+            // saucer, cradled on a held flipper — is not stuck. The watchdog
+            // used to kick a cradled ball off the flipper after three seconds.
+            if ball.physicsBody?.isDynamic == false
+                || parts.flippers.contains(where: { $0.isCradling(ball.position) }) {
                 ball.clearStuck()
             } else if ball.isStuck(at: sceneTime) {
                 freeStuckBall(ball)

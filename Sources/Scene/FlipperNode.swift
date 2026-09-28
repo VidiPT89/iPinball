@@ -1,11 +1,14 @@
 import SpriteKit
 
-/// A flipper on a pin joint. The joint limits do the work: pressing spins the
-/// body until it hits the upper limit, releasing spins it back to the lower one.
+/// A flipper on a pin joint. The joint limits stop the blade at either end of
+/// its swing, and `drive()` pushes it towards the end the button asks for on
+/// every frame.
 final class FlipperNode: SKNode {
 
     let side: TableSide
     let pivotInScene: CGPoint
+    /// How far from the pivot a ball can be and still be resting on the blade.
+    let reach: CGFloat
 
     private let angleRange: CGFloat
     private let sign: CGFloat
@@ -21,6 +24,7 @@ final class FlipperNode: SKNode {
 
         let length = geometry.length(config.length)
         let thickness = geometry.length(config.thickness)
+        reach = length + thickness
         let path = FlipperNode.bladePath(length: length, thickness: thickness, sign: sign)
 
         blade = SKShapeNode(path: path)
@@ -103,18 +107,38 @@ final class FlipperNode: SKNode {
     func press() {
         guard !isPressed else { return }
         isPressed = true
-        physicsBody?.angularVelocity = sign * PhysicsTuning.flipperAngularSpeed
-        halo.run(.customAction(withDuration: 0.001) { [weak self] node, _ in
-            guard let self, let shape = node as? SKShapeNode else { return }
-            shape.strokeColor = self.blade.strokeColor.withAlphaComponent(0.55)
-        })
+        drive()
+        halo.strokeColor = blade.strokeColor.withAlphaComponent(0.55)
     }
 
     func release() {
         guard isPressed else { return }
         isPressed = false
-        physicsBody?.angularVelocity = -sign * PhysicsTuning.flipperAngularSpeed * 0.7
+        drive()
         halo.strokeColor = halo.strokeColor.withAlphaComponent(0)
+    }
+
+    /// Pushes the blade towards where the button says it should be. Called on
+    /// every frame, not just when the button changes: a single push on press
+    /// was all the flipper used to get, so a ball resting on a held flipper
+    /// pressed it back down, and a ball on top of a released one could stop it
+    /// getting back to rest. The ball then sat on a flipper that no longer did
+    /// what the button said.
+    func drive() {
+        guard let body = physicsBody else { return }
+        // 0 at rest, `angleRange` fully raised, whichever side this is.
+        let travel = (zRotation - sign * PhysicsTuning.flipperRestAngle) * sign
+        let target: CGFloat = isPressed ? angleRange : 0
+        let limit = PhysicsTuning.flipperAngularSpeed * (isPressed ? 1 : 0.7)
+        let speed = max(-limit, min(limit, (target - travel) * PhysicsTuning.flipperHoldGain))
+        body.angularVelocity = sign * speed
+    }
+
+    /// Whether a ball centred at `point` is lying on this flipper while it is
+    /// held up — a cradle, which the player is allowed to keep for as long as
+    /// they like.
+    func isCradling(_ point: CGPoint) -> Bool {
+        isPressed && point.distance(to: pivotInScene) < reach
     }
 
     func repaint(with palette: Palette) {
