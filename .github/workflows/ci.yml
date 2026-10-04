@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Test (macOS)
+        run: |
+          xcodebuild test \
+            -project iPinball.xcodeproj \
+            -scheme iPinball-macOS \
+            -destination platform=macOS \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Build (iOS)
+        run: |
+          xcodebuild build \
+            -project iPinball.xcodeproj \
+            -scheme iPinball-iOS \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO

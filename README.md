@@ -4,6 +4,7 @@
 
 [![Report Bug](https://img.shields.io/badge/Report-Bug-red)](https://github.com/VidiPT89/iPinball/issues)
 [![Request Feature](https://img.shields.io/badge/Request-Feature-blue)](https://github.com/VidiPT89/iPinball/issues)
+[![CI](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml/badge.svg)](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml)
 
 ## ✨ Features
 
