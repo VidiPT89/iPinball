@@ -73,6 +73,7 @@ final class GameSession {
         skillShotExpiresAt = nil
         skillShotLane = Self.skillShotLane(at: time)
         ballSaveSpent = false
+        ballSaveEndsAt = nil
         extraBallGivenForScore = false
         extraBallGivenForMissions = false
         extraBallGivenForBanks = false
@@ -122,6 +123,9 @@ final class GameSession {
             return []
         }
 
+        if case .ballLaunched = event { return launchBall(at: time) }
+        guard phase == .playing else { return [] }
+        advanceSkillShot(to: time)
         var effects: [GameEffect] = []
 
         switch event {
@@ -135,7 +139,8 @@ final class GameSession {
             effects.append(awarded(ScoreValue.standupTarget, .target))
 
         case .dropTarget(let index):
-            guard !dropTargetsDown.contains(index) else { return [] }
+            guard TableLayout.dropTargets.indices.contains(index),
+                  !dropTargetsDown.contains(index) else { return [] }
             dropTargetsDown.insert(index)
             score.registerDropTarget()
             effects.append(.dropTargetDown(index: index))
@@ -160,6 +165,7 @@ final class GameSession {
             effects.append(.comboChanged(multiplier: score.comboMultiplier))
 
         case .rolloverLane(let index):
+            guard (0..<LaneLetter.allCases.count).contains(index) else { return [] }
             effects.append(contentsOf: collectSkillShot(through: index))
             guard !litLanes.contains(index) else { break }
             effects.append(.laneLit(index: index))
@@ -176,7 +182,7 @@ final class GameSession {
             guard isJackpotLit else { break }
             let isSuper = missions.completed.contains("jackpotHunt")
             let base = isSuper ? ScoreValue.superJackpot : ScoreValue.jackpot
-            let total = score.award(base, label: isSuper ? .superJackpot : .jackpot)
+            let total = score.award(base)
             effects.append(isSuper ? .superJackpotCollected(points: total)
                                    : .jackpotCollected(points: total))
 
@@ -227,8 +233,7 @@ final class GameSession {
         skillShotExpiresAt = nil
         guard lane == index else { return [] }
         score.isMultiballActive = isMultiball
-        return [.skillShotCollected(points: score.award(ScoreValue.skillShot,
-                                                        label: .skillShot))]
+        return [.skillShotCollected(points: score.award(ScoreValue.skillShot))]
     }
 
     /// Lane change: each flipper press moves the lit lanes one place towards
@@ -244,7 +249,7 @@ final class GameSession {
 
     private func awarded(_ base: Int, _ label: ScoreLabel) -> GameEffect {
         score.isMultiballActive = isMultiball
-        return .scored(points: score.award(base, label: label), label: label)
+        return .scored(points: score.award(base), label: label)
     }
 
     private func clearBank() -> [GameEffect] {
@@ -351,6 +356,9 @@ final class GameSession {
         guard phase != .gameOver else { return [] }
 
         if ballsInPlay > 1 {
+            if phase != .tilted, isBallSaveActive {
+                return [.multiballBallSaved]
+            }
             ballsInPlay -= 1
             if ballsInPlay == 1 {
                 score.isMultiballActive = false
@@ -377,6 +385,7 @@ final class GameSession {
         if bonus.total > 0, phase != .tilted {
             score.addRaw(bonus.total)
             effects.append(.bonusAwarded(bonus))
+            effects.append(contentsOf: checkExtraBall())
         }
 
         score.resetBallCounters()

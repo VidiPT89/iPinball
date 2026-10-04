@@ -147,7 +147,7 @@ final class AudioEngine {
         case .superJackpotCollected:   play(.superJackpot)
         case .wizardModeStarted:       play(.multiball)
         case .extraBallAwarded:        play(.extraBall)
-        case .ballSaved:               play(.extraBall)
+        case .ballSaved, .multiballBallSaved:               play(.extraBall)
         case .ballLost:                play(.drain)
         case .tilted, .tiltWarning:    play(.tilt)
         case .gameOver:                play(.gameOver)
@@ -169,14 +169,7 @@ final class AudioEngine {
         case .spinner:       return .spinner
         case .ramp:          return .ramp
         case .orbit:         return .orbit
-        case .lane:          return .lane
         case .laneSet:       return .laneSet
-        case .jackpot:       return .jackpot
-        case .superJackpot:  return .superJackpot
-        case .mission:       return .mission
-        case .bonus:         return .extraBall
-        case .combo:         return .orbit
-        case .skillShot:     return .laneSet
         }
     }
 

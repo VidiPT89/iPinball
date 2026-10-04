@@ -148,6 +148,7 @@
 		568644C25FE074EA6A924C35 /* RampNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampNode.swift; sourceTree = "<group>"; };
 		5877EDC0E62B4CC58128A0C6 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		5F038E700FB22FB13A063F1B /* PinballScene+Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinballScene+Effects.swift"; sourceTree = "<group>"; };
+		5F568B50212C12BE3DB3C70B /* iPinball.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iPinball.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		606A9C0583D5F1D38B24FDB8 /* ScoreEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEngine.swift; sourceTree = "<group>"; };
 		654009995CEE960A5CD0952D /* PinballScene+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinballScene+Contacts.swift"; sourceTree = "<group>"; };
 		66428BA56B6043D7BAF2982C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -170,9 +171,8 @@
 		A567AE3E5C504980FF3234DC /* FlipperNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperNode.swift; sourceTree = "<group>"; };
 		A56A52725CE82D601B695653 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		A8B1341AC6F8FB46616DF9A6 /* TableNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNodes.swift; sourceTree = "<group>"; };
+		BBB9C6ED85DD904C1EF4AD48 /* iPinball.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPinball.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C017B62D9058AF3EA1071D2B /* KickModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickModelTests.swift; sourceTree = "<group>"; };
-		ACDB01E4E6CDEA32A948A571 /* iPinball.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPinball.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B63F03B7A35FD79EB20DECC4 /* iPinball.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPinball.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1173313662A46E3DFA6265E /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		C45E373F8B851D2612EE4F9E /* PhysicsCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsCategories.swift; sourceTree = "<group>"; };
 		C7476573811E0AC45ADF8323 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
@@ -232,8 +232,8 @@
 		56D940521CC2AA05935A419E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B63F03B7A35FD79EB20DECC4 /* iPinball.app */,
-				ACDB01E4E6CDEA32A948A571 /* iPinball.app */,
+				5F568B50212C12BE3DB3C70B /* iPinball.app */,
+				BBB9C6ED85DD904C1EF4AD48 /* iPinball.app */,
 				C8DE279BC02023447E8DF5DC /* iPinballTests.xctest */,
 			);
 			name = Products;
@@ -370,7 +370,7 @@
 			packageProductDependencies = (
 			);
 			productName = "iPinball-macOS";
-			productReference = ACDB01E4E6CDEA32A948A571 /* iPinball.app */;
+			productReference = BBB9C6ED85DD904C1EF4AD48 /* iPinball.app */;
 			productType = "com.apple.product-type.application";
 		};
 		71B5912CD193ABCCA6CC1A58 /* iPinballTests */ = {
@@ -406,7 +406,7 @@
 			packageProductDependencies = (
 			);
 			productName = "iPinball-iOS";
-			productReference = B63F03B7A35FD79EB20DECC4 /* iPinball.app */;
+			productReference = 5F568B50212C12BE3DB3C70B /* iPinball.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -417,6 +417,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					056B659447FC7D6CFFCC2C18 = {
+						DevelopmentTeam = S769436W24;
+					};
+					F1262653A68531866A2F2FA5 = {
+						DevelopmentTeam = S769436W24;
+					};
+				};
 			};
 			buildConfigurationList = 369B1B5E6A68AFB9CE942FCA /* Build configuration list for PBXProject "iPinball" */;
 			developmentRegion = en;
@@ -726,7 +734,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = S769436W24;
+				DEVELOPMENT_TEAM = S769436W24;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Config/Info-macOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -816,8 +824,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = S769436W24;
-				ENABLE_HARDENED_RUNTIME = YES;
+				DEVELOPMENT_TEAM = S769436W24;
+				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = "Config/Info-macOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

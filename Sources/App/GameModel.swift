@@ -53,6 +53,22 @@ final class GameModel {
     var bonus: BonusReport?
     var bonusStartedAt: Date?
 
+    private var displayPausedAt: Date?
+
+    func setDisplayPaused(_ paused: Bool, at date: Date = Date()) {
+        if paused {
+            if displayPausedAt == nil { displayPausedAt = date }
+        } else if let start = displayPausedAt {
+            let duration = date.timeIntervalSince(start)
+            bonusStartedAt = bonusStartedAt?.addingTimeInterval(duration)
+            if let message = banner {
+                banner = Banner(key: message.key, style: message.style, detail: message.detail,
+                                showsAt: message.showsAt.addingTimeInterval(duration))
+            }
+            displayPausedAt = nil
+        }
+    }
+
     var bonusEndsAt: Date? {
         guard let bonus, let bonusStartedAt else { return nil }
         return bonusStartedAt.addingTimeInterval(Motion.bonusCountdown(for: bonus))
@@ -86,6 +102,7 @@ final class GameModel {
         banner = nil
         bonus = nil
         bonusStartedAt = nil
+        displayPausedAt = nil
         jackpotCount = 0
         bestCombo = 1
         ballsPlayed = 0
@@ -169,7 +186,7 @@ final class GameModel {
         case .wizardModeStarted:
             show("hud.wizard", style: .great)
 
-        case .ballSaved:
+        case .ballSaved, .multiballBallSaved:
             show("hud.ballSaved", style: .good)
 
         case .extraBallAwarded:

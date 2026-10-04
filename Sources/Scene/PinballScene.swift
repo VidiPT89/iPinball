@@ -26,11 +26,10 @@ final class PinballScene: SKScene {
     private var launchArrow: SKShapeNode?
 
     private(set) var sceneTime: TimeInterval = 0
-    private var firstFrameTime: TimeInterval?
+    private var previousFrameTime: TimeInterval?
     private var lastHUDPush: TimeInterval = 0
 
     var plungerCharge: CGFloat = 0
-    var orbitEntry: (side: TableSide, time: TimeInterval)?
     var ballsOnRamp: Set<ObjectIdentifier> = []
     var heldSaucers: Set<ObjectIdentifier> = []
     /// When each saucer is allowed to capture again, by side.
@@ -75,6 +74,8 @@ final class PinballScene: SKScene {
         children.filter { $0 !== camera }.forEach { $0.removeFromParent() }
         physicsWorld.removeAllJoints()
         balls.removeAll()
+        ballsOnRamp.removeAll()
+        heldSaucers.removeAll()
 
         geometry = TableGeometry(sceneSize: size, topInset: hudInset)
         physicsWorld.gravity = CGVector(
@@ -95,6 +96,7 @@ final class PinballScene: SKScene {
 
         addPlunger()
         isNodeBuilt = true
+        resetTableElements()
 
         // A rebuild wipes every node, so whatever was on the table has to be
         // put back: either the game that was waiting to start, or the balls
@@ -166,11 +168,15 @@ final class PinballScene: SKScene {
             startWhenReady = true
             return
         }
+        removeAllActions()
+        physicsWorld.speed = 1
+        releaseAllFlippers()
+        saucerReadyAt.removeAll()
+        magnetActiveUntil = 0
         gameGeneration += 1
         bonusCountdown = 0
         _ = session.startGame(ballCount: ballCount, at: sceneTime)
         model?.resetForNewGame(ballCount: ballCount)
-        resetTableElements()
         serveBall()
     }
 
@@ -186,12 +192,20 @@ final class PinballScene: SKScene {
     }
 
     private func resetTableElements() {
-        parts.dropTargets.forEach { $0.raise(reduceMotion: reduceMotion) }
-        parts.rollovers.forEach { $0.setLit(false, palette: palette) }
+        parts.dropTargets.forEach {
+            $0.removeAllActions()
+            if session.dropTargetsDown.contains($0.index) {
+                $0.drop(reduceMotion: reduceMotion)
+            } else {
+                $0.raise(reduceMotion: reduceMotion)
+            }
+        }
+        parts.rollovers.forEach { $0.setLit(session.litLanes.contains($0.index), palette: palette) }
         parts.standupTargets.forEach { $0.setLit(true) }
     }
 
     func serveBall() {
+        resetTableElements()
         balls.forEach { $0.removeFromParent() }
         balls.removeAll()
         ballsOnRamp.removeAll()
@@ -207,10 +221,11 @@ final class PinballScene: SKScene {
         updatePlungerVisual()
 
         if autoPlunge {
-            run(.sequence([.wait(forDuration: 0.8), .run { [weak self] in
-                self?.plungerCharge = 0.72
-                self?.firePlunger()
-            }]))
+            afterDelay(0.8) { [weak self, weak ball] in
+                guard let self, let ball, self.balls.first === ball else { return }
+                self.plungerCharge = 0.72
+                self.firePlunger()
+            }
         }
         #if DEBUG
         dropForQA(ball)
@@ -237,7 +252,7 @@ final class PinballScene: SKScene {
     // MARK: - Input from the container view
 
     func pressFlipper(side: TableSide) {
-        guard !session.isTilted, session.phase == .playing || session.phase == .ballReady else {
+        guard !isPaused, !session.isTilted, session.phase == .playing || session.phase == .ballReady else {
             return
         }
         for flipper in parts.flippers where flipper.side == side {
@@ -266,7 +281,8 @@ final class PinballScene: SKScene {
     /// forward at all, because the phase had already moved on to `.playing`
     /// and the plunger only answered to `.ballReady`.
     var canPlunge: Bool {
-        if session.phase == .ballReady { return true }
+        guard !isPaused else { return false }
+        if session.phase == .ballReady { return !balls.isEmpty }
         guard session.phase == .playing, balls.count == 1,
               let ball = balls.first, !ball.isOnRamp else { return false }
 
@@ -313,7 +329,7 @@ final class PinballScene: SKScene {
     }
 
     func nudge(direction: CGFloat) {
-        guard session.phase == .playing, !session.isTilted else { return }
+        guard !isPaused, session.phase == .playing, !session.isTilted else { return }
         let speed = geometry.length(PhysicsTuning.nudgeSpeed)
         for ball in balls where !ball.isOnRamp {
             ball.physicsBody?.velocity.dx += speed * direction
@@ -329,6 +345,8 @@ final class PinballScene: SKScene {
     func setPaused(_ paused: Bool) {
         // A button held when the game paused will never report its release.
         if paused { releaseAllFlippers() }
+        previousFrameTime = nil
+        model?.setDisplayPaused(paused)
         isPaused = paused
         physicsWorld.speed = paused ? 0 : 1
     }
@@ -336,10 +354,10 @@ final class PinballScene: SKScene {
     // MARK: - Frame loop
 
     override func update(_ currentTime: TimeInterval) {
-        if firstFrameTime == nil { firstFrameTime = currentTime }
-        sceneTime = currentTime - (firstFrameTime ?? currentTime)
-
-        guard !isPaused else { return }
+        guard !isPaused else { previousFrameTime = nil; return }
+        let delta = min(1.0 / 15.0, max(0, currentTime - (previousFrameTime ?? currentTime)))
+        previousFrameTime = currentTime
+        sceneTime += delta
 
         for effect in session.advance(to: sceneTime) {
             handle(effect)
@@ -354,7 +372,7 @@ final class PinballScene: SKScene {
             ball.stabilise(maxSpeed: maxSpeed, radius: radius, time: sceneTime)
             // The shooter gate is solid only from the arch side.
             let aboveGate = TableLayout.isAboveShooterGate(geometry.localPoint(ball.position))
-            ball.physicsBody?.collisionBitMask = PhysicsCategory.solid
+            ball.physicsBody?.collisionBitMask = PhysicsCategory.solid | PhysicsCategory.ball
                 | (aboveGate ? PhysicsCategory.shooterGate : PhysicsCategory.none)
             // A ball held on purpose — waiting on the plunger, sitting in a
             // saucer, cradled on a held flipper — is not stuck. The watchdog
@@ -365,7 +383,7 @@ final class PinballScene: SKScene {
             } else if ball.isStuck(at: sceneTime) {
                 freeStuckBall(ball)
             }
-            applyMagnet(to: ball)
+            if session.phase == .playing { applyMagnet(to: ball, delta: delta) }
         }
 
         updateInserts()
@@ -379,7 +397,10 @@ final class PinballScene: SKScene {
         // than lost, so the player never sees a ball simply vanish.
         for ball in balls where !ball.isOnRamp {
             let local = geometry.localPoint(ball.position)
-            if local.x < -0.1 || local.x > 1.1 || local.y > TableLayout.height + 0.1 {
+            if local.y < -0.1 {
+                removeBall(ball)
+                dispatch(.ballDrained)
+            } else if local.x < -0.1 || local.x > 1.1 || local.y > TableLayout.height + 0.1 {
                 ball.park(at: geometry.point(TableLayout.ballStart))
             }
         }
@@ -397,7 +418,7 @@ final class PinballScene: SKScene {
         #endif
     }
 
-    private func applyMagnet(to ball: BallNode) {
+    private func applyMagnet(to ball: BallNode, delta frameDuration: TimeInterval) {
         guard sceneTime < magnetActiveUntil else {
             parts.magnetGlow?.alpha = max(0, (parts.magnetGlow?.alpha ?? 0) - 0.04)
             return
@@ -406,7 +427,7 @@ final class PinballScene: SKScene {
         let centre = geometry.point(TableLayout.magnetCenter)
         let delta = CGVector(dx: centre.x - ball.position.x, dy: centre.y - ball.position.y)
         guard delta.magnitude < geometry.length(TableLayout.magnetRadius * 2) else { return }
-        let pull = delta.normalized() * geometry.length(PhysicsTuning.magnetPull) * 0.06
+        let pull = delta.normalized() * geometry.length(PhysicsTuning.magnetPull) * CGFloat(frameDuration * 3.6)
         ball.physicsBody?.velocity.dx += pull.dx
         ball.physicsBody?.velocity.dy += pull.dy
     }
@@ -441,6 +462,7 @@ final class PinballScene: SKScene {
     private func pushHUD() {
         guard sceneTime - lastHUDPush > 0.08, let model else { return }
         lastHUDPush = sceneTime
+        model.comboMultiplier = session.score.comboMultiplier
         model.missionRemaining = session.missions.remainingTime
         if model.score != session.score.score {
             model.score = session.score.score

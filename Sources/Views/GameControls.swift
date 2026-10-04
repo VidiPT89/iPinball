@@ -11,7 +11,6 @@ struct ControlOverlay: View {
     let scene: PinballScene
 
     @Environment(AppSettings.self) private var settings
-    @Environment(\.palette) private var palette
 
     var body: some View {
         GeometryReader { proxy in
@@ -159,6 +158,9 @@ struct GameKeyboardControls: ViewModifier {
             }
             // Keys held when the table loses the keyboard never report their
             // release, so the flippers are dropped rather than left up.
+            .onChange(of: model.isPaused) { _, paused in
+                if paused { stopCharging() }
+            }
             .onChange(of: hasKeyboardFocus) { _, focused in
                 if !focused { scene.releaseAllFlippers() }
             }
@@ -201,7 +203,7 @@ struct GameKeyboardControls: ViewModifier {
     // MARK: Plunger
 
     private func beginCharging() {
-        guard plungerStart == nil else { return }
+        guard !model.isPaused, scene.canPlunge, plungerStart == nil else { return }
         plungerStart = Date()
         chargeTimer = Timer.scheduledTimer(withTimeInterval: 1 / 30, repeats: true) { _ in
             guard let start = plungerStart else { return }

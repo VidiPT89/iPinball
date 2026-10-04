@@ -15,7 +15,7 @@
 - ✅ Three-ball multiball where everything scores double, lit jackpots and super jackpots
 - ✅ Combo multiplier up to 8× on back-to-back ramps and orbits, player multiplier up to 5× from the lanes and the drop bank
 - ✅ Ball save, extra balls, end-of-ball bonus, a stuck-ball watchdog and a ten-entry high score table with initials
-- ✅ Lamp inserts that flash at the shot to make, general illumination that goes out on a tilt, impact flashes, screen shake and slow motion on a jackpot
+- ✅ Lamp inserts that flash at the shot to make, general illumination that goes out on a tilt, lamp flashes on a jackpot and cabinet movement when nudged
 - ✅ Fully synthesised audio and Core Haptics — no sound files, every effect generated at launch
 - ✅ Bilingual PT-PT / English in-app language switch, independent of your device language
 - ✅ Dark, Light and System appearance, with the iVidi.dev orange, burnt yellow and black
@@ -74,7 +74,7 @@ xcodebuild -project iPinball.xcodeproj -scheme iPinball-iOS -destination 'generi
 xcodebuild -project iPinball.xcodeproj -scheme iPinball-macOS -destination 'platform=macOS' build
 ```
 
-The rules engine, the table layout, the save format and the translations are covered by unit tests that never touch SpriteKit, so the whole suite runs in well under a second.
+The suite covers rules, table clearances, persistence, translations and SpriteKit scene regressions, including an off-screen table render. Release builds keep the macOS hardened runtime enabled; Debug disables it so XCTest can load its test bundle.
 
 ## 📄 License
 

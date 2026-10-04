@@ -33,7 +33,7 @@ final class ScoreEngine {
     // MARK: - Scoring
 
     @discardableResult
-    func award(_ base: Int, label: ScoreLabel) -> Int {
+    func award(_ base: Int) -> Int {
         let total = base * comboMultiplier * playerMultiplier * (isMultiballActive ? 2 : 1)
         score += total
         return total
@@ -90,6 +90,7 @@ final class ScoreEngine {
         dropTargetsDownThisBall = 0
         loopsThisBall = 0
         comboMultiplier = 1
+        lastComboTime = -.greatestFiniteMagnitude
         litLanes.removeAll()
     }
 
@@ -101,6 +102,7 @@ final class ScoreEngine {
         score = 0
         playerMultiplier = 1
         comboMultiplier = 1
+        lastComboTime = -.greatestFiniteMagnitude
         litLanes.removeAll()
         bankClears = 0
         isMultiballActive = false

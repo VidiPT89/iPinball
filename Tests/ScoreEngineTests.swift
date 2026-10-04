@@ -12,7 +12,7 @@ final class ScoreEngineTests: XCTestCase {
     }
 
     func testBaseAwardWithNoMultipliers() {
-        let total = engine.award(ScoreValue.popBumper, label: .bumper)
+        let total = engine.award(ScoreValue.popBumper)
         XCTAssertEqual(total, ScoreValue.popBumper)
         XCTAssertEqual(engine.score, ScoreValue.popBumper)
     }
@@ -22,7 +22,7 @@ final class ScoreEngineTests: XCTestCase {
         engine.raisePlayerMultiplier()         // player 2
         engine.isMultiballActive = true        // ×2
 
-        let total = engine.award(1_000, label: .ramp)
+        let total = engine.award(1_000)
         XCTAssertEqual(total, 1_000 * 2 * 2 * 2)
     }
 
@@ -92,7 +92,7 @@ final class ScoreEngineTests: XCTestCase {
     }
 
     func testResettingBallCountersKeepsTheScoreAndPlayerMultiplier() {
-        engine.award(5_000, label: .ramp)
+        engine.award(5_000)
         engine.raisePlayerMultiplier()
         engine.registerDropTarget()
         engine.registerComboShot()
@@ -112,7 +112,7 @@ final class ScoreEngineTests: XCTestCase {
     }
 
     func testFullResetClearsEverything() {
-        engine.award(9_999, label: .jackpot)
+        engine.award(9_999)
         engine.raisePlayerMultiplier()
         engine.registerBankClear()
         engine.isMultiballActive = true

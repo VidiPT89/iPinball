@@ -7,6 +7,7 @@ final class BallNode: SKSpriteNode {
 
     /// While a ramp is carrying the ball, physics is switched off.
     var isOnRamp = false
+    var orbitEntry: (side: TableSide, time: TimeInterval)?
 
     /// How many times in a row the watchdog has had to free this ball, and
     /// when it last did. A ball that falls straight back into the same pocket
@@ -31,7 +32,7 @@ final class BallNode: SKSpriteNode {
         body.allowsRotation = true
         body.usesPreciseCollisionDetection = true
         body.categoryBitMask = PhysicsCategory.ball
-        body.collisionBitMask = PhysicsCategory.solid
+        body.collisionBitMask = PhysicsCategory.solid | PhysicsCategory.ball
         body.contactTestBitMask = PhysicsCategory.solid | PhysicsCategory.sensors
         physicsBody = body
     }
@@ -76,6 +77,7 @@ final class BallNode: SKSpriteNode {
     }
 
     func park(at point: CGPoint) {
+        orbitEntry = nil
         position = point
         lastPosition = point
         stuckSince = nil

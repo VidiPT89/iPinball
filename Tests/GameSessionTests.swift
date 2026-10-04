@@ -244,6 +244,64 @@ final class GameSessionTests: XCTestCase {
         XCTAssertTrue(session.handle(.ballDrained, at: 999).isEmpty)
     }
 
+    func testInactivePhasesIgnoreContactsAndNudges() {
+        for event: TableEvent in [.popBumper(index: 0), .nudged, .ballDrained] {
+            XCTAssertTrue(session.handle(event, at: 1).isEmpty)
+        }
+        XCTAssertEqual(session.phase, .ballReady)
+        XCTAssertEqual(session.score.score, 0)
+        _ = session.startGame(ballCount: 1, at: 2)
+        _ = session.launchBall(at: 2)
+        _ = session.handle(.ballDrained, at: 20)
+        XCTAssertTrue(session.handle(.popBumper(index: 0), at: 21).isEmpty)
+        XCTAssertTrue(session.handle(.nudged, at: 21).isEmpty)
+    }
+
+    func testRestartClearsOldBallSave() {
+        _ = session.launchBall(at: 0)
+        _ = session.startGame(ballCount: 3, at: 1)
+        XCTAssertFalse(session.isBallSaveActive)
+    }
+
+    func testMultiballSaveReplacesEveryDrainUntilExpiry() {
+        _ = session.launchBall(at: 0)
+        startMultiball()
+        let end = session.ballSaveEndsAt!
+        for _ in 0..<4 {
+            XCTAssertEqual(session.handle(.ballDrained, at: end - 1), [.multiballBallSaved])
+            XCTAssertEqual(session.ballsInPlay, 3)
+        }
+        _ = session.handle(.ballDrained, at: end)
+        XCTAssertEqual(session.ballsInPlay, 2)
+    }
+
+    func testBonusCanEarnAnExtraBallOnTheLastBall() {
+        _ = session.startGame(ballCount: 1, at: 0)
+        _ = session.launchBall(at: 0)
+        _ = session.handle(.dropTarget(index: 0), at: 1)
+        session.score.addRaw(ScoreValue.extraBallScoreThreshold - session.score.score - 500)
+        let effects = session.handle(.ballDrained, at: 20)
+        XCTAssertTrue(effects.contains(.extraBallAwarded))
+        XCTAssertTrue(effects.contains(.shootAgain))
+        XCTAssertEqual(session.phase, .ballReady)
+    }
+
+    func testExpiredSkillShotCannotScoreBetweenFrames() {
+        _ = session.launchBall(at: 0)
+        let lane = session.skillShotLane!
+        let effects = session.handle(.rolloverLane(index: lane), at: PhysicsTuning.skillShotWindow + 1)
+        XCTAssertFalse(effects.contains { if case .skillShotCollected = $0 { return true }; return false })
+    }
+
+    func testComboHistoryDoesNotCarryIntoNewGame() {
+        _ = session.launchBall(at: 0)
+        _ = session.handle(.rampCompleted(side: .left), at: 1)
+        _ = session.startGame(ballCount: 3, at: 2)
+        _ = session.launchBall(at: 2)
+        _ = session.handle(.rampCompleted(side: .left), at: 3)
+        XCTAssertEqual(session.score.comboMultiplier, 2)
+    }
+
     // MARK: - Helpers
 
     /// Walks the mission chain up to and including Lock 3, which is what puts
@@ -265,7 +323,7 @@ final class GameSessionTests: XCTestCase {
         switch mission.id {
         case "warmUp":       return .popBumper(index: 0)
         case "rampRush":     return .rampCompleted(side: .left)
-        case "targetFrenzy": return .dropTarget(index: Int.random(in: 0..<5))
+        case "targetFrenzy": return .dropTarget(index: (0..<5).first { !session.dropTargetsDown.contains($0) } ?? 0)
         case "orbitLoop":    return .orbitCompleted(side: .left)
         case "lock3":        return .saucerEntered(side: .left)
         default:             return .litJackpotHit
@@ -374,7 +432,7 @@ final class GameSessionRegressionTests: XCTestCase {
         switch mission.id {
         case "warmUp":       return .popBumper(index: 0)
         case "rampRush":     return .rampCompleted(side: .left)
-        case "targetFrenzy": return .dropTarget(index: Int.random(in: 0..<5))
+        case "targetFrenzy": return .dropTarget(index: (0..<5).first { !session.dropTargetsDown.contains($0) } ?? 0)
         case "orbitLoop":    return .orbitCompleted(side: .left)
         case "lock3":        return .saucerEntered(side: .left)
         default:             return .litJackpotHit

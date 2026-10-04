@@ -7,7 +7,10 @@ extension PinballScene: SKPhysicsContactDelegate {
 
     func didBegin(_ contact: SKPhysicsContact) {
         guard let (ball, other) = resolve(contact) else { return }
-        guard !ball.isOnRamp else { return }
+        guard balls.contains(where: { $0 === ball }), !ball.isOnRamp else { return }
+        guard other.categoryBitMask == PhysicsCategory.drain
+                || (session.phase == .playing && !heldSaucers.contains(ObjectIdentifier(ball)))
+        else { return }
 
         switch other.categoryBitMask {
         case PhysicsCategory.bumper:
@@ -78,9 +81,7 @@ extension PinballScene: SKPhysicsContactDelegate {
             dispatch(.dropTarget(index: target.index))
         case .standup:
             target.flash(reduceMotion: reduceMotion)
-            kick(ball, normal: CGVector(dx: ball.position.x - target.position.x,
-                                        dy: ball.position.y - target.position.y),
-                 speed: geometry.length(PhysicsTuning.standupKickSpeed))
+            // Standups are passive rubber targets; the contact solver supplies the rebound.
             if session.isJackpotLit {
                 dispatch(.litJackpotHit)
             }
@@ -91,7 +92,7 @@ extension PinballScene: SKPhysicsContactDelegate {
     // MARK: - Sensors
 
     private func hitRollover(_ node: SKNode?) {
-        guard let rollover = node as? RolloverNode, !rollover.isLit else { return }
+        guard let rollover = node as? RolloverNode else { return }
         rollover.setLit(true, palette: palette)
         dispatch(.rolloverLane(index: rollover.index))
     }
@@ -156,9 +157,13 @@ extension PinballScene: SKPhysicsContactDelegate {
                           minimumSpeed: geometry.length(PhysicsTuning.rampExitSpeed * 0.45))
         else { return }
 
+        ball.orbitEntry = nil
         ballsOnRamp.insert(id)
         ball.isOnRamp = true
         ball.physicsBody?.isDynamic = false
+        ball.physicsBody?.categoryBitMask = PhysicsCategory.none
+        ball.physicsBody?.collisionBitMask = PhysicsCategory.none
+        ball.physicsBody?.contactTestBitMask = PhysicsCategory.none
         ball.zPosition = 80
 
         let travel = SKAction.follow(geometry.smoothPath(through: ramp.path),
@@ -173,6 +178,9 @@ extension PinballScene: SKPhysicsContactDelegate {
                 guard let self, let ball else { return }
                 ball.isOnRamp = false
                 ball.zPosition = 60
+                ball.physicsBody?.categoryBitMask = PhysicsCategory.ball
+                ball.physicsBody?.collisionBitMask = PhysicsCategory.solid | PhysicsCategory.ball
+                ball.physicsBody?.contactTestBitMask = PhysicsCategory.solid | PhysicsCategory.sensors
                 ball.physicsBody?.isDynamic = true
                 ball.physicsBody?.velocity = KickModel.eject(
                     angle: ramp.exitAngle,
@@ -189,17 +197,17 @@ extension PinballScene: SKPhysicsContactDelegate {
 
     /// An orbit only counts when the ball enters one gate and leaves by the
     /// other, which is what separates a full loop from a rattle at the entry.
-    private func passOrbitGate(_ ball: BallNode, node: SKNode?) {
+    func passOrbitGate(_ ball: BallNode, node: SKNode?) {
         guard let name = node?.name, name.hasPrefix("orbit.") else { return }
         let sideKey = String(name.dropFirst("orbit.".count))
         guard let side = TableSide(rawValue: sideKey) else { return }
 
-        if let entry = orbitEntry, entry.side != side,
+        if let entry = ball.orbitEntry, entry.side != side,
            sceneTime - entry.time < PhysicsTuning.comboWindow {
-            orbitEntry = nil
+            ball.orbitEntry = nil
             dispatch(.orbitCompleted(side: side))
         } else {
-            orbitEntry = (side, sceneTime)
+            ball.orbitEntry = (side, sceneTime)
         }
     }
 
@@ -208,8 +216,6 @@ extension PinballScene: SKPhysicsContactDelegate {
     private func drain(_ ball: BallNode) {
         guard balls.contains(where: { $0 === ball }) else { return }
         removeBall(ball)
-        drainSparks(at: CGPoint(x: ball.position.x,
-                                y: geometry.point(CGPoint(x: 0, y: 0.02)).y))
         dispatch(.ballDrained)
     }
 

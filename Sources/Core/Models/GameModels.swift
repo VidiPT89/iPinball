@@ -45,6 +45,7 @@ enum GameEffect: Equatable {
     case wizardModeStarted
     case ballSaveArmed(duration: TimeInterval)
     case ballSaved
+    case multiballBallSaved
     case ballLost(ballsRemaining: Int)
     case extraBallAwarded
     case bonusAwarded(BonusReport)
@@ -59,11 +60,10 @@ enum GameEffect: Equatable {
     case gameOver(score: Int)
 }
 
-/// Short identifier for the floating text the scene pops at the impact point.
+/// Identifies the sound and haptic feedback for ordinary scoring switches.
 enum ScoreLabel: String, Equatable {
     case bumper, slingshot, target, dropTarget, bankClear
-    case spinner, ramp, orbit, lane, laneSet
-    case jackpot, superJackpot, mission, bonus, combo, skillShot
+    case spinner, ramp, orbit, laneSet
 }
 
 /// The end-of-ball bonus, broken down the way the display counts it out.

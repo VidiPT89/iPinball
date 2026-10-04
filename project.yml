@@ -19,6 +19,7 @@ settings:
 
 targets:
   iPinball-iOS:
+    productName: iPinball
     type: application
     platform: iOS
     sources:
@@ -42,11 +43,13 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball
+        DEVELOPMENT_TEAM: S769436W24
         PRODUCT_NAME: iPinball
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: false
 
   iPinball-macOS:
+    productName: iPinball
     type: application
     platform: macOS
     sources:
@@ -62,9 +65,14 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball
+        DEVELOPMENT_TEAM: S769436W24
         PRODUCT_NAME: iPinball
         COMBINE_HIDPI_IMAGES: true
         ENABLE_HARDENED_RUNTIME: true
+      configs:
+        Debug:
+          # XCTest injects an ad-hoc signed bundle into the host app.
+          ENABLE_HARDENED_RUNTIME: false
 
   iPinballTests:
     type: bundle.unit-test

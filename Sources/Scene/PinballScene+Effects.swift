@@ -37,8 +37,7 @@ extension PinballScene {
 
         case .jackpotCollected, .superJackpotCollected:
             whiteFlash()
-            shakeCamera(intensity: 1.0)
-            slowMotion()
+            pulseRails(times: 6)
 
         case .multiballStarted(let count):
             startMultiball(count: count)
@@ -48,11 +47,9 @@ extension PinballScene {
 
         case .missionCompleted:
             whiteFlash()
-            shakeCamera(intensity: 0.7)
 
         case .wizardModeStarted:
             pulseRails(times: 10)
-            slowMotion()
 
         case .tilted:
             parts.flippers.forEach { $0.disable() }
@@ -61,7 +58,14 @@ extension PinballScene {
             afterDelay(1.4) { [weak self] in self?.finishTilt() }
 
         case .tiltWarning:
-            shakeCamera(intensity: 0.5)
+            break
+
+        case .multiballBallSaved:
+            afterDelay(0.35) { [weak self] in
+                guard let self, self.session.phase == .playing,
+                      self.balls.count < self.session.ballsInPlay else { return }
+                self.spawnBall(at: CGPoint(x: 0.5, y: 1.12))
+            }
 
         case .ballSaved:
             afterDelay(0.35) { [weak self] in self?.serveBall() }
@@ -83,7 +87,6 @@ extension PinballScene {
         case .skillShotCollected:
             parts.rollovers.forEach { flash(at: $0.position, color: palette.accentLight,
                                             radius: geometry.length(0.09)) }
-            shakeCamera(intensity: 0.5)
 
         case .gameOver:
             endGame()
@@ -96,6 +99,7 @@ extension PinballScene {
     }
 
     private func finishTilt() {
+        guard session.isTilted else { return }
         // Every ball comes off the table, including the other multiball ones,
         // so what is on screen matches what the session thinks is in play.
         balls.forEach { $0.removeFromParent() }
@@ -122,7 +126,8 @@ extension PinballScene {
             run(.sequence([
                 .wait(forDuration: 0.18 * Double(index)),
                 .run { [weak self] in
-                    guard let self else { return }
+                    guard let self, self.session.phase == .playing,
+                          self.balls.count < self.session.ballsInPlay else { return }
                     let spawn = CGPoint(x: 0.5 + CGFloat(index - 1) * 0.06, y: 1.12)
                     let ball = self.spawnBall(at: spawn)
                     ball.physicsBody?.velocity = CGVector(
@@ -134,7 +139,6 @@ extension PinballScene {
             ]))
         }
         whiteFlash()
-        shakeCamera(intensity: 0.8)
     }
 
     // MARK: - Impact flourishes
@@ -155,29 +159,6 @@ extension PinballScene {
         ]))
     }
 
-    func drainSparks(at point: CGPoint) {
-        guard !reduceMotion else { return }
-        for _ in 0..<10 {
-            let spark = SKShapeNode(circleOfRadius: geometry.length(0.005))
-            spark.position = point
-            spark.fillColor = palette.danger
-            spark.strokeColor = .clear
-            spark.blendMode = .add
-            spark.zPosition = 72
-            addChild(spark)
-
-            let angle = CGFloat.random(in: (.pi * 0.15)...(.pi * 0.85))
-            let distance = geometry.length(CGFloat.random(in: 0.05...0.16))
-            spark.run(.sequence([
-                .group([
-                    .move(by: CGVector(angle: angle, magnitude: distance), duration: 0.45),
-                    .fadeOut(withDuration: 0.45),
-                ]),
-                .removeFromParent(),
-            ]))
-        }
-    }
-
     // MARK: - Whole-table flourishes
 
     func shakeCamera(intensity: CGFloat) {
@@ -193,19 +174,6 @@ extension PinballScene {
         steps.append(.move(to: home, duration: Motion.screenShake / 5))
         camera.removeAllActions()
         camera.run(.sequence(steps))
-    }
-
-    /// Time dials back for a moment so a jackpot lands instead of flashing past.
-    func slowMotion() {
-        guard !reduceMotion else { return }
-        physicsWorld.speed = 0.35
-        run(.sequence([
-            .wait(forDuration: Motion.slowMotion),
-            .run { [weak self] in
-                guard let self, !self.isPaused else { return }
-                self.physicsWorld.speed = 1
-            },
-        ]))
     }
 
     func whiteFlash() {
@@ -228,7 +196,7 @@ extension PinballScene {
     /// Flashes every insert and the steel with it, the way a real machine
     /// strobes its lamps when something big happens.
     func pulseRails(times: Int) {
-        guard let rails = parts.rails else { return }
+        guard !reduceMotion, let rails = parts.rails else { return }
         rails.removeAllActions()
         let lit = palette.accentLight
         rails.run(.sequence([

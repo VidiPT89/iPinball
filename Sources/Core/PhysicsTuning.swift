@@ -53,8 +53,6 @@ enum PhysicsTuning {
     /// harder, as it does on a real table.
     static let bumperKickSpeed: CGFloat = 1.9
     static let slingshotKickSpeed: CGFloat = 1.7
-    /// A standup target is passive: it only adds a little to the rebound.
-    static let standupKickSpeed: CGFloat = 0.5
     static let saucerEjectSpeed: CGFloat = 1.85
 
     // MARK: Variety

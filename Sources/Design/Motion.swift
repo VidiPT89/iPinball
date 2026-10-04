@@ -19,7 +19,6 @@ enum Motion {
     static let bumperPulse: TimeInterval = 0.12
     static let shockwave: TimeInterval = 0.35
     static let screenShake: TimeInterval = 0.15
-    static let slowMotion: TimeInterval = 0.40
     static let jackpotFlash: TimeInterval = 0.10
 
     // Dot-matrix display
