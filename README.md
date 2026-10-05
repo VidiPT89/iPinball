@@ -6,6 +6,10 @@
 [![Request Feature](https://img.shields.io/badge/Request-Feature-blue)](https://github.com/VidiPT89/iPinball/issues)
 [![CI](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml/badge.svg)](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml)
 
+<p align="center">
+  <img src="assets/demo.gif" alt="iPinball gameplay on iPhone: launching the ball, pop bumpers and the bonus display" width="320">
+</p>
+
 ## ✨ Features
 
 - ✅ A full 90s playfield — three pop bumpers, two slingshots, a five-target drop bank, four standup targets, two ramps, two orbits, a spinner, two saucers, a magnet and the P-I-N-B rollover lanes
