@@ -187,7 +187,7 @@ final class GameSession {
                                    : .jackpotCollected(points: total))
 
         case .ballLaunched:
-            return launchBall(at: time)
+            return []   // Answered above, before the phase guard.
 
         case .nudged:
             return handleNudge(at: time)

@@ -5,6 +5,7 @@ import SpriteKit
 ///
 /// Everything is drawn into a plain y-up bitmap through `TextureCanvas`, which
 /// keeps the drawing identical on iOS and macOS.
+@MainActor
 enum TextureFactory {
 
     private static var cache: [String: SKTexture] = [:]

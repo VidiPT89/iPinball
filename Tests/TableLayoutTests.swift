@@ -157,7 +157,7 @@ final class TableLayoutTests: XCTestCase {
     }
 
     func testTheTableIsTallerThanItIsWide() {
-        XCTAssertGreaterThan(TableLayout.aspectRatio, 1.5)
+        XCTAssertGreaterThan(TableLayout.height / TableLayout.width, 1.5)
     }
 
     func testThereIsOneRolloverPerLetter() {
@@ -262,8 +262,31 @@ final class PersistenceTests: XCTestCase {
         store.save(data)
 
         XCTAssertEqual(store.load().lifetime.gamesPlayed, 7)
-        store.clear()
-        XCTAssertEqual(store.load().lifetime.gamesPlayed, 0)
+    }
+
+    /// A save from before a setting existed has no key for it. The whole
+    /// save used to fail to decode, and the high scores went with it.
+    func testASaveMissingNewerFieldsKeepsItsScoresAndSettings() throws {
+        var original = SavedData()
+        original.settings.language = .pt
+        original.lifetime.gamesPlayed = 4
+        original.insert(HighScore(initials: "DAM", score: 4_321, missionsCompleted: 0))
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(
+            with: JSONEncoder().encode(original)) as? [String: Any])
+        var settings = try XCTUnwrap(json["settings"] as? [String: Any])
+        settings["autoPlunge"] = nil
+        json["settings"] = settings
+        var lifetime = try XCTUnwrap(json["lifetime"] as? [String: Any])
+        lifetime["playTime"] = nil
+        json["lifetime"] = lifetime
+        json["version"] = nil
+
+        let old = try JSONSerialization.data(withJSONObject: json)
+        let decoded = try JSONDecoder().decode(SavedData.self, from: old)
+        XCTAssertEqual(decoded.highScores.first?.score, 4_321)
+        XCTAssertEqual(decoded.settings.language, .pt)
+        XCTAssertFalse(decoded.settings.autoPlunge)
+        XCTAssertEqual(decoded.lifetime.gamesPlayed, 4)
     }
 }
 
@@ -282,6 +305,23 @@ final class LocalizationTests: XCTestCase {
                             "\(mission.id) has no name")
             XCTAssertNotNil(Strings.all["mission.\(mission.id).goal"],
                             "\(mission.id) has no goal")
+        }
+    }
+
+    /// The display shows the goal when a mission starts, so its numbers have
+    /// to be the rules' numbers. "Clear the bank" used to promise less than
+    /// the five drops the mission actually counts.
+    func testEveryMissionGoalQuotesItsOwnTargetAndTimeLimit() throws {
+        for mission in MissionEngine.catalog {
+            let goal = try XCTUnwrap(Strings.all["mission.\(mission.id).goal"])
+            for text in [goal.pt, goal.en] {
+                XCTAssertTrue(text.contains("\(mission.target)"),
+                              "\(mission.id): \"\(text)\" does not say \(mission.target)")
+                if let limit = mission.timeLimit {
+                    XCTAssertTrue(text.contains("\(Int(limit))"),
+                                  "\(mission.id): \"\(text)\" does not say \(Int(limit))s")
+                }
+            }
         }
     }
 

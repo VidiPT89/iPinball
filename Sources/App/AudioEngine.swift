@@ -12,6 +12,7 @@ enum SoundVoice: CaseIterable {
 /// A tiny synthesiser. Every sound is generated into a PCM buffer at launch,
 /// so the app carries no audio files and the whole soundtrack is a few
 /// hundred kilobytes of arithmetic.
+@MainActor
 final class AudioEngine {
 
     private let engine = AVAudioEngine()
@@ -28,7 +29,11 @@ final class AudioEngine {
     var isSoundEnabled = true
     var isMusicEnabled = true
 
-    private var isRunning = false
+    /// Whether the game wants sound now. The engine itself can stop under
+    /// it — an output device coming or going stops it — so `start()` checks
+    /// the engine, not this.
+    private var wantsToRun = false
+    private var isRunning: Bool { engine.isRunning }
     /// Stops a burst of identical contacts turning into a buzz.
     private var lastPlayed: [SoundVoice: TimeInterval] = [:]
     private var lastPlungerNotch = -1
@@ -54,27 +59,43 @@ final class AudioEngine {
             buffers[voice] = render(Recipe.for(voice))
         }
         musicBuffer = renderMusicLoop()
+
+        // Plugging in headphones or switching the output stops the engine.
+        // Left alone the game went silent, and the next voice asked to play
+        // on a stopped engine raised an exception.
+        NotificationCenter.default.addObserver(
+            forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.restartAfterConfigurationChange() }
+        }
     }
 
     func start() {
+        wantsToRun = true
         guard !isRunning else { return }
         configureSession()
         do {
             try engine.start()
-            isRunning = true
             voices.forEach { $0.play() }
             if isMusicEnabled { startMusic() }
         } catch {
-            isRunning = false
+            engine.stop()
         }
     }
 
     func stop() {
+        wantsToRun = false
         guard isRunning else { return }
         musicPlayer.stop()
         voices.forEach { $0.stop() }
         engine.pause()
-        isRunning = false
+    }
+
+    private func restartAfterConfigurationChange() {
+        guard wantsToRun else { return }
+        musicPlayer.stop()
+        voices.forEach { $0.stop() }
+        start()
     }
 
     private func configureSession() {

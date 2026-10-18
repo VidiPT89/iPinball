@@ -11,6 +11,9 @@ final class GameModel {
         let style: Style
         /// A second line, such as the points a jackpot was worth.
         let detail: String?
+        /// A second line still to be translated, such as a mission's goal.
+        /// Kept as a key so the display follows a change of language.
+        let detailKey: String?
         /// When the display starts showing it. A message that arrives during
         /// the bonus count waits for the count to finish.
         let showsAt: Date
@@ -18,10 +21,12 @@ final class GameModel {
 
         enum Style { case neutral, good, great, bad }
 
-        init(key: String, style: Style, detail: String? = nil, showsAt: Date = Date()) {
+        init(key: String, style: Style, detail: String? = nil, detailKey: String? = nil,
+             showsAt: Date = Date()) {
             self.key = key
             self.style = style
             self.detail = detail
+            self.detailKey = detailKey
             self.showsAt = showsAt
             self.id = UUID()
         }
@@ -63,7 +68,7 @@ final class GameModel {
             bonusStartedAt = bonusStartedAt?.addingTimeInterval(duration)
             if let message = banner {
                 banner = Banner(key: message.key, style: message.style, detail: message.detail,
-                                showsAt: message.showsAt.addingTimeInterval(duration))
+                                detailKey: message.detailKey, showsAt: message.showsAt.addingTimeInterval(duration))
             }
             displayPausedAt = nil
         }
@@ -110,10 +115,12 @@ final class GameModel {
         startedAt = Date()
     }
 
-    func show(_ key: String, style: Banner.Style, detail: String? = nil) {
+    func show(_ key: String, style: Banner.Style, detail: String? = nil,
+              detailKey: String? = nil) {
         let now = Date()
         let start = max(now, bonusEndsAt ?? now)
-        banner = Banner(key: key, style: style, detail: detail, showsAt: start)
+        banner = Banner(key: key, style: style, detail: detail, detailKey: detailKey,
+                        showsAt: start)
     }
 
     /// Folds one rules-engine effect into the HUD state.
@@ -149,6 +156,9 @@ final class GameModel {
             missionID = id
             missionCurrent = 0
             missionTarget = MissionEngine.mission(withID: id)?.target ?? 0
+            // The display spells out the mode and what it asks for, the way
+            // a 90s machine introduces every mode it starts.
+            show("mission.\(id).name", style: .neutral, detailKey: "mission.\(id).goal")
 
         case .missionProgressed(_, let current, let target):
             missionCurrent = current
@@ -184,7 +194,7 @@ final class GameModel {
             show("hud.superJackpot", style: .great, detail: points.grouped)
 
         case .wizardModeStarted:
-            show("hud.wizard", style: .great)
+            show("hud.wizard", style: .great, detailKey: "mission.finalShot.goal")
 
         case .ballSaved, .multiballBallSaved:
             show("hud.ballSaved", style: .good)

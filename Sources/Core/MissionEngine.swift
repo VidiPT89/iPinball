@@ -149,8 +149,10 @@ final class MissionEngine {
         case "jackpotHunt":
             if case .litJackpotHit = event { return true }
         case "finalShot":
+            // Not `.litJackpotHit`: a lit standup reports the jackpot and the
+            // standup together, and one shot counted twice.
             switch event {
-            case .dropTarget, .standupTarget, .rampCompleted, .orbitCompleted, .litJackpotHit:
+            case .dropTarget, .standupTarget, .rampCompleted, .orbitCompleted:
                 return true
             default:
                 return false

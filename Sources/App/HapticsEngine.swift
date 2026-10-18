@@ -8,6 +8,7 @@ enum HapticStrength { case light, medium, heavy }
 
 /// Core Haptics where it exists, and nothing at all where it does not, so the
 /// call sites never need to know which platform they are on.
+@MainActor
 final class HapticsEngine {
 
     var isEnabled = true
@@ -24,9 +25,12 @@ final class HapticsEngine {
         #if os(iOS)
         guard supportsHaptics, engine == nil else { return }
         engine = try? CHHapticEngine()
-        // iOS stops the engine whenever the app loses the foreground.
-        engine?.resetHandler = { [weak self] in try? self?.engine?.start() }
-        engine?.stoppedHandler = { _ in }
+        // iOS stops the engine whenever the app loses the foreground. The
+        // handler arrives on a queue of the engine's own, not the main one.
+        engine?.resetHandler = { @Sendable [weak self] in
+            Task { @MainActor in try? self?.engine?.start() }
+        }
+        engine?.stoppedHandler = { @Sendable _ in }
         try? engine?.start()
         light.prepare()
         medium.prepare()

@@ -383,8 +383,9 @@ final class PinballScene: SKScene {
             } else if ball.isStuck(at: sceneTime) {
                 freeStuckBall(ball)
             }
-            if session.phase == .playing { applyMagnet(to: ball, delta: delta) }
+            if magnetIsOn { applyMagnet(to: ball, delta: delta) }
         }
+        updateMagnetGlow()
 
         updateInserts()
         updateLaunchHint()
@@ -418,12 +419,18 @@ final class PinballScene: SKScene {
         #endif
     }
 
+    private var magnetIsOn: Bool {
+        session.phase == .playing && sceneTime < magnetActiveUntil
+    }
+
+    /// Once a frame, not once a ball: with three balls in play the glow used
+    /// to fade in and out three times as fast.
+    private func updateMagnetGlow() {
+        guard let glow = parts.magnetGlow else { return }
+        glow.alpha = magnetIsOn ? min(0.55, glow.alpha + 0.06) : max(0, glow.alpha - 0.04)
+    }
+
     private func applyMagnet(to ball: BallNode, delta frameDuration: TimeInterval) {
-        guard sceneTime < magnetActiveUntil else {
-            parts.magnetGlow?.alpha = max(0, (parts.magnetGlow?.alpha ?? 0) - 0.04)
-            return
-        }
-        parts.magnetGlow?.alpha = min(0.55, (parts.magnetGlow?.alpha ?? 0) + 0.06)
         let centre = geometry.point(TableLayout.magnetCenter)
         let delta = CGVector(dx: centre.x - ball.position.x, dy: centre.y - ball.position.y)
         guard delta.magnitude < geometry.length(TableLayout.magnetRadius * 2) else { return }

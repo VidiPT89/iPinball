@@ -87,6 +87,49 @@ struct SavedData: Codable, Equatable {
     }
 }
 
+// MARK: - Tolerant decoding
+//
+// Every field falls back to its default when the save does not carry it. With
+// the synthesised decoders one setting added in an update made the whole old
+// save unreadable, and `load()` started again from nothing: high scores,
+// lifetime stats and preferences all gone.
+
+extension GameSettings {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = GameSettings()
+        language = try c.decodeIfPresent(AppLanguage.self, forKey: .language) ?? d.language
+        theme = try c.decodeIfPresent(AppTheme.self, forKey: .theme) ?? d.theme
+        soundEnabled = try c.decodeIfPresent(Bool.self, forKey: .soundEnabled) ?? d.soundEnabled
+        musicEnabled = try c.decodeIfPresent(Bool.self, forKey: .musicEnabled) ?? d.musicEnabled
+        hapticsEnabled = try c.decodeIfPresent(Bool.self, forKey: .hapticsEnabled) ?? d.hapticsEnabled
+        autoPlunge = try c.decodeIfPresent(Bool.self, forKey: .autoPlunge) ?? d.autoPlunge
+        ballCount = try c.decodeIfPresent(Int.self, forKey: .ballCount) ?? d.ballCount
+    }
+}
+
+extension LifetimeStats {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        gamesPlayed = try c.decodeIfPresent(Int.self, forKey: .gamesPlayed) ?? 0
+        ballsPlayed = try c.decodeIfPresent(Int.self, forKey: .ballsPlayed) ?? 0
+        jackpots = try c.decodeIfPresent(Int.self, forKey: .jackpots) ?? 0
+        bestCombo = try c.decodeIfPresent(Int.self, forKey: .bestCombo) ?? 1
+        totalScore = try c.decodeIfPresent(Int.self, forKey: .totalScore) ?? 0
+        playTime = try c.decodeIfPresent(TimeInterval.self, forKey: .playTime) ?? 0
+    }
+}
+
+extension SavedData {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(Int.self, forKey: .version) ?? SavedData.currentVersion
+        settings = try c.decodeIfPresent(GameSettings.self, forKey: .settings) ?? GameSettings()
+        highScores = try c.decodeIfPresent([HighScore].self, forKey: .highScores) ?? []
+        lifetime = try c.decodeIfPresent(LifetimeStats.self, forKey: .lifetime) ?? LifetimeStats()
+    }
+}
+
 /// Codable round-trip on top of `UserDefaults`, with a version field so old
 /// payloads can be migrated instead of thrown away.
 final class GameStore {
@@ -110,10 +153,6 @@ final class GameStore {
     func save(_ value: SavedData) {
         guard let data = try? JSONEncoder().encode(value) else { return }
         defaults.set(data, forKey: key)
-    }
-
-    func clear() {
-        defaults.removeObject(forKey: key)
     }
 
     private func migrate(_ value: SavedData) -> SavedData {

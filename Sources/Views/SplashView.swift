@@ -146,8 +146,11 @@ struct SplashView: View {
         schedule(after: Motion.splashTotal) { finish() }
     }
 
-    private func schedule(after delay: TimeInterval, _ work: @escaping () -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
+    private func schedule(after delay: TimeInterval, _ work: @escaping @MainActor () -> Void) {
+        Task {
+            try? await Task.sleep(for: .seconds(delay))
+            work()
+        }
     }
 
     /// Guarded, because the timer and a tap can both arrive.

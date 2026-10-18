@@ -15,7 +15,6 @@ enum TableLayout {
     /// walls and formed pockets narrower than the ball.
     static let width: CGFloat = 1.09
     static let height: CGFloat = 1.85
-    static var aspectRatio: CGFloat { height / width }
 
     static let ballRadius: CGFloat = PhysicsTuning.ballRadiusRatio
     static let wallThickness: CGFloat = 0.012

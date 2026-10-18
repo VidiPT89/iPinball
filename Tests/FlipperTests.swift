@@ -6,6 +6,7 @@ import XCTest
 /// nothing in between. A ball resting on a held flipper pushed it back down,
 /// and the ball sat on a flipper that no longer did what the button said.
 /// `drive()` now runs every frame; these tests pin down what it asks for.
+@MainActor
 final class FlipperTests: XCTestCase {
 
     private let geometry = TableGeometry(sceneSize: CGSize(width: 560, height: 940))

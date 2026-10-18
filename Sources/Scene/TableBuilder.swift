@@ -19,6 +19,7 @@ struct TableParts {
 
 /// Turns `TableLayout` into SpriteKit nodes. The layout stays pure data, the
 /// builder owns everything that knows about pixels.
+@MainActor
 struct TableBuilder {
 
     let geometry: TableGeometry

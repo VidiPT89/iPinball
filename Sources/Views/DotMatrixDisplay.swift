@@ -138,8 +138,11 @@ struct DotMatrixDisplay: View {
                 .font(large(height))
                 .lineLimit(1)
                 .minimumScaleFactor(0.4)
-            if let detail = banner.detail {
-                Text(detail).font(medium(height))
+            if let detail = banner.detail ?? banner.detailKey.map({ settings.t($0) }) {
+                Text(detail.uppercased())
+                    .font(medium(height))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
         }
         .opacity(visible ? 1 : 0)

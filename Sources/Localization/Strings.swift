@@ -63,20 +63,20 @@ enum Strings {
 
     static let missions: [String: Pair] = [
         "mission.warmUp.name": ("Aquecimento", "Warm-Up"),
-        "mission.warmUp.goal": ("Acerta em 5 bumpers", "Hit 5 pop bumpers"),
+        "mission.warmUp.goal": ("5 bumpers em 20 segundos", "5 pop bumpers in 20 seconds"),
         "mission.rampRush.name": ("Corrida de Rampas", "Ramp Rush"),
-        "mission.rampRush.goal": ("Completa 4 rampas", "Complete 4 ramps"),
+        "mission.rampRush.goal": ("4 rampas em 30 segundos", "4 ramps in 30 seconds"),
         "mission.targetFrenzy.name": ("Frenesim de Alvos", "Target Frenzy"),
-        "mission.targetFrenzy.goal": ("Derruba o banco sem perder a bola",
-                                      "Clear the bank without draining"),
+        "mission.targetFrenzy.goal": ("Derruba 5 alvos sem perder a bola",
+                                      "Drop 5 targets without draining"),
         "mission.orbitLoop.name": ("Volta Completa", "Orbit Loop"),
-        "mission.orbitLoop.goal": ("Faz 3 orbits", "Complete 3 orbits"),
+        "mission.orbitLoop.goal": ("3 orbits em 25 segundos", "3 orbits in 25 seconds"),
         "mission.lock3.name": ("Prender 3", "Lock 3"),
-        "mission.lock3.goal": ("Prende 3 bolas nos saucers", "Lock 3 balls in the saucers"),
+        "mission.lock3.goal": ("Acerta 3 vezes nos saucers", "Shoot the saucers 3 times"),
         "mission.jackpotHunt.name": ("Caça ao Jackpot", "Jackpot Hunt"),
-        "mission.jackpotHunt.goal": ("Acerta no alvo aceso", "Hit the lit target"),
+        "mission.jackpotHunt.goal": ("3 jackpots nos alvos acesos", "3 jackpots on the lit targets"),
         "mission.finalShot.name": ("Tiro Final", "Final Shot"),
-        "mission.finalShot.goal": ("Tudo aceso, 60 segundos", "Everything lit, 60 seconds"),
+        "mission.finalShot.goal": ("12 tiros em 60 segundos", "12 shots in 60 seconds"),
     ]
 
     static let settings: [String: Pair] = [

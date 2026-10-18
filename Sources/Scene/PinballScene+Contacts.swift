@@ -3,7 +3,7 @@ import SpriteKit
 /// Translates physics contacts into `TableEvent`s. This file decides *what
 /// happened*; `GameSession` decides what it is worth and `+Effects` decides
 /// what it looks like.
-extension PinballScene: SKPhysicsContactDelegate {
+extension PinballScene: @preconcurrency SKPhysicsContactDelegate {
 
     func didBegin(_ contact: SKPhysicsContact) {
         guard let (ball, other) = resolve(contact) else { return }

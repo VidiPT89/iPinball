@@ -111,7 +111,10 @@ private struct FlipperZone: View {
             .accessibilityAddTraits(.isButton)
             .accessibilityAction {
                 onPress()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: onRelease)
+                Task {
+                    try? await Task.sleep(for: .milliseconds(120))
+                    onRelease()
+                }
             }
     }
 }
@@ -204,11 +207,15 @@ struct GameKeyboardControls: ViewModifier {
 
     private func beginCharging() {
         guard !model.isPaused, scene.canPlunge, plungerStart == nil else { return }
-        plungerStart = Date()
+        let scene = scene
+        let start = Date()
+        plungerStart = start
+        // The timer runs on the main run loop, which is the main actor.
         chargeTimer = Timer.scheduledTimer(withTimeInterval: 1 / 30, repeats: true) { _ in
-            guard let start = plungerStart else { return }
-            // A full second of holding is a full-strength launch.
-            scene.chargePlunger(to: CGFloat(Date().timeIntervalSince(start)))
+            MainActor.assumeIsolated {
+                // A full second of holding is a full-strength launch.
+                scene.chargePlunger(to: CGFloat(Date().timeIntervalSince(start)))
+            }
         }
     }
 

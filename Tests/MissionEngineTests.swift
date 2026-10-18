@@ -109,12 +109,24 @@ final class MissionEngineTests: XCTestCase {
 
         let shots: [TableEvent] = [
             .dropTarget(index: 0), .standupTarget(index: 0),
-            .rampCompleted(side: .left), .orbitCompleted(side: .right), .litJackpotHit,
+            .rampCompleted(side: .left), .orbitCompleted(side: .right),
         ]
         for (index, shot) in shots.enumerated() {
             _ = engine.handle(shot, at: Double(index))
         }
         XCTAssertEqual(engine.progress, shots.count)
+    }
+
+    /// A lit standup reports the jackpot and the standup together. Both used
+    /// to count, so one shot during multiball was worth two in Final Shot.
+    func testFinalShotCountsALitStandupOnce() {
+        for mission in MissionEngine.catalog where !mission.isWizard {
+            complete(mission)
+        }
+        engine.startNextMission(at: 0)
+        _ = engine.handle(.litJackpotHit, at: 1)
+        _ = engine.handle(.standupTarget(index: 0), at: 1)
+        XCTAssertEqual(engine.progress, 1)
     }
 
     func testResetClearsProgressAndHistory() {
@@ -195,7 +207,7 @@ final class MissionEngineTests: XCTestCase {
         case "orbitLoop":    return .orbitCompleted(side: .left)
         case "lock3":        return .saucerEntered(side: .left)
         case "jackpotHunt":  return .litJackpotHit
-        default:             return .litJackpotHit
+        default:             return .rampCompleted(side: .right)
         }
     }
 }
