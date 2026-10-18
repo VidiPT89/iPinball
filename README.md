@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" alt="iPinball app icon" width="160">
+</p>
+
 # iPinball 🎱
 
 > A native iOS & macOS pinball machine in the style of the 90s tables: one neon playfield, six chained missions, multiball and a wizard mode.
