@@ -8,15 +8,18 @@ import SpriteKit
 /// - `IPINBALL_AUTOPLAY=1` plunges every ball and works the flippers, so a
 ///   game plays itself: for recording the README demo, and for leaving a
 ///   build running on a device to see that nothing breaks.
+/// - `IPINBALL_PANEL=howToPlay` (or `settings`, `highScores`, `about`)
+///   opens that panel over the menu, for App Store screenshots.
 enum QAFlags {
-    static var startsInGame: Bool { isSet("IPINBALL_AUTOSTART") }
-    static var autoplay: Bool { isSet("IPINBALL_AUTOPLAY") }
+    static var startsInGame: Bool { value("IPINBALL_AUTOSTART") != nil }
+    static var autoplay: Bool { value("IPINBALL_AUTOPLAY") != nil }
+    static var panel: Panel? { value("IPINBALL_PANEL").flatMap(Panel.init(rawValue:)) }
 
-    private static func isSet(_ name: String) -> Bool {
+    private static func value(_ name: String) -> String? {
         #if DEBUG
-        ProcessInfo.processInfo.environment[name] != nil
+        ProcessInfo.processInfo.environment[name]
         #else
-        false
+        nil
         #endif
     }
 }

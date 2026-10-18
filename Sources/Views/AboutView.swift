@@ -40,6 +40,12 @@ struct AboutView: View {
                             url: Links.github,
                             label: settings.t("a11y.openGitHub"))
 
+                    linkRow(title: settings.t("about.privacy"),
+                            value: "PRIVACY.md",
+                            icon: "hand.raised.fill",
+                            url: Links.privacy,
+                            label: settings.t("a11y.openPrivacy"))
+
                     Divider().overlay(palette.faintColor.opacity(0.25))
 
                     HStack {

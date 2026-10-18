@@ -43,8 +43,8 @@ struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var screen: Screen = QAFlags.startsInGame ? .game : .splash
-    @State private var panel: Panel?
+    @State private var screen: Screen = RootView.firstScreen
+    @State private var panel: Panel? = QAFlags.panel
     @State private var audio = AudioEngine()
     @State private var haptics = HapticsEngine()
 
@@ -115,6 +115,12 @@ struct RootView: View {
         case .howToPlay:  HowToPlayView()
         case .about:      AboutView()
         }
+    }
+
+    /// The title card, unless a debug flag asks for a game or a panel.
+    private static var firstScreen: Screen {
+        if QAFlags.panel != nil { return .menu }
+        return QAFlags.startsInGame ? .game : .splash
     }
 
     private func advance(to next: Screen) {

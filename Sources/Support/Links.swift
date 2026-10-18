@@ -6,4 +6,6 @@ import Foundation
 enum Links {
     static let website = URL(string: "https://ividi.dev/")!
     static let github = URL(string: "https://github.com/VidiPT89/")!
+    /// The App Store Connect privacy policy URL points here too.
+    static let privacy = URL(string: "https://github.com/VidiPT89/iPinball/blob/main/PRIVACY.md")!
 }

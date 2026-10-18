@@ -40,6 +40,10 @@ targets:
         UIRequiresFullScreen: true
         LSApplicationCategoryType: public.app-category.arcade-games
         NSHumanReadableCopyright: Copyright © David Arsénio Martins
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # No cryptography beyond what the system does: no export paperwork.
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball
@@ -62,6 +66,9 @@ targets:
         LSApplicationCategoryType: public.app-category.arcade-games
         NSHumanReadableCopyright: Copyright © David Arsénio Martins
         NSHighResolutionCapable: true
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball

@@ -175,6 +175,7 @@ enum Strings {
         "about.website": ("Site", "Website"),
         "about.github": ("GitHub", "GitHub"),
         "about.version": ("Versão", "Version"),
+        "about.privacy": ("Privacidade", "Privacy"),
         "about.credits": ("Feito em Cascais, Portugal.", "Made in Cascais, Portugal."),
     ]
 
@@ -188,5 +189,6 @@ enum Strings {
         "a11y.languageToggle": ("Mudar idioma", "Switch language"),
         "a11y.openWebsite": ("Abrir ividi.dev", "Open ividi.dev"),
         "a11y.openGitHub": ("Abrir GitHub", "Open GitHub"),
+        "a11y.openPrivacy": ("Abrir a política de privacidade", "Open the privacy policy"),
     ]
 }
