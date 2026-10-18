@@ -18,6 +18,14 @@ final class TableSnapshotTests: XCTestCase {
         let view = SKView(frame: CGRect(origin: .zero, size: size))
         view.presentScene(scene)
 
+        // One ball on the playfield and one up on a ramp, so the picture
+        // shows the steel, the shadows and how far a raised ball's falls.
+        let rolling = scene.spawnBall(at: CGPoint(x: 0.5, y: 0.62))
+        let raised = scene.spawnBall(at: CGPoint(x: 0.30, y: 1.02))
+        raised.isOnRamp = true
+        [rolling, raised].forEach { $0.updateLighting() }
+        XCTAssertEqual(rolling.shadow.parent, scene, "a ball has to lay its shadow on the table")
+
         guard let texture = view.texture(from: scene),
               let image = texture.cgImage() as CGImage? else {
             throw XCTSkip("no renderer available in this environment")
@@ -137,5 +145,38 @@ final class SceneLifecycleTests: XCTestCase {
         model.setDisplayPaused(true, at: start.addingTimeInterval(1))
         model.setDisplayPaused(false, at: start.addingTimeInterval(101))
         XCTAssertEqual(model.bonusStartedAt, start.addingTimeInterval(100))
+    }
+}
+
+/// The shadow is what shows the ball's height: on a ramp it has to fall
+/// further from the ball than on the playfield, and it must never spin.
+@MainActor
+final class BallLightingTests: XCTestCase {
+
+    func testARaisedBallThrowsItsShadowFurther() {
+        let ball = BallNode(radius: 10)
+        ball.position = CGPoint(x: 100, y: 100)
+        ball.updateLighting()
+        let onTable = ball.shadow.position.distance(to: ball.position)
+
+        ball.isOnRamp = true
+        ball.updateLighting()
+        let onRamp = ball.shadow.position.distance(to: ball.position)
+
+        XCTAssertGreaterThan(onTable, 0, "the shadow sits off to one side of the ball")
+        XCTAssertGreaterThan(onRamp, onTable * 1.4)
+    }
+
+    func testTheShadowIgnoresTheBallsSpin() {
+        let ball = BallNode(radius: 10)
+        ball.position = CGPoint(x: 50, y: 50)
+        ball.updateLighting()
+        let still = ball.shadow.position
+
+        ball.zRotation = 2.4
+        ball.updateLighting()
+        XCTAssertEqual(ball.shadow.position.x, still.x, accuracy: 0.001)
+        XCTAssertEqual(ball.shadow.position.y, still.y, accuracy: 0.001)
+        XCTAssertEqual(ball.shadow.zRotation, 0)
     }
 }

@@ -2,11 +2,16 @@ import SpriteKit
 
 // MARK: - Pop bumper
 
+/// A pop bumper from above: the coloured base skirt on the playfield, the
+/// chrome ring that the coil pulls down, and the lit plastic cap on top.
 final class BumperNode: SKNode {
 
     let index: Int
     private let cap: SKSpriteNode
+    /// The bulb flaring inside the cap when the switch closes.
+    private let flare: SKSpriteNode
     private let glow: SKSpriteNode
+    private let skirt: SKShapeNode
     private let ring: SKShapeNode
     private let radius: CGFloat
 
@@ -18,25 +23,44 @@ final class BumperNode: SKNode {
             diameter: radius * 2, color: palette.accentLight))
         cap.size = CGSize(width: radius * 2, height: radius * 2)
 
+        flare = SKSpriteNode(texture: TextureFactory.radialGlow(
+            diameter: radius * 2, color: .white))
+        flare.size = cap.size
+        flare.alpha = 0
+        flare.blendMode = .add
+        flare.zPosition = 0.5
+
         glow = SKSpriteNode(texture: TextureFactory.radialGlow(
             diameter: radius * 4, color: palette.accentLight))
         glow.size = CGSize(width: radius * 4, height: radius * 4)
         glow.alpha = 0.22
         glow.blendMode = .add
-        glow.zPosition = -1
+        glow.zPosition = -1.5
 
-        ring = SKShapeNode(circleOfRadius: radius * 1.22)
-        ring.strokeColor = CabinetColors.steel.withAlphaComponent(0.85)
-        ring.lineWidth = max(1.2, radius * 0.10)
+        skirt = SKShapeNode(circleOfRadius: radius * 1.36)
+        skirt.lineWidth = max(1, radius * 0.05)
+        skirt.zPosition = -1
+
+        ring = SKShapeNode(circleOfRadius: radius * 1.14)
         ring.fillColor = .clear
+        ring.strokeColor = CabinetColors.steel
+        ring.lineWidth = max(1.6, radius * 0.16)
         ring.zPosition = -0.5
+        let shine = SKShapeNode(circleOfRadius: radius * 1.14)
+        shine.fillColor = .clear
+        shine.strokeColor = CabinetColors.steelHighlight.withAlphaComponent(0.8)
+        shine.lineWidth = max(0.6, radius * 0.04)
+        ring.addChild(shine)
 
         super.init()
         position = geometry.point(config.center)
         zPosition = 20
         addChild(glow)
+        addChild(skirt)
         addChild(ring)
         addChild(cap)
+        addChild(flare)
+        repaint(with: palette)
 
         let body = SKPhysicsBody(circleOfRadius: radius)
         body.isDynamic = false
@@ -49,23 +73,32 @@ final class BumperNode: SKNode {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
+    /// The bulb flashes and the ring snaps down and back. The cap itself
+    /// stays put: it is screwed to the body and never moves on a real one.
     func pulse(reduceMotion: Bool) {
         glow.removeAllActions()
         glow.run(.sequence([
             .fadeAlpha(to: 0.85, duration: 0.04),
             .fadeAlpha(to: 0.22, duration: Motion.bumperPulse * 2),
         ]))
+        flare.removeAllActions()
+        flare.run(.sequence([
+            .fadeAlpha(to: 0.7, duration: 0.03),
+            .fadeAlpha(to: 0, duration: Motion.bumperPulse * 1.5),
+        ]))
         guard !reduceMotion else { return }
-        cap.removeAllActions()
-        cap.run(.sequence([
-            .scale(to: 1.18, duration: Motion.bumperPulse / 2),
-            .scale(to: 1.0, duration: Motion.bumperPulse / 2),
+        ring.removeAllActions()
+        ring.run(.sequence([
+            .scale(to: 0.90, duration: Motion.bumperPulse / 3),
+            .scale(to: 1.0, duration: Motion.bumperPulse),
         ]))
     }
 
     func repaint(with palette: Palette) {
         cap.texture = TextureFactory.bumperCap(diameter: radius * 2,
                                                color: palette.accentLight)
+        skirt.fillColor = palette.accentDark.blended(with: .black, amount: 0.45)
+        skirt.strokeColor = palette.accent.withAlphaComponent(0.55)
     }
 }
 
@@ -334,6 +367,9 @@ final class SpinnerNode: SKNode {
 
 // MARK: - Slingshot
 
+/// A slingshot: a moulded plastic cover lit from below, a post at each
+/// corner and a white rubber band round them, the kicking face towards the
+/// middle of the table.
 final class SlingshotNode: SKShapeNode {
 
     let side: TableSide
@@ -353,11 +389,22 @@ final class SlingshotNode: SKShapeNode {
 
         let scenePath = geometry.path(through: config.vertices, closed: true)
         path = scenePath
-        fillColor = palette.accentDark.withAlphaComponent(0.55)
         strokeColor = CabinetColors.rubber
         lineWidth = max(2, geometry.length(0.009))
         lineJoin = .round
         zPosition = 16
+        repaint(with: palette)
+
+        let postRadius = geometry.length(TableLayout.ballRadius * 0.42)
+        for vertex in config.vertices {
+            let post = SKShapeNode(circleOfRadius: postRadius)
+            post.position = geometry.point(vertex)
+            post.fillColor = CabinetColors.steel
+            post.strokeColor = CabinetColors.steelHighlight
+            post.lineWidth = max(0.6, postRadius * 0.25)
+            post.zPosition = 0.5
+            addChild(post)
+        }
 
         let body = SKPhysicsBody(polygonFrom: scenePath)
         body.isDynamic = false
@@ -370,18 +417,22 @@ final class SlingshotNode: SKShapeNode {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
+    /// The flasher under the plastic fires with the coil.
     func fire(palette: Palette, reduceMotion: Bool) {
         removeAllActions()
         run(.sequence([
-            .run { [weak self] in self?.fillColor = palette.accentLight },
+            .run { [weak self] in self?.fillColor = .white },
             .wait(forDuration: reduceMotion ? 0.05 : 0.09),
-            .run { [weak self] in
-                self?.fillColor = palette.accentDark.withAlphaComponent(0.55)
-            },
+            .run { [weak self] in self?.fillColor = Self.restingTint },
         ]))
     }
 
     func repaint(with palette: Palette) {
-        fillColor = palette.accentDark.withAlphaComponent(0.55)
+        let box = path?.boundingBoxOfPath.size ?? CGSize(width: 1, height: 1)
+        fillTexture = TextureFactory.slingshotPlastic(size: box, color: palette.accent)
+        fillColor = Self.restingTint
     }
+
+    /// The texture is the lit plastic; at rest the lamp under it is dimmer.
+    private static let restingTint = PlatformColor(white: 0.72, alpha: 1)
 }

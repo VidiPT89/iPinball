@@ -16,7 +16,8 @@ struct Palette {
     let danger: PlatformColor
     let success: PlatformColor
     /// The playfield stays dark in both schemes. A pinball table is a box lit
-    /// from the inside, and the neon needs black behind it.
+    /// from the inside, and the lamps need a dark print behind them; not
+    /// black, though, or nothing standing on it could cast a shadow.
     let tableFelt: PlatformColor
     let tableRail: PlatformColor
 
@@ -32,7 +33,7 @@ struct Palette {
         textFaint: .hex(0x5B6474),
         danger: .hex(0xEF4444),
         success: .hex(0x22C55E),
-        tableFelt: .hex(0x0D0D14),
+        tableFelt: .hex(0x17162A),
         tableRail: .hex(0x1C1C2B)
     )
 
@@ -48,7 +49,7 @@ struct Palette {
         textFaint: .hex(0x94A3B8),
         danger: .hex(0xC0392B),
         success: .hex(0x15803D),
-        tableFelt: .hex(0x121220),
+        tableFelt: .hex(0x1B1A30),
         tableRail: .hex(0x2A2A3D)
     )
 

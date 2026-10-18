@@ -77,6 +77,9 @@ final class PinballScene: SKScene {
         ballsOnRamp.removeAll()
         heldSaucers.removeAll()
 
+        // Textures are cached by size. A window dragged wider passes through
+        // dozens of sizes, and the playfield alone is several megabytes each.
+        TextureFactory.purge()
         geometry = TableGeometry(sceneSize: size, topInset: hudInset)
         physicsWorld.gravity = CGVector(
             dx: 0,
@@ -237,8 +240,10 @@ final class PinballScene: SKScene {
         let radius = geometry.length(TableLayout.ballRadius)
         let ball = BallNode(radius: radius)
         ball.park(at: geometry.point(layoutPoint))
+        addChild(ball.shadow)
         addChild(ball)
         balls.append(ball)
+        ball.updateLighting()
         return ball
     }
 
@@ -394,6 +399,7 @@ final class PinballScene: SKScene {
 
     override func didSimulatePhysics() {
         guard !isPaused else { return }
+        balls.forEach { $0.updateLighting() }
         // A ball that somehow ended up outside the table is recovered rather
         // than lost, so the player never sees a ball simply vanish.
         for ball in balls where !ball.isOnRamp {

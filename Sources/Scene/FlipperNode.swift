@@ -14,6 +14,10 @@ final class FlipperNode: SKNode {
     private let sign: CGFloat
     private let blade: SKShapeNode
     private let halo: SKShapeNode
+    private let shadow: SKShapeNode
+    /// Where the shadow falls on the playfield, in scene points. The blade
+    /// turns, the light does not, so the offset is turned back every frame.
+    private let shadowOffset: CGVector
 
     private(set) var isPressed = false
 
@@ -29,6 +33,9 @@ final class FlipperNode: SKNode {
 
         blade = SKShapeNode(path: path)
         halo = SKShapeNode(path: path)
+        shadow = SKShapeNode(path: path)
+        shadowOffset = CGVector(dx: geometry.length(TableDepth.shadowOffset.dx),
+                                dy: geometry.length(TableDepth.shadowOffset.dy))
         angleRange = PhysicsTuning.flipperActiveAngle - PhysicsTuning.flipperRestAngle
 
         super.init()
@@ -36,6 +43,14 @@ final class FlipperNode: SKNode {
         position = pivotInScene
         zRotation = sign * PhysicsTuning.flipperRestAngle
         zPosition = 40
+
+        shadow.fillColor = .black.withAlphaComponent(0.42)
+        shadow.strokeColor = .black.withAlphaComponent(0.18)
+        shadow.lineWidth = thickness * 0.35
+        // Relative to the flipper, so it lands on the shadow layer's depth.
+        shadow.zPosition = TableDepth.dynamicShadow - 40
+        addChild(shadow)
+        placeShadow()
 
         halo.fillColor = .clear
         halo.strokeColor = palette.accent.withAlphaComponent(0.0)
@@ -132,6 +147,13 @@ final class FlipperNode: SKNode {
         let limit = PhysicsTuning.flipperAngularSpeed * (isPressed ? 1 : 0.7)
         let speed = max(-limit, min(limit, (target - travel) * PhysicsTuning.flipperHoldGain))
         body.angularVelocity = sign * speed
+        placeShadow()
+    }
+
+    private func placeShadow() {
+        let turn = -zRotation
+        shadow.position = CGPoint(x: shadowOffset.dx * cos(turn) - shadowOffset.dy * sin(turn),
+                                  y: shadowOffset.dx * sin(turn) + shadowOffset.dy * cos(turn))
     }
 
     /// Whether a ball centred at `point` is lying on this flipper while it is

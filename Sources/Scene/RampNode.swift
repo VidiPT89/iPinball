@@ -3,15 +3,16 @@ import SpriteKit
 /// A ramp drawn the way one is actually built, rather than as a thick line.
 ///
 /// The climb is a tapering surface with a bright rail down each edge; the way
-/// back is a thin wire habitrail with rungs across it. Both sit on a soft
-/// shadow, which is what tells the eye the track passes *over* the targets and
-/// slingshot it crosses. Painting it as one thick stroke with a felt-coloured
+/// back is a thin wire habitrail with rungs across it. Both cast a soft
+/// shadow well away from the track (see `TableBuilder.addShadows`), which is
+/// what tells the eye it passes *over* the targets and slingshot it crosses. Painting it as one thick stroke with a felt-coloured
 /// core made it read as a slot cut into the table instead.
 final class RampNode: SKNode {
 
     let side: TableSide
+    /// The outline of the track, for the table's shadow layer to cast.
+    private(set) var deckPath: CGPath?
 
-    private let shadow = SKShapeNode()
     private let surface = SKShapeNode()
     private let rails = SKShapeNode()
     private let rungs = SKShapeNode()
@@ -36,7 +37,6 @@ final class RampNode: SKNode {
 
         let (left, right) = edges(along: centre, apex: apex, geometry: geometry)
 
-        addChild(shadow)
         addChild(surface)
         addChild(rails)
         addChild(rungs)
@@ -102,11 +102,7 @@ final class RampNode: SKNode {
         surface.path = path
         surface.lineWidth = 0
         surface.zPosition = 29
-
-        shadow.path = path
-        shadow.lineWidth = 0
-        shadow.position = CGPoint(x: geometry.length(0.006), y: -geometry.length(0.012))
-        shadow.zPosition = 28
+        deckPath = path
     }
 
     private func buildRails(left: [CGPoint], right: [CGPoint],
@@ -181,7 +177,6 @@ final class RampNode: SKNode {
         // Clear plastic with a steel wireform along each edge, as 90s ramps
         // were built, only the entrance flap carrying the table's colour.
         surface.fillColor = CabinetColors.steelHighlight.withAlphaComponent(0.10)
-        shadow.fillColor = .black.withAlphaComponent(0.45)
         rails.strokeColor = CabinetColors.steel
         rungs.strokeColor = CabinetColors.steel.withAlphaComponent(0.45)
         flare.strokeColor = palette.accent

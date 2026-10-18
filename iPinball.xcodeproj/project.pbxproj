@@ -58,6 +58,7 @@
 		618CF60DACF93A86AD653308 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56A52725CE82D601B695653 /* AudioEngine.swift */; };
 		630D3E65776B2D07859F4DD4 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BBDC9C0A75A9094F07BDC /* GameSession.swift */; };
 		631CDB2870607DDC107DC7D8 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3396483B01C8E995BB05D6C /* TableLayout.swift */; };
+		6C18D396C17215E4A5A50A15 /* TableLighting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D454E71B9C2E7E278F5880 /* TableLighting.swift */; };
 		6D46F95A988053CC8DA95A2A /* RampNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568644C25FE074EA6A924C35 /* RampNode.swift */; };
 		6DE24D82C9F94CF32C32CD8F /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C310062A34F49EAFACFD7D /* HUDView.swift */; };
 		76DAF8DAA4203FC2998CE717 /* PhysicsCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45E373F8B851D2612EE4F9E /* PhysicsCategories.swift */; };
@@ -90,6 +91,7 @@
 		A90EFC2FE5ADFED87F1017D4 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A6815D644027F2AC5B56CB /* Motion.swift */; };
 		A9A74CA516A27F664EDFA427 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A978F94A17EFB834D2D689 /* SettingsView.swift */; };
 		AE31931FCCE378C5FD8B7327 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FEA225A18E7956D4004919 /* Typography.swift */; };
+		B1DBBD25C42F5439C7929A2F /* TableLighting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D454E71B9C2E7E278F5880 /* TableLighting.swift */; };
 		B54D5D71BCB5CBA9CB6A9963 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B3F0B942C4A1C02ABDB531 /* Components.swift */; };
 		B599556E26D84C93A9099FAD /* FlipperNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A567AE3E5C504980FF3234DC /* FlipperNode.swift */; };
 		B86040CE2989C3207E196FD7 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564AC7984C863F7EEDE20B88 /* HowToPlayView.swift */; };
@@ -155,6 +157,7 @@
 		6A4981EA910AA0B555382AA8 /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
 		6AEA37EFCE1569D526F6539B /* TableSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableSnapshotTests.swift; sourceTree = "<group>"; };
 		7287CB1D04BCF89556813AFF /* FlipperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperTests.swift; sourceTree = "<group>"; };
+		73D454E71B9C2E7E278F5880 /* TableLighting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableLighting.swift; sourceTree = "<group>"; };
 		76A978F94A17EFB834D2D689 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		77F0E4F6E7E0F99C1CCB8B57 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7AFE732B33E1961908B3CEBC /* ArcadeRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcadeRulesTests.swift; sourceTree = "<group>"; };
@@ -346,6 +349,7 @@
 				568644C25FE074EA6A924C35 /* RampNode.swift */,
 				E19E6F25622AA4C1D29AFE03 /* TableBuilder.swift */,
 				9D2CCF5BC0965B69F5007890 /* TableGeometry.swift */,
+				73D454E71B9C2E7E278F5880 /* TableLighting.swift */,
 				A8B1341AC6F8FB46616DF9A6 /* TableNodes.swift */,
 				C9AC02DAA1FE1BEBBC2AE98A /* TextureFactory.swift */,
 			);
@@ -513,6 +517,7 @@
 				FA68E7E5E207472E5DC847C5 /* TableBuilder.swift in Sources */,
 				0B21D1FA3DA0D65B76E46306 /* TableGeometry.swift in Sources */,
 				631CDB2870607DDC107DC7D8 /* TableLayout.swift in Sources */,
+				B1DBBD25C42F5439C7929A2F /* TableLighting.swift in Sources */,
 				7C5EB355B2B353D541B51C9C /* TableNodes.swift in Sources */,
 				7D0DC140C0571CA350B29CB3 /* TextureFactory.swift in Sources */,
 				BD38463069C2AC4B5AB91620 /* Typography.swift in Sources */,
@@ -584,6 +589,7 @@
 				02C68F410ED5437731CEBC31 /* TableBuilder.swift in Sources */,
 				A22C9009B1AAA0E0126C4E1C /* TableGeometry.swift in Sources */,
 				58E420F4EB5F899E2DB1AE40 /* TableLayout.swift in Sources */,
+				6C18D396C17215E4A5A50A15 /* TableLighting.swift in Sources */,
 				D01EFD28105D41CD3B409F82 /* TableNodes.swift in Sources */,
 				0C8ADDEEA92E5A16CA91A072 /* TextureFactory.swift in Sources */,
 				AE31931FCCE378C5FD8B7327 /* Typography.swift in Sources */,

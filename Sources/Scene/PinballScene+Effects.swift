@@ -38,6 +38,7 @@ extension PinballScene {
         case .jackpotCollected, .superJackpotCollected:
             whiteFlash()
             pulseRails(times: 6)
+            flickerGeneralIllumination()
 
         case .multiballStarted(let count):
             startMultiball(count: count)
@@ -119,6 +120,20 @@ extension PinballScene {
         heldSaucers.removeAll()
     }
 
+    /// The GI drops out for a beat while the flashers fire, which is how a
+    /// Williams machine of the era makes a jackpot or a multiball land.
+    private func flickerGeneralIllumination() {
+        guard !reduceMotion, !session.isTilted,
+              let sheet = parts.generalIllumination else { return }
+        sheet.removeAllActions()
+        sheet.run(.sequence([
+            .fadeAlpha(to: 0.55, duration: 0.03), .wait(forDuration: 0.09),
+            .fadeAlpha(to: 0, duration: 0.03), .wait(forDuration: 0.07),
+            .fadeAlpha(to: 0.55, duration: 0.03), .wait(forDuration: 0.09),
+            .fadeAlpha(to: 0, duration: 0.15),
+        ]))
+    }
+
     private func startMultiball(count: Int) {
         // One ball is already live; the rest drop in from the bumper nest.
         let extras = max(0, count - max(1, balls.count))
@@ -139,6 +154,7 @@ extension PinballScene {
             ]))
         }
         whiteFlash()
+        flickerGeneralIllumination()
     }
 
     // MARK: - Impact flourishes
@@ -228,6 +244,8 @@ extension PinballScene {
     func repaint(with newPalette: Palette) {
         palette = newPalette
         TextureFactory.purge()
+        parts.playfield?.texture = TableBuilder(geometry: geometry, palette: newPalette)
+            .playfieldTexture()
         parts.flippers.forEach { $0.repaint(with: newPalette) }
         parts.bumpers.forEach { $0.repaint(with: newPalette) }
         parts.dropTargets.forEach { $0.repaint(with: newPalette) }

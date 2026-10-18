@@ -15,6 +15,7 @@ struct TableParts {
     var magnetGlow: SKSpriteNode?
     var inserts = InsertBank()
     var generalIllumination: SKSpriteNode?
+    var playfield: SKSpriteNode?
 }
 
 /// Turns `TableLayout` into SpriteKit nodes. The layout stays pure data, the
@@ -28,7 +29,7 @@ struct TableBuilder {
     func build(into scene: SKScene) -> TableParts {
         var parts = TableParts()
 
-        addFelt(to: scene)
+        parts.playfield = addPlayfield(to: scene)
         addArtwork(to: scene)
         parts.inserts = addInserts(to: scene)
         parts.rails = addWalls(to: scene)
@@ -90,34 +91,13 @@ struct TableBuilder {
             return node
         }
 
+        addShadows(to: scene, ramps: parts.ramps)
+        addGlass(to: scene)
         parts.generalIllumination = addGeneralIllumination(to: scene)
         return parts
     }
 
     // MARK: - Pieces
-
-    private func addFelt(to scene: SKScene) {
-        let rect = CGRect(x: geometry.origin.x,
-                          y: geometry.origin.y,
-                          width: geometry.length(TableLayout.width),
-                          height: geometry.length(TableLayout.height))
-        let felt = SKShapeNode(rect: rect, cornerRadius: geometry.length(0.05))
-        felt.fillColor = palette.tableFelt
-        felt.strokeColor = CabinetColors.steel.withAlphaComponent(0.5)
-        felt.lineWidth = 3
-        felt.zPosition = -10
-        scene.addChild(felt)
-
-        // A soft warm wash behind the bumper nest, so the table is not flat.
-        let wash = SKSpriteNode(texture: TextureFactory.radialGlow(
-            diameter: geometry.length(1.3), color: palette.accent))
-        wash.size = CGSize(width: geometry.length(1.3), height: geometry.length(1.3))
-        wash.position = geometry.point(CGPoint(x: 0.5, y: 1.05))
-        wash.alpha = 0.10
-        wash.blendMode = .add
-        wash.zPosition = -9
-        scene.addChild(wash)
-    }
 
     private func addWalls(to scene: SKScene) -> SKShapeNode {
         let combined = CGMutablePath()
