@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// The layout is pure data, so the table can be proven sane without ever
 /// rendering it: nothing off the playfield, nothing stacked on top of
@@ -247,13 +247,13 @@ final class PersistenceTests: XCTestCase {
     }
 
     func testAnEmptyStoreReturnsDefaults() {
-        let defaults = UserDefaults(suiteName: "iPinballTests.\(UUID().uuidString)")!
+        let defaults = UserDefaults(suiteName: "iVidiPinballTests.\(UUID().uuidString)")!
         let store = GameStore(defaults: defaults)
         XCTAssertEqual(store.load(), SavedData())
     }
 
     func testStoredDataComesBackOut() {
-        let defaults = UserDefaults(suiteName: "iPinballTests.\(UUID().uuidString)")!
+        let defaults = UserDefaults(suiteName: "iVidiPinballTests.\(UUID().uuidString)")!
         let store = GameStore(defaults: defaults)
 
         var data = SavedData()

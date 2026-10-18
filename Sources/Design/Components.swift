@@ -87,7 +87,7 @@ struct GlowCard<Content: View>: View {
 
 // MARK: - Neon wordmark
 
-/// The iPinball logo: the app icon's artwork, with the same continuous
+/// The iVidiPinball logo: the app icon's artwork, with the same continuous
 /// corners the system gives the icon, so the menu and the Home Screen match.
 struct LogoBadge: View {
     var size: CGFloat = 150
@@ -105,7 +105,7 @@ struct LogoBadge: View {
             .shadow(color: Self.glow.opacity(0.55), radius: size * 0.14)
             .shadow(color: .black.opacity(0.35), radius: size * 0.04, y: size * 0.03)
             .accessibilityElement()
-            .accessibilityLabel(Text(verbatim: "iPinball"))
+            .accessibilityLabel(Text(verbatim: "iVidiPinball"))
             .accessibilityAddTraits(.isHeader)
     }
 }

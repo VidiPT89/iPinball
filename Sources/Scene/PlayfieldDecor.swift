@@ -183,7 +183,7 @@ extension TableBuilder {
         apron.zPosition = 9
         scene.addChild(apron)
 
-        let text = SKLabelNode(text: side == .left ? "iPINBALL" : "iVIDI.DEV")
+        let text = SKLabelNode(text: side == .left ? "iVIDIPINBALL" : "iVIDI.DEV")
         text.fontName = "AvenirNextCondensed-HeavyItalic"
         text.fontSize = geometry.length(0.030)
         text.fontColor = palette.accent.withAlphaComponent(0.8)

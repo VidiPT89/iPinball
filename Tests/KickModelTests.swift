@@ -1,6 +1,6 @@
 import CoreGraphics
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// Pop bumpers and slingshots used to set one fixed velocity whatever the ball
 /// was doing, so every ball that touched them left along the same line. These

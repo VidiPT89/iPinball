@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// The shooter lane is a dead end if a plunge cannot carry the ball over the
 /// arch above it: the ball drops back in, and nothing on the table can move it

@@ -1,10 +1,10 @@
 import ImageIO
 import SpriteKit
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// Renders the built table off screen. It proves the scene assembles and draws
-/// without a display, and — with `IPINBALL_SNAPSHOT_DIR` set — writes a PNG,
+/// without a display, and — with `IVIDIPINBALL_SNAPSHOT_DIR` set — writes a PNG,
 /// which is the only way to look at the table when the Mac is locked.
 final class TableSnapshotTests: XCTestCase {
 
@@ -36,7 +36,7 @@ final class TableSnapshotTests: XCTestCase {
         XCTAssertFalse(scene.children.isEmpty, "the table built no nodes")
 
         guard let directory = ProcessInfo.processInfo
-            .environment["IPINBALL_SNAPSHOT_DIR"] else { return }
+            .environment["IVIDIPINBALL_SNAPSHOT_DIR"] else { return }
 
         let url = URL(fileURLWithPath: directory)
             .appendingPathComponent("table.png")

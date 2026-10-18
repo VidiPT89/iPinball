@@ -1,14 +1,14 @@
-# iPinball Privacy Policy
+# iVidiPinball Privacy Policy
 
 *Last updated: 18 October 2026*
 
-**English** · [Português](#política-de-privacidade-do-ipinball)
+**English** · [Português](#política-de-privacidade-do-ividipinball)
 
-iPinball is a pinball game for iPhone, iPad and Mac, made by David Arsénio Martins.
+iVidiPinball is a pinball game for iPhone, iPad and Mac, made by David Arsénio Martins.
 
-## What iPinball collects
+## What iVidiPinball collects
 
-Nothing. iPinball does not collect, store on a server, share or sell any personal data.
+Nothing. iVidiPinball does not collect, store on a server, share or sell any personal data.
 
 - No account, no sign-in.
 - No analytics, no advertising, no tracking of any kind.
@@ -24,7 +24,7 @@ The About screen links to ividi.dev and GitHub. Those open in your browser and a
 
 ## Children
 
-iPinball is suitable for all ages and collects no data from anyone, children included.
+iVidiPinball is suitable for all ages and collects no data from anyone, children included.
 
 ## Changes
 
@@ -32,21 +32,21 @@ If this policy ever changes, the new version will be published here with a new d
 
 ## Contact
 
-Questions about this policy: open an issue at [github.com/VidiPT89/iPinball/issues](https://github.com/VidiPT89/iPinball/issues).
+Questions about this policy: open an issue at [github.com/VidiPT89/iVidiPinball/issues](https://github.com/VidiPT89/iVidiPinball/issues).
 
 ---
 
-# Política de Privacidade do iPinball
+# Política de Privacidade do iVidiPinball
 
 *Última atualização: 18 de outubro de 2026*
 
-[English](#ipinball-privacy-policy) · **Português**
+[English](#ividipinball-privacy-policy) · **Português**
 
-O iPinball é um jogo de pinball para iPhone, iPad e Mac, criado por David Arsénio Martins.
+O iVidiPinball é um jogo de pinball para iPhone, iPad e Mac, criado por David Arsénio Martins.
 
-## O que o iPinball recolhe
+## O que o iVidiPinball recolhe
 
-Nada. O iPinball não recolhe, não guarda em servidores, não partilha e não vende dados pessoais.
+Nada. O iVidiPinball não recolhe, não guarda em servidores, não partilha e não vende dados pessoais.
 
 - Sem conta e sem início de sessão.
 - Sem estatísticas de utilização, sem publicidade e sem qualquer tipo de rastreio.
@@ -62,7 +62,7 @@ O ecrã Sobre tem ligações para ividi.dev e para o GitHub. Abrem no navegador 
 
 ## Crianças
 
-O iPinball é adequado para todas as idades e não recolhe dados de ninguém, incluindo crianças.
+O iVidiPinball é adequado para todas as idades e não recolhe dados de ninguém, incluindo crianças.
 
 ## Alterações
 
@@ -70,4 +70,4 @@ Se esta política mudar, a nova versão é publicada aqui com uma nova data.
 
 ## Contacto
 
-Para questões sobre esta política, abre um issue em [github.com/VidiPT89/iPinball/issues](https://github.com/VidiPT89/iPinball/issues).
+Para questões sobre esta política, abre um issue em [github.com/VidiPT89/iVidiPinball/issues](https://github.com/VidiPT89/iVidiPinball/issues).

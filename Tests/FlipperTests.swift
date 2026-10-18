@@ -1,6 +1,6 @@
 import SpriteKit
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// A flipper used to get one push when pressed and one when released, and
 /// nothing in between. A ball resting on a held flipper pushed it back down,

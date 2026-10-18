@@ -134,7 +134,7 @@ extension SavedData {
 /// payloads can be migrated instead of thrown away.
 final class GameStore {
 
-    private let key = "dev.ividi.ipinball.save"
+    private let key = "dev.ividi.ividipinball.save"
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

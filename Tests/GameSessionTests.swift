@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 final class GameSessionTests: XCTestCase {
 

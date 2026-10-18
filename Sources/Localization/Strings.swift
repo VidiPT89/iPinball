@@ -112,7 +112,7 @@ enum Strings {
         "gameover.playAgain": ("Jogar outra vez", "Play again"),
         "gameover.menu": ("Menu principal", "Main menu"),
         "gameover.share": ("Partilhar", "Share"),
-        "gameover.shareText": ("Fiz %@ pontos no iPinball.", "I scored %@ in iPinball."),
+        "gameover.shareText": ("Fiz %@ pontos no iVidiPinball.", "I scored %@ in iVidiPinball."),
         "pause.title": ("Em pausa", "Paused"),
         "pause.resume": ("Retomar", "Resume"),
         "pause.restart": ("Recomeçar", "Restart"),

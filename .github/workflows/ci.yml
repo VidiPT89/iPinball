@@ -22,15 +22,15 @@ jobs:
       - name: Test (macOS)
         run: |
           xcodebuild test \
-            -project iPinball.xcodeproj \
-            -scheme iPinball-macOS \
+            -project iVidiPinball.xcodeproj \
+            -scheme iVidiPinball-macOS \
             -destination platform=macOS \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Build (iOS)
         run: |
           xcodebuild build \
-            -project iPinball.xcodeproj \
-            -scheme iPinball-iOS \
+            -project iVidiPinball.xcodeproj \
+            -scheme iVidiPinball-iOS \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO

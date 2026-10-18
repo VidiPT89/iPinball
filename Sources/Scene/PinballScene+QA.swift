@@ -3,17 +3,17 @@ import SpriteKit
 /// Switches for playing the table without a person at it, read from the
 /// environment. Always off in a release build.
 ///
-/// - `IPINBALL_AUTOSTART=1` skips the title card and the menu and goes
+/// - `IVIDIPINBALL_AUTOSTART=1` skips the title card and the menu and goes
 ///   straight to a game.
-/// - `IPINBALL_AUTOPLAY=1` plunges every ball and works the flippers, so a
+/// - `IVIDIPINBALL_AUTOPLAY=1` plunges every ball and works the flippers, so a
 ///   game plays itself: for recording the README demo, and for leaving a
 ///   build running on a device to see that nothing breaks.
-/// - `IPINBALL_PANEL=howToPlay` (or `settings`, `highScores`, `about`)
+/// - `IVIDIPINBALL_PANEL=howToPlay` (or `settings`, `highScores`, `about`)
 ///   opens that panel over the menu, for App Store screenshots.
 enum QAFlags {
-    static var startsInGame: Bool { value("IPINBALL_AUTOSTART") != nil }
-    static var autoplay: Bool { value("IPINBALL_AUTOPLAY") != nil }
-    static var panel: Panel? { value("IPINBALL_PANEL").flatMap(Panel.init(rawValue:)) }
+    static var startsInGame: Bool { value("IVIDIPINBALL_AUTOSTART") != nil }
+    static var autoplay: Bool { value("IVIDIPINBALL_AUTOPLAY") != nil }
+    static var panel: Panel? { value("IVIDIPINBALL_PANEL").flatMap(Panel.init(rawValue:)) }
 
     private static func value(_ name: String) -> String? {
         #if DEBUG
@@ -29,22 +29,22 @@ enum QAFlags {
 /// Instruments for finding faults on the table. Debug builds only: none of
 /// this is compiled into a release build.
 ///
-/// - `IPINBALL_DROP="x,y"` drops every new ball at that layout point instead
+/// - `IVIDIPINBALL_DROP="x,y"` drops every new ball at that layout point instead
 ///   of serving it to the plunger, so a trap can be reproduced on demand
 ///   rather than waited for. `"x,y,vx,vy"` fires it, in table widths per
 ///   second, to test a shot.
-/// - `IPINBALL_QA_LOG=1` prints each place the stuck-ball watchdog had to act,
+/// - `IVIDIPINBALL_QA_LOG=1` prints each place the stuck-ball watchdog had to act,
 ///   and at the end of every game how often each part of the table was hit —
 ///   which is how to tell a trap, or a shot nobody can reach, from bad luck.
 extension PinballScene {
 
     private static var tallies: [String: Int] = [:]
     private static var isLogging: Bool {
-        ProcessInfo.processInfo.environment["IPINBALL_QA_LOG"] != nil
+        ProcessInfo.processInfo.environment["IVIDIPINBALL_QA_LOG"] != nil
     }
 
     func dropForQA(_ ball: BallNode) {
-        guard let spec = ProcessInfo.processInfo.environment["IPINBALL_DROP"] else { return }
+        guard let spec = ProcessInfo.processInfo.environment["IVIDIPINBALL_DROP"] else { return }
         let values = spec.split(separator: ",").compactMap { Double($0) }
         guard values.count == 2 || values.count == 4 else { return }
         let point = CGPoint(x: values[0], y: values[1])

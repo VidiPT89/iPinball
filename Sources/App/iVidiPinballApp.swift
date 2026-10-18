@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct iPinballApp: App {
+struct iVidiPinballApp: App {
 
     @State private var settings = AppSettings()
 

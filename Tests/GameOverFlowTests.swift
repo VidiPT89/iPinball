@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// Everything the game-over screen stands on: reaching the end of a game,
 /// working out whether it made the table, writing it down, and the text the
@@ -11,7 +11,7 @@ final class GameOverFlowTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        suiteName = "iPinballTests.\(UUID().uuidString)"
+        suiteName = "iVidiPinballTests.\(UUID().uuidString)"
         settings = AppSettings(store: GameStore(defaults: UserDefaults(suiteName: suiteName)!))
     }
 

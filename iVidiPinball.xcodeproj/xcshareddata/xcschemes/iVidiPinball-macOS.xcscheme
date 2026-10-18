@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "056B659447FC7D6CFFCC2C18"
-               BuildableName = "iPinball.app"
-               BlueprintName = "iPinball-macOS"
-               ReferencedContainer = "container:iPinball.xcodeproj">
+               BlueprintIdentifier = "1C918393FDD3A1D8205BFCCE"
+               BuildableName = "iVidiPinball.app"
+               BlueprintName = "iVidiPinball-macOS"
+               ReferencedContainer = "container:iVidiPinball.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,10 +29,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "71B5912CD193ABCCA6CC1A58"
-               BuildableName = "iPinballTests.xctest"
-               BlueprintName = "iPinballTests"
-               ReferencedContainer = "container:iPinball.xcodeproj">
+               BlueprintIdentifier = "B3971E9C2B57FD363822D29F"
+               BuildableName = "iVidiPinballTests.xctest"
+               BlueprintName = "iVidiPinballTests"
+               ReferencedContainer = "container:iVidiPinball.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,10 +46,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "056B659447FC7D6CFFCC2C18"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-macOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "1C918393FDD3A1D8205BFCCE"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-macOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -58,10 +58,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "71B5912CD193ABCCA6CC1A58"
-               BuildableName = "iPinballTests.xctest"
-               BlueprintName = "iPinballTests"
-               ReferencedContainer = "container:iPinball.xcodeproj">
+               BlueprintIdentifier = "B3971E9C2B57FD363822D29F"
+               BuildableName = "iVidiPinballTests.xctest"
+               BlueprintName = "iVidiPinballTests"
+               ReferencedContainer = "container:iVidiPinball.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,10 +82,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "056B659447FC7D6CFFCC2C18"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-macOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "1C918393FDD3A1D8205BFCCE"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-macOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -101,10 +101,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "056B659447FC7D6CFFCC2C18"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-macOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "1C918393FDD3A1D8205BFCCE"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-macOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

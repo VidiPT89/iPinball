@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F1262653A68531866A2F2FA5"
-               BuildableName = "iPinball.app"
-               BlueprintName = "iPinball-iOS"
-               ReferencedContainer = "container:iPinball.xcodeproj">
+               BlueprintIdentifier = "C538133AD041295B7162C141"
+               BuildableName = "iVidiPinball.app"
+               BlueprintName = "iVidiPinball-iOS"
+               ReferencedContainer = "container:iVidiPinball.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F1262653A68531866A2F2FA5"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-iOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "C538133AD041295B7162C141"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-iOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F1262653A68531866A2F2FA5"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-iOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "C538133AD041295B7162C141"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-iOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F1262653A68531866A2F2FA5"
-            BuildableName = "iPinball.app"
-            BlueprintName = "iPinball-iOS"
-            ReferencedContainer = "container:iPinball.xcodeproj">
+            BlueprintIdentifier = "C538133AD041295B7162C141"
+            BuildableName = "iVidiPinball.app"
+            BlueprintName = "iVidiPinball-iOS"
+            ReferencedContainer = "container:iVidiPinball.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

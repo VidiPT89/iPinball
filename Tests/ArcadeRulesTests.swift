@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// The rules that make the table play like a 90s machine: the skill shot, the
 /// lane change on the flipper buttons, SHOOT AGAIN and the bonus count.

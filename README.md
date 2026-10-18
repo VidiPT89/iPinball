@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" alt="iPinball app icon" width="160">
+  <img src="Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" alt="iVidiPinball app icon" width="160">
 </p>
 
-# iPinball 🎱
+# iVidiPinball 🎱
 
 > A native iOS & macOS pinball machine in the style of the 90s tables: one neon playfield, six chained missions, multiball and a wizard mode.
 
-[![Report Bug](https://img.shields.io/badge/Report-Bug-red)](https://github.com/VidiPT89/iPinball/issues)
-[![Request Feature](https://img.shields.io/badge/Request-Feature-blue)](https://github.com/VidiPT89/iPinball/issues)
-[![CI](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml/badge.svg)](https://github.com/VidiPT89/iPinball/actions/workflows/ci.yml)
+[![Report Bug](https://img.shields.io/badge/Report-Bug-red)](https://github.com/VidiPT89/iVidiPinball/issues)
+[![Request Feature](https://img.shields.io/badge/Request-Feature-blue)](https://github.com/VidiPT89/iVidiPinball/issues)
+[![CI](https://github.com/VidiPT89/iVidiPinball/actions/workflows/ci.yml/badge.svg)](https://github.com/VidiPT89/iVidiPinball/actions/workflows/ci.yml)
 
 <p align="center">
-  <img src="assets/demo.gif" alt="iPinball gameplay on iPhone: launching the ball, pop bumpers and the bonus display" width="320">
+  <img src="assets/demo.gif" alt="iVidiPinball gameplay on iPhone: launching the ball, pop bumpers and the bonus display" width="320">
 </p>
 
 ## ✨ Features
@@ -55,12 +55,12 @@
 ### Installation
 
 ```bash
-git clone https://github.com/VidiPT89/iPinball.git
-cd iPinball
-open iPinball.xcodeproj
+git clone https://github.com/VidiPT89/iVidiPinball.git
+cd iVidiPinball
+open iVidiPinball.xcodeproj
 ```
 
-Pick the `iPinball-iOS` or `iPinball-macOS` scheme and run (`⌘R`).
+Pick the `iVidiPinball-iOS` or `iVidiPinball-macOS` scheme and run (`⌘R`).
 
 > The Xcode project is generated with XcodeGen from `project.yml`. If you add or move Swift files, regenerate it with `xcodegen generate`.
 
@@ -78,9 +78,9 @@ Pick the `iPinball-iOS` or `iPinball-macOS` scheme and run (`⌘R`).
 ## 🧪 Testing
 
 ```bash
-xcodebuild -project iPinball.xcodeproj -scheme iPinball-macOS -destination 'platform=macOS' test
-xcodebuild -project iPinball.xcodeproj -scheme iPinball-iOS -destination 'generic/platform=iOS Simulator' build
-xcodebuild -project iPinball.xcodeproj -scheme iPinball-macOS -destination 'platform=macOS' build
+xcodebuild -project iVidiPinball.xcodeproj -scheme iVidiPinball-macOS -destination 'platform=macOS' test
+xcodebuild -project iVidiPinball.xcodeproj -scheme iVidiPinball-iOS -destination 'generic/platform=iOS Simulator' build
+xcodebuild -project iVidiPinball.xcodeproj -scheme iVidiPinball-macOS -destination 'platform=macOS' build
 ```
 
 The suite covers rules, table clearances, persistence, translations and SpriteKit scene regressions, including an off-screen table render. Release builds keep the macOS hardened runtime enabled; Debug disables it so XCTest can load its test bundle.
@@ -98,7 +98,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome. Feel free to check the [issues page](https://github.com/VidiPT89/iPinball/issues).
+Contributions, issues and feature requests are welcome. Feel free to check the [issues page](https://github.com/VidiPT89/iVidiPinball/issues).
 
 ---
 

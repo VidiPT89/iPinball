@@ -1,5 +1,5 @@
 import XCTest
-@testable import iPinball
+@testable import iVidiPinball
 
 /// A ball that cannot fit somewhere it can reach is a ball that gets wedged.
 /// These tests measure the table rather than look at it: every pair of solid

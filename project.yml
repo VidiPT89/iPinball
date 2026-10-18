@@ -1,4 +1,4 @@
-name: iPinball
+name: iVidiPinball
 options:
   bundleIdPrefix: dev.ividi
   deploymentTarget:
@@ -18,8 +18,8 @@ settings:
       ENABLE_TESTABILITY: YES
 
 targets:
-  iPinball-iOS:
-    productName: iPinball
+  iVidiPinball-iOS:
+    productName: iVidiPinball
     type: application
     platform: iOS
     sources:
@@ -29,7 +29,7 @@ targets:
       path: Config/Info-iOS.plist
       properties:
         UILaunchScreen: {}
-        CFBundleDisplayName: iPinball
+        CFBundleDisplayName: iVidiPinball
         # Portrait only: the table is a tall cabinet and a landscape layout
         # would mean a different, worse playfield.
         UISupportedInterfaceOrientations:
@@ -46,14 +46,14 @@ targets:
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ividipinball
         DEVELOPMENT_TEAM: S769436W24
-        PRODUCT_NAME: iPinball
+        PRODUCT_NAME: iVidiPinball
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: false
 
-  iPinball-macOS:
-    productName: iPinball
+  iVidiPinball-macOS:
+    productName: iVidiPinball
     type: application
     platform: macOS
     sources:
@@ -62,7 +62,7 @@ targets:
     info:
       path: Config/Info-macOS.plist
       properties:
-        CFBundleDisplayName: iPinball
+        CFBundleDisplayName: iVidiPinball
         LSApplicationCategoryType: public.app-category.arcade-games
         NSHumanReadableCopyright: Copyright © David Arsénio Martins
         NSHighResolutionCapable: true
@@ -71,9 +71,9 @@ targets:
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ividipinball
         DEVELOPMENT_TEAM: S769436W24
-        PRODUCT_NAME: iPinball
+        PRODUCT_NAME: iVidiPinball
         COMBINE_HIDPI_IMAGES: true
         ENABLE_HARDENED_RUNTIME: true
       configs:
@@ -81,35 +81,35 @@ targets:
           # XCTest injects an ad-hoc signed bundle into the host app.
           ENABLE_HARDENED_RUNTIME: false
 
-  iPinballTests:
+  iVidiPinballTests:
     type: bundle.unit-test
     platform: macOS
     sources:
       - path: Tests
     dependencies:
-      - target: iPinball-macOS
+      - target: iVidiPinball-macOS
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ipinball.tests
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.ividipinball.tests
         GENERATE_INFOPLIST_FILE: true
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/iPinball.app/Contents/MacOS/iPinball
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/iVidiPinball.app/Contents/MacOS/iVidiPinball
         BUNDLE_LOADER: $(TEST_HOST)
 
 schemes:
-  iPinball-iOS:
+  iVidiPinball-iOS:
     build:
       targets:
-        iPinball-iOS: all
+        iVidiPinball-iOS: all
     run:
       config: Debug
-  iPinball-macOS:
+  iVidiPinball-macOS:
     build:
       targets:
-        iPinball-macOS: all
-        iPinballTests: [test]
+        iVidiPinball-macOS: all
+        iVidiPinballTests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - iPinballTests
+        - iVidiPinballTests
