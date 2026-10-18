@@ -6,7 +6,10 @@ enum TableDepth {
     /// Above the printed playfield and its art, below everything that stands
     /// on it. Raised parts cast their shadow on to the wood, not on each other.
     static let staticShadows: CGFloat = 7
-    static let dynamicShadow: CGFloat = 7.2
+    /// The ball's and the flippers' shadows. Above the inserts and lane
+    /// lamps, which are set flush into the wood, so a ball rolling over a
+    /// lamp still darkens it; below every part that stands up from it.
+    static let dynamicShadow: CGFloat = 12.5
     /// The glass is the last thing between the player and the table.
     static let glass: CGFloat = 88
 

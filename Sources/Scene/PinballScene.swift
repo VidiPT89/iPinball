@@ -333,20 +333,6 @@ final class PinballScene: SKScene {
         launchArrow?.alpha = canPlunge ? 0.35 + plungerCharge * 0.5 : 0
     }
 
-    func nudge(direction: CGFloat) {
-        guard !isPaused, session.phase == .playing, !session.isTilted else { return }
-        let speed = geometry.length(PhysicsTuning.nudgeSpeed)
-        for ball in balls where !ball.isOnRamp {
-            ball.physicsBody?.velocity.dx += speed * direction
-            ball.physicsBody?.velocity.dy += speed * 0.25
-        }
-        if !reduceMotion {
-            shakeCamera(intensity: 0.4)
-        }
-        audio?.play(.nudge)
-        dispatch(.nudged)
-    }
-
     func setPaused(_ paused: Bool) {
         // A button held when the game paused will never report its release.
         if paused { releaseAllFlippers() }
@@ -456,19 +442,6 @@ final class PinballScene: SKScene {
         let waiting = canPlunge
         if model.showLaunchHint != waiting {
             model.showLaunchHint = waiting
-        }
-    }
-
-    /// The general illumination: on while a ball is being played, off on a
-    /// tilt, so the table goes dark exactly as a real one does.
-    func setGeneralIllumination(on: Bool) {
-        guard let sheet = parts.generalIllumination else { return }
-        sheet.removeAllActions()
-        let target: CGFloat = on ? 0 : 0.62
-        if reduceMotion {
-            sheet.alpha = target
-        } else {
-            sheet.run(.fadeAlpha(to: target, duration: on ? 0.25 : 0.08))
         }
     }
 

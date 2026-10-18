@@ -157,6 +157,35 @@ extension PinballScene {
         flickerGeneralIllumination()
     }
 
+    // MARK: - Nudge and general illumination
+
+    func nudge(direction: CGFloat) {
+        guard !isPaused, session.phase == .playing, !session.isTilted else { return }
+        let speed = geometry.length(PhysicsTuning.nudgeSpeed)
+        for ball in balls where !ball.isOnRamp {
+            ball.physicsBody?.velocity.dx += speed * direction
+            ball.physicsBody?.velocity.dy += speed * 0.25
+        }
+        if !reduceMotion {
+            shakeCamera(intensity: 0.4)
+        }
+        audio?.play(.nudge)
+        dispatch(.nudged)
+    }
+
+    /// The general illumination: on while a ball is being played, off on a
+    /// tilt, so the table goes dark exactly as a real one does.
+    func setGeneralIllumination(on: Bool) {
+        guard let sheet = parts.generalIllumination else { return }
+        sheet.removeAllActions()
+        let target: CGFloat = on ? 0 : 0.62
+        if reduceMotion {
+            sheet.alpha = target
+        } else {
+            sheet.run(.fadeAlpha(to: target, duration: on ? 0.25 : 0.08))
+        }
+    }
+
     // MARK: - Impact flourishes
 
     func flash(at point: CGPoint, color: PlatformColor, radius: CGFloat) {
