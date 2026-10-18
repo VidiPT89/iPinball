@@ -92,12 +92,15 @@ final class MissionEngineTests: XCTestCase {
         XCTAssertEqual(engine.nextMission?.id, "finalShot")
     }
 
-    func testNothingIsLeftAfterTheWizardMission() {
+    /// A 90s machine relights its modes once the wizard mode is beaten. The
+    /// chain used to end there, and the saucers had nothing left to start.
+    func testBeatingTheWizardModeRelightsTheLadder() {
         for mission in MissionEngine.catalog {
             complete(mission)
         }
-        XCTAssertNil(engine.nextMission)
-        XCTAssertNil(engine.startNextMission(at: 0))
+        XCTAssertTrue(engine.completed.isEmpty)
+        XCTAssertFalse(engine.isWizardUnlocked)
+        XCTAssertEqual(engine.startNextMission(at: 0)?.id, "warmUp")
     }
 
     func testFinalShotAcceptsEveryMajorShot() {
@@ -175,7 +178,7 @@ final class MissionEngineTests: XCTestCase {
                        "the table has to say that Final Shot is waiting at a saucer")
 
         complete(wizard)
-        XCTAssertEqual(engine.lamp(for: wizard), .lit)
+        XCTAssertEqual(engine.lamp(for: wizard), .off, "a new round starts with the ladder dark")
     }
 
     // MARK: - Helpers
@@ -186,10 +189,11 @@ final class MissionEngineTests: XCTestCase {
             XCTFail("expected \(mission.id) to be next, got \(engine.active?.id ?? "nil")")
             return
         }
+        var effects: [GameEffect] = []
         for _ in 0..<mission.target {
-            _ = engine.handle(event(for: mission), at: 0)
+            effects += engine.handle(event(for: mission), at: 0)
         }
-        XCTAssertTrue(engine.completed.contains(mission.id))
+        XCTAssertTrue(effects.contains(.missionCompleted(id: mission.id, reward: mission.reward)))
     }
 
     private func completeMissions(upTo id: String) {

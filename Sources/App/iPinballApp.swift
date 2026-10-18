@@ -43,7 +43,7 @@ struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var screen: Screen = .splash
+    @State private var screen: Screen = QAFlags.startsInGame ? .game : .splash
     @State private var panel: Panel?
     @State private var audio = AudioEngine()
     @State private var haptics = HapticsEngine()

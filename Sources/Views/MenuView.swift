@@ -109,7 +109,8 @@ struct MenuView: View {
 
     private var header: some View {
         VStack(spacing: 10) {
-            NeonTitle(text: "iPinball", size: 52)
+            LogoBadge(size: 150)
+                .padding(.bottom, 4)
 
             Text(settings.t("menu.tagline"))
                 .font(Typography.label(13))

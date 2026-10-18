@@ -1,5 +1,27 @@
-#if DEBUG
 import SpriteKit
+
+/// Switches for playing the table without a person at it, read from the
+/// environment. Always off in a release build.
+///
+/// - `IPINBALL_AUTOSTART=1` skips the title card and the menu and goes
+///   straight to a game.
+/// - `IPINBALL_AUTOPLAY=1` plunges every ball and works the flippers, so a
+///   game plays itself: for recording the README demo, and for leaving a
+///   build running on a device to see that nothing breaks.
+enum QAFlags {
+    static var startsInGame: Bool { isSet("IPINBALL_AUTOSTART") }
+    static var autoplay: Bool { isSet("IPINBALL_AUTOPLAY") }
+
+    private static func isSet(_ name: String) -> Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.environment[name] != nil
+        #else
+        false
+        #endif
+    }
+}
+
+#if DEBUG
 
 /// Instruments for finding faults on the table. Debug builds only: none of
 /// this is compiled into a release build.
@@ -36,6 +58,37 @@ extension PinballScene {
             self.dispatch(.ballLaunched)
         }]))
     }
+
+    /// Flips whichever flipper a falling ball reaches the outer half of, as
+    /// one short stroke followed by a rest. Holding on while a ball was near
+    /// cradled it, and letting go dropped it straight back into the next
+    /// press: the ball rocked on the flipper for ever and never left it.
+    func autoFlipForQA() {
+        for flipper in parts.flippers {
+            let side = flipper.side
+            if flipper.isPressed {
+                if sceneTime >= Self.flipEnds[side, default: 0] {
+                    releaseFlipper(side: side)
+                    Self.flipRestEnds[side] = sceneTime + 0.25
+                }
+                continue
+            }
+            guard sceneTime >= Self.flipRestEnds[side, default: 0] else { continue }
+            let onTheBlade = balls.contains { ball in
+                let reach = ball.position.distance(to: flipper.pivotInScene)
+                return !ball.isOnRamp
+                    && reach > flipper.reach * 0.45 && reach < flipper.reach * 1.1
+                    && (ball.physicsBody?.velocity.dy ?? 0) < 0
+            }
+            if onTheBlade {
+                pressFlipper(side: side)
+                Self.flipEnds[side] = sceneTime + 0.18
+            }
+        }
+    }
+
+    private static var flipEnds: [TableSide: TimeInterval] = [:]
+    private static var flipRestEnds: [TableSide: TimeInterval] = [:]
 
     func logWatchdogForQA(at position: CGPoint, strength: CGFloat) {
         guard Self.isLogging else { return }

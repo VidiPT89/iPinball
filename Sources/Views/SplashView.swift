@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// The short title card. It plays once, credits the author, and gets out of
-/// the way — on its own after `Motion.splashTotal`, or immediately on a tap.
+/// The short title card. The logo drops in, the author is credited, and it
+/// gets out of the way — on its own after `Motion.splashTotal`, or
+/// immediately on a tap.
 struct SplashView: View {
 
     let onFinish: () -> Void
@@ -11,7 +12,7 @@ struct SplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openURL) private var openURL
 
-    @State private var ballDropped = false
+    @State private var showLogo = false
     @State private var showWordmark = false
     @State private var showCredit = false
     @State private var showLinks = false
@@ -23,14 +24,11 @@ struct SplashView: View {
 
             ZStack {
                 glowHalo
-                steelBall
+                LogoBadge(size: 190)
+                    .opacity(showLogo ? 1 : 0)
+                    .scaleEffect(showLogo || reduceMotion ? 1 : 0.6)
+                    .offset(y: showLogo || reduceMotion ? 0 : -120)
             }
-            .frame(height: 120)
-
-            NeonTitle(text: "iPinball", size: 56)
-                .opacity(showWordmark ? 1 : 0)
-                .scaleEffect(showWordmark || reduceMotion ? 1 : 0.86)
-                .padding(.top, 14)
 
             Text(settings.t("menu.tagline"))
                 .font(Typography.label(14))
@@ -38,7 +36,7 @@ struct SplashView: View {
                 .textCase(.uppercase)
                 .foregroundStyle(palette.dimColor)
                 .opacity(showWordmark ? 1 : 0)
-                .padding(.top, 10)
+                .padding(.top, 24)
 
             Spacer()
 
@@ -55,27 +53,12 @@ struct SplashView: View {
 
     // MARK: - Pieces
 
-    private var steelBall: some View {
-        Circle()
-            .fill(
-                RadialGradient(
-                    colors: [.white, Color(white: 0.78), Color(white: 0.35), Color(white: 0.16)],
-                    center: UnitPoint(x: 0.34, y: 0.30),
-                    startRadius: 2,
-                    endRadius: 58)
-            )
-            .frame(width: 74, height: 74)
-            .shadow(color: palette.accentColor.opacity(0.7), radius: 26)
-            .offset(y: ballDropped || reduceMotion ? 0 : -160)
-            .opacity(ballDropped || reduceMotion ? 1 : 0)
-    }
-
     private var glowHalo: some View {
         Circle()
-            .fill(palette.accentColor)
-            .frame(width: 150, height: 150)
-            .blur(radius: 55)
-            .opacity(ballDropped ? 0.55 : 0)
+            .fill(LogoBadge.glow)
+            .frame(width: 230, height: 230)
+            .blur(radius: 70)
+            .opacity(showLogo ? 0.6 : 0)
     }
 
     private var credits: some View {
@@ -123,7 +106,7 @@ struct SplashView: View {
 
     private func run() {
         guard !reduceMotion else {
-            ballDropped = true
+            showLogo = true
             showWordmark = true
             showCredit = true
             showLinks = true
@@ -131,8 +114,9 @@ struct SplashView: View {
             return
         }
 
+        // The logo drops in and settles like a ball landing on the table.
         withAnimation(.spring(response: Motion.splashBallDrop, dampingFraction: 0.55)) {
-            ballDropped = true
+            showLogo = true
         }
         withAnimation(.easeOut(duration: Motion.splashWordmark).delay(0.35)) {
             showWordmark = true

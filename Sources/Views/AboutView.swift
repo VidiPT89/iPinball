@@ -9,7 +9,7 @@ struct AboutView: View {
     var body: some View {
         Panel_Scaffold(title: settings.t("about.title")) {
             VStack(spacing: 12) {
-                NeonTitle(text: "iPinball", size: 42)
+                LogoBadge(size: 110)
                 Text(settings.t("menu.tagline"))
                     .font(Typography.label(12))
                     .kerning(2.2)

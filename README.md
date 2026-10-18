@@ -18,7 +18,7 @@
 
 - ✅ A full 90s playfield — three pop bumpers, two slingshots, a five-target drop bank, four standup targets, two ramps, two orbits, a spinner, two saucers, a magnet and the P-I-N-B rollover lanes
 - ✅ Two flippers on real pin joints, as on the classic 90s tables, a pull-and-release plunger, and a nudge that tilts the table if you push your luck three times in two seconds
-- ✅ Six chained missions — Warm-Up, Ramp Rush, Target Frenzy, Orbit Loop, Lock 3 and Jackpot Hunt — leading into the Final Shot wizard mode, tracked on a lit mission ladder under the top arch
+- ✅ Six chained missions — Warm-Up, Ramp Rush, Target Frenzy, Orbit Loop, Lock 3 and Jackpot Hunt — leading into the Final Shot wizard mode, tracked on a lit mission ladder under the top arch; beating it relights the ladder for another round
 - ✅ A 90s skill shot: the lit lane walks across P-I-N-B while you aim, and the flipper buttons move the lit lanes (lane change)
 - ✅ An amber dot-matrix display for the score, jackpots, TILT and the end-of-ball bonus counted out line by line, which introduces every mission with its goal
 - ✅ Three-ball multiball where everything scores double, lit jackpots and super jackpots

@@ -80,7 +80,7 @@ struct GameView: View {
         scene.haptics = haptics
         scene.palette = palette
         scene.reduceMotion = reduceMotion
-        scene.autoPlunge = settings.autoPlunge
+        scene.autoPlunge = settings.autoPlunge || QAFlags.autoplay
         scene.ballCount = settings.ballCount
 
         DispatchQueue.main.async {
@@ -110,7 +110,7 @@ struct GameView: View {
             model.isGameOver = false
         }
         scene.ballCount = settings.ballCount
-        scene.autoPlunge = settings.autoPlunge
+        scene.autoPlunge = settings.autoPlunge || QAFlags.autoplay
         scene.setPaused(false)
         scene.startGame()
     }

@@ -354,6 +354,9 @@ final class PinballScene: SKScene {
             handle(effect)
         }
 
+        #if DEBUG
+        if QAFlags.autoplay, session.phase == .playing { autoFlipForQA() }
+        #endif
         parts.flippers.forEach { $0.drive() }
 
         let maxSpeed = geometry.length(PhysicsTuning.maxBallSpeed)

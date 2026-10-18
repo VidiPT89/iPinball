@@ -15,6 +15,7 @@ struct Mission: Equatable, Identifiable {
 
 /// Drives the six chained missions and the wizard mode that follows them.
 /// Only one mission runs at a time; the rest wait their turn at the saucers.
+/// Finishing the wizard mode starts the chain again.
 final class MissionEngine {
 
     static let catalog: [Mission] = [
@@ -71,7 +72,8 @@ final class MissionEngine {
 
     /// The mission ladder printed on the playfield: a finished mission stays
     /// lit, the one being played flashes, and so does Final Shot once every
-    /// other lamp is on, to send the player back to a saucer.
+    /// other lamp is on, to send the player back to a saucer. Beating Final
+    /// Shot puts every lamp out again.
     enum Lamp: Equatable { case off, lit, flashing }
 
     func lamp(for mission: Mission) -> Lamp {
@@ -129,6 +131,9 @@ final class MissionEngine {
 
     private func complete(_ mission: Mission) -> GameEffect {
         completed.insert(mission.id)
+        // Beating the wizard mode relights the ladder from the start, as a
+        // 90s machine does, so a good player always has a next mode to play.
+        if mission.isWizard { completed.removeAll() }
         active = nil
         progress = 0
         return .missionCompleted(id: mission.id, reward: mission.reward)

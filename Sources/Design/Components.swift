@@ -87,20 +87,26 @@ struct GlowCard<Content: View>: View {
 
 // MARK: - Neon wordmark
 
-struct NeonTitle: View {
-    let text: String
-    var size: CGFloat = 46
-    @Environment(\.palette) private var palette
+/// The iPinball logo: the app icon's artwork, with the same continuous
+/// corners the system gives the icon, so the menu and the Home Screen match.
+struct LogoBadge: View {
+    var size: CGFloat = 150
+
+    /// The violet the artwork glows in, for the halo behind it.
+    static let glow = Color(platform: .hex(0x8A4DFF))
 
     var body: some View {
-        Text(text)
-            .font(Typography.display(size))
-            .kerning(1.5)
-            .overlay(palette.accentGradient.mask(
-                Text(text).font(Typography.display(size)).kerning(1.5)
-            ))
-            .shadow(color: palette.accentColor.opacity(0.55), radius: 18)
-            .shadow(color: palette.accentLightColor.opacity(0.25), radius: 38)
+        Image("Logo")
+            .resizable()
+            .interpolation(.high)
+            .aspectRatio(1, contentMode: .fit)
+            .frame(width: size, height: size)
+            .clipShape(RoundedRectangle(cornerRadius: size * 0.2237, style: .continuous))
+            .shadow(color: Self.glow.opacity(0.55), radius: size * 0.14)
+            .shadow(color: .black.opacity(0.35), radius: size * 0.04, y: size * 0.03)
+            .accessibilityElement()
+            .accessibilityLabel(Text(verbatim: "iPinball"))
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
